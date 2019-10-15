@@ -1,0 +1,55 @@
+ObserverCombinedView: MINUS
+	Description: All Players
+	Types: Observer
+
+ObserverWorldView: EQUALS
+	Description: Disable Shroud
+	Types: Observer
+
+ReplaySpeedSlow: F9
+	Description: Slow speed
+	Types: Replay
+
+ReplaySpeedRegular: F10
+	Description: Regular speed
+	Types: Replay
+
+ReplaySpeedFast: F11
+	Description: Fast speed
+	Types: Replay
+
+ReplaySpeedMax: F12
+	Description: Maximum speed
+	Types: Replay
+
+StatisticsNone: F1
+	Description: Disable statistics
+	Types: Observer, Replay
+
+StatisticsBasic: F2
+	Description: Basic statistics
+	Types: Observer, Replay
+
+StatisticsEconomy: F3
+	Description: Economy statistics
+	Types: Observer, Replay
+
+StatisticsProduction: F4
+	Description: Production statistics
+	Types: Observer, Replay
+
+StatisticsSupportPowers: F5
+	Description: Support Power statistics
+	Types: Observer, Replay
+
+StatisticsCombat: F6
+	Description: Combat statistics
+	Types: Observer, Replay
+
+StatisticsGraph: F7
+	Description: Statistics graph
+	Types: Observer, Replay
+
+StatisticsArmyGraph: F8
+	Description: Army value graph
+	Types: Observer, Replay
