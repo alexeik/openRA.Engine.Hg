@@ -92,6 +92,10 @@ namespace OpenRA.Platforms.Default
 				SDL.SDL_GL_SetAttribute(SDL.SDL_GLattr.SDL_GL_BLUE_SIZE, 8);
 				SDL.SDL_GL_SetAttribute(SDL.SDL_GLattr.SDL_GL_ALPHA_SIZE, 0);
 
+				// SDL.SDL_GL_SetAttribute(SDL.SDL_GLattr.SDL_GL_CONTEXT_MAJOR_VERSION, 3); // OpenGL 3+
+
+				// SDL.SDL_GL_SetAttribute(SDL.SDL_GLattr.SDL_GL_CONTEXT_MINOR_VERSION, 2);
+				SDL.SDL_GL_SetAttribute(SDL.SDL_GLattr.SDL_GL_CONTEXT_PROFILE_MASK, 1); // нужно для RenderDoc
 				SDL.SDL_DisplayMode display;
 				SDL.SDL_GetCurrentDisplayMode(0, out display);
 

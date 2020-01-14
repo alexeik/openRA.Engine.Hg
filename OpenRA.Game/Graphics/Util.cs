@@ -36,9 +36,26 @@ namespace OpenRA.Graphics
 			float sb = 0;
 
 			// See shp.vert for documentation on the channel attribute format
-			var attribC = r.Channel == TextureChannel.RGBA ? 0x02 : ((byte)r.Channel) << 1 | 0x01;
-			attribC |= samplers.X << 6;
+			float ct1 = 0, ct2 = 0, ct3 = 0, ct4 = 0;
+
+			// тут r трактуется как класс Sprite
+			if (r.Channel == TextureChannel.RGBA)
+			{
+				ct1 = 0.4f;
+			}
+			else
+			{
+				ct1 = (byte)r.Channel / 10f;
+			}
+
+			// var attribC = r.Channel == TextureChannel.RGBA ? 0x02 : ((byte)r.Channel) << 1 | 0x01;
+			// attribC |= samplers.X << 6;
+			ct2 = samplers.X;
+
 			var ss = r as SpriteWithSecondaryData;
+
+			// тут r трактуется уже как SpriteWithSecondaryData, если преобразование пройдет успешно! а если нет, то ss = null
+			// используется для vDepthMask в шейдере и когда поставлен флаг ОтладкиГлубины SpriteRendere.SetDepthPreviewEnabled ставит у шейдера uniform EnableDepthPreview =true
 			if (ss != null)
 			{
 				sl = ss.SecondaryLeft;
@@ -46,17 +63,44 @@ namespace OpenRA.Graphics
 				sr = ss.SecondaryRight;
 				sb = ss.SecondaryBottom;
 
-				attribC |= ((byte)ss.SecondaryChannel) << 4 | 0x08;
-				attribC |= samplers.Y << 9;
+				// attribC |= ((byte)ss.SecondaryChannel) << 4 | 0x08;
+				if (ss.SecondaryChannel == TextureChannel.RGBA)
+				{
+					ct3 = 0.4f;
+				}
+				else
+				{
+					ct3 = (byte)ss.SecondaryChannel / 10f;
+				}
+
+				// attribC |= samplers.Y << 9;
+				ct4 = samplers.Y;
 			}
 
-			var fAttribC = (float)attribC;
-			vertices[nv] = new Vertex(a, r.Left, r.Top, sl, st, paletteTextureIndex, fAttribC);
-			vertices[nv + 1] = new Vertex(b, r.Right, r.Top, sr, st, paletteTextureIndex, fAttribC);
-			vertices[nv + 2] = new Vertex(c, r.Right, r.Bottom, sr, sb, paletteTextureIndex, fAttribC);
-			vertices[nv + 3] = new Vertex(c, r.Right, r.Bottom, sr, sb, paletteTextureIndex, fAttribC);
-			vertices[nv + 4] = new Vertex(d, r.Left, r.Bottom, sl, sb, paletteTextureIndex, fAttribC);
-			vertices[nv + 5] = new Vertex(a, r.Left, r.Top, sl, st, paletteTextureIndex, fAttribC);
+			int drawmode = 0;
+
+			// Как то передать режим в котором будет рисование.
+			if (r.Channel == TextureChannel.RGBA)
+			{
+				// значит режим рисования RGBA из текстуры
+				drawmode = 0;
+			}
+			else
+			{
+				drawmode = 1;
+
+				// режим через палитру, в основном из канала R в текстуре идем к цвету в палитре
+
+			// drawmode=2 ставится для рисования прямоугольников и т.п. в RgbaColorRenderer
+			}
+
+			// var fAttribC = (float)attribC;
+			vertices[nv] = new Vertex(a, r.Left, r.Top, sl, st, paletteTextureIndex, drawmode, ct1, ct2, ct3, ct4);
+			vertices[nv + 1] = new Vertex(b, r.Right, r.Top, sr, st, paletteTextureIndex, drawmode, ct1, ct2, ct3, ct4);
+			vertices[nv + 2] = new Vertex(c, r.Right, r.Bottom, sr, sb, paletteTextureIndex, drawmode, ct1, ct2, ct3, ct4);
+			vertices[nv + 3] = new Vertex(c, r.Right, r.Bottom, sr, sb, paletteTextureIndex, drawmode, ct1, ct2, ct3, ct4);
+			vertices[nv + 4] = new Vertex(d, r.Left, r.Bottom, sl, sb, paletteTextureIndex, drawmode, ct1, ct2, ct3, ct4);
+			vertices[nv + 5] = new Vertex(a, r.Left, r.Top, sl, st, paletteTextureIndex, drawmode, ct1, ct2, ct3, ct4);
 		}
 
 		public static void FastCopyIntoChannel(Sprite dest, byte[] src)

@@ -67,3 +67,5 @@ StyleCopViolations.xml
 
 # IntelliJ files
 .idea
+
+/mods/common/OpenRA.Game.exe

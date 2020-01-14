@@ -16,6 +16,7 @@ varying vec4 vChannelMask;
 varying vec4 vDepthMask;
 varying vec2 vTexSampler;
 
+varying vec4 vColorInfo;
 varying vec4 vColorFraction;
 varying vec4 vRGBAFraction;
 varying vec4 vPalettedFraction;
@@ -58,8 +59,27 @@ vec4 Sample(float samplerIndex, vec2 pos)
 
 void main()
 {
+	vec4 c ;
+	if (vTexMetadata.t==0.0)
+	{
 	vec4 x = Sample(vTexSampler.s, vTexCoord.st); //возвращает структуру (R,G,B,A) из текстуры
-	
+	//vec4 c = vRGBAFraction * x ;
+	 c =  x ; // vRGBAFraction всегда 1,1,1,1
+	}
+	if (vTexMetadata.t==1.0)
+	{
+		vec4 x = Sample(vTexSampler.s, vTexCoord.st);
+		//vTexMetadata.s вертикальный индекс палитры содержит. 
+		
+		//vec2 p = vec2(dot(x, vChannelMask), vTexMetadata.s);
+		vec2 p = vec2(dot(x, vec4(1,0,0,0)), vTexMetadata.s);
+		 c = vec4(1,1,1,1) * texture2D(Palette, p) ;
+	}
+	if (vTexMetadata.t==2.0)
+	{
+		//vec4 c = vColorFraction * vTexCoord;
+		 c =  vTexCoord; // vColorFraction всегда 1,1,1,1
+	}
 	//для attrib.s=1, vChannelMask будет vec4(1,0,0,0)
 	//dot это просто перемножение каждой компоненты vec4 на такую же компоненту из другого vec4
 	//dot(x, vChannelMask) это будет Х координата для цвета в палитре ,
@@ -68,14 +88,22 @@ void main()
 	//получаем, что х который равен цвету из текстуры, будет обреза с помощью vChannelMask до какой то компоненты r,g,b,a
 	// , чтобы понять, в какой из них хранится указатель на цвет палитры.
 	
-	vec2 p = vec2(dot(x, vChannelMask), vTexMetadata.s);
-	vec4 c = vPalettedFraction * texture2D(Palette, p) + vRGBAFraction * x + vColorFraction * vTexCoord;
+	//тут всегда vChannelMask будет для R канала цвета.
+	//orig-vec2 p = vec2(dot(x, vChannelMask), vTexMetadata.s);
+	//orig-vec4 c = vPalettedFraction * texture2D(Palette, p) + vRGBAFraction * x + vColorFraction * vTexCoord;
+	
+
+	//vPalettedFraction * texture2D(Palette, p) это цвет в палитре сидит по индексу X,Y
+	//vRGBAFraction * x  = это RGBA байты в текстуре
+	//vColorFraction * vTexCoord <- для обозначения места установки постройки это DrawLine использует так хитро . 
+//Пишет вместо vTexCoord значения RGBA и таким образом рисует линии;
 
 	// Discard any transparent fragments (both color and depth)
 	if (c.a == 0.0)
 		discard;
 
 	float depth = gl_FragCoord.z;
+	//используется для дебаг режима
 	if (length(vDepthMask) > 0.0)
 	{
 		vec4 y = Sample(vTexSampler.t, vTexCoord.pq);

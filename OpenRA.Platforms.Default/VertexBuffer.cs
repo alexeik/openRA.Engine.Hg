@@ -99,8 +99,12 @@ namespace OpenRA.Platforms.Default
 			OpenGL.CheckGLError();
 			OpenGL.glVertexAttribPointer(Shader.TexCoordAttributeIndex, 4, OpenGL.GL_FLOAT, false, VertexSize, new IntPtr(12));
 			OpenGL.CheckGLError();
-			OpenGL.glVertexAttribPointer(Shader.TexMetadataAttributeIndex, 2, OpenGL.GL_FLOAT, false, VertexSize, new IntPtr(28));
+			OpenGL.glVertexAttribPointer(Shader.TexMetadataAttributeIndex, 2, OpenGL.GL_FLOAT, false, VertexSize, new IntPtr(28));  // последний аргумнет, это смещение измеряющиеся в байтах , которые указывают на начало столбика данных
 			OpenGL.CheckGLError();
+			OpenGL.glVertexAttribPointer(Shader.VertexColorInfo, 4, OpenGL.GL_FLOAT, false, VertexSize, new IntPtr(36));  // последний аргумнет, это смещение измеряющиеся в байтах , которые указывают на начало столбика данных
+			OpenGL.CheckGLError();
+
+			// нужно добавить строчку для OpenGL.glBindAttribLocation(program, VertexColorInfo, "aVertexColorInfo");
 		}
 
 		public void Dispose()

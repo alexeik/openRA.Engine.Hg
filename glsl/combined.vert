@@ -4,6 +4,7 @@ uniform vec3 r1, r2;
 attribute vec4 aVertexPosition;
 attribute vec4 aVertexTexCoord;
 attribute vec2 aVertexTexMetadata;
+attribute vec4 aVertexColorInfo;
 
 varying vec4 vTexCoord;
 varying vec2 vTexMetadata;
@@ -11,10 +12,11 @@ varying vec4 vChannelMask;
 varying vec4 vDepthMask;
 varying vec2 vTexSampler;
 
+varying vec4 vColorInfo;
 varying vec4 vColorFraction;
 varying vec4 vRGBAFraction;
 varying vec4 vPalettedFraction;
-
+/* 
 vec4 UnpackChannelAttributes(float x)
 {
 	// The channel attributes float encodes a set of attributes
@@ -95,7 +97,7 @@ vec4 SelectPalettedFraction(float x)
 
 	return vec4(1, 1, 1, 1);
 }
-
+ */
 void main()
 {
  // if aVertexTexMetadata.t=X=65 , primarySampler=1,x=1,primaryChannel=1 =>attrib.s=1=primaryChannel
@@ -103,11 +105,21 @@ void main()
 	vTexCoord = aVertexTexCoord;
 	vTexMetadata = aVertexTexMetadata;
 	
-	vec4 attrib = UnpackChannelAttributes(aVertexTexMetadata.t);
-	vChannelMask = SelectChannelMask(attrib.s);
-	vColorFraction = SelectColorFraction(attrib.s);
-	vRGBAFraction = SelectRGBAFraction(attrib.s);
-	vPalettedFraction = SelectPalettedFraction(attrib.s);
-	vDepthMask = SelectChannelMask(attrib.t);
-	vTexSampler = attrib.pq;
+	//vec4 attrib = UnpackChannelAttributes(aVertexTexMetadata.t);
+	//drawMode передается в aVertexTexCoord - 4 позиция тип float.
+	
+	//vec4 drawMode = vec4(aVertexTexMetadata.t;
+	
+	vColorInfo = aVertexColorInfo; //теперь передаем сразу эти 4 числа float
+	
+	//vChannelMask = SelectChannelMask(attrib.s);
+	//vColorFraction = SelectColorFraction(attrib.s);
+	//vRGBAFraction = SelectRGBAFraction(attrib.s);
+	//vPalettedFraction = SelectPalettedFraction(attrib.s);
+	//vDepthMask = SelectChannelMask(attrib.t);
+	
+	vChannelMask = vec4(aVertexColorInfo.s,0,0,0); 
+	//тут нужно из целого числа, сделать вектор, чтобы потом умножить и оставить токо ту часть, которая содержит Х коориданату в палитре
+	
+	vTexSampler = vec2(aVertexColorInfo.t,0);
 } 
