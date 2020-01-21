@@ -38,15 +38,13 @@ namespace OpenRA.Platforms.Default
 				throw new InvalidOperationException("Can not create OpenGL context. (Error: {0})".F(SDL.SDL_GetError()));
 
 			OpenGL.Initialize();
-
-			// убрал. не понятно, почему тут происходит инициализация этих переменных.
 			OpenGL.glEnableVertexAttribArray(Shader.VertexPosAttributeIndex);
 			OpenGL.CheckGLError();
 			OpenGL.glEnableVertexAttribArray(Shader.TexCoordAttributeIndex);
 			OpenGL.CheckGLError();
 			OpenGL.glEnableVertexAttribArray(Shader.TexMetadataAttributeIndex);
 			OpenGL.CheckGLError();
-			OpenGL.glEnableVertexAttribArray(Shader.VertexColorInfo); // тут забыл настройку для вертек таблицы вписать. сча вписано.
+			OpenGL.glEnableVertexAttribArray(Shader.VertexColorInfo);
 			OpenGL.CheckGLError();
 		}
 
