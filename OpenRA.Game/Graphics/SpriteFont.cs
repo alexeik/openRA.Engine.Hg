@@ -166,6 +166,7 @@ namespace OpenRA.Graphics
 			{
 				for (var i = 0; i < s.Size.X; i++)
 				{
+					// тут происходит копирование байтов из глифа в "p", а после в dest общий массив текстуры.
 					var p = glyph.Data[j * glyph.Size.Width + i];
 					if (p != 0)
 					{
