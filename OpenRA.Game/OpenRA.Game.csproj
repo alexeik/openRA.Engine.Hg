@@ -7,7 +7,7 @@
     <UseVSHostingProcess>false</UseVSHostingProcess>
     <LangVersion>5</LangVersion>
     <DebugSymbols>true</DebugSymbols>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <AutoGenerateBindingRedirects>false</AutoGenerateBindingRedirects>
     <RootNamespace>OpenRA</RootNamespace>
     <OutputPath>..</OutputPath>
@@ -44,6 +44,9 @@
   <PropertyGroup Condition="'$(RunConfiguration)' == 'Tiberian Sun'">
     <StartAction>Project</StartAction>
     <StartArguments>Game.Mod=ts</StartArguments>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <WarningsAsErrors />
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Open.Nat">
