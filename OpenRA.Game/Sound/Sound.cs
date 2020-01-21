@@ -36,7 +36,7 @@ namespace OpenRA
 
 	public sealed class Sound : IDisposable
 	{
-		readonly ISoundEngine soundEngine;
+		public readonly ISoundEngine soundEngine;
 		ISoundLoader[] loaders;
 		IReadOnlyFileSystem fileSystem;
 		Cache<string, ISoundSource> sounds;
