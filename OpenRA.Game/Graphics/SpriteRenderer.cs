@@ -53,6 +53,11 @@ namespace OpenRA.Graphics
 			}
 		}
 
+		/// <summary>
+		/// Этот метод, косвенно может запустить opengl DrawBatch  если спрайт принадлежит другому Sheet(Текстуре).
+		/// </summary>
+		/// <param name="s">Спрайт, который записывается в VBO.</param>
+		/// <returns>Возвращает индекс Sheet куда попал спрайт.</returns>
 		int2 SetRenderStateForSprite(Sprite s)
 		{
 			renderer.CurrentBatchRenderer = this;
@@ -106,7 +111,7 @@ namespace OpenRA.Graphics
 
 		internal void DrawSprite(Sprite s, float3 location, float paletteTextureIndex, float3 size)
 		{
-			var samplers = SetRenderStateForSprite(s);
+			var samplers = SetRenderStateForSprite(s); // узнает номер текстуры из которой этой спрайт, чтобы потом записать это в VBO
 			Util.FastCreateQuad(vertices, location + s.FractionalOffset * size, s, samplers, paletteTextureIndex, nv, size);
 			nv += 6;
 		}
@@ -154,7 +159,10 @@ namespace OpenRA.Graphics
 		{
 			shader.SetTexture("Palette", palette);
 		}
-
+		public void SetFontMSDF(ITexture palette)
+		{
+			shader.SetTexture("TextureFontMSDF", palette);
+		}
 		public void SetViewportParams(Size screen, float depthScale, float depthOffset, float zoom, int2 scroll)
 		{
 			shader.SetVec("Scroll", scroll.X, scroll.Y, scroll.Y);
@@ -167,7 +175,10 @@ namespace OpenRA.Graphics
 			// Texture index is sampled as a float, so convert to pixels then scale
 			shader.SetVec("DepthTextureScale", 128 * depthScale * zoom / screen.Height);
 		}
-
+		public void SetTextColor(Color c)
+		{
+			shader.SetVec("TextColor", c.R, c.G, c.B);
+		}
 		public void SetDepthPreviewEnabled(bool enabled)
 		{
 			shader.SetBool("EnableDepthPreview", enabled);

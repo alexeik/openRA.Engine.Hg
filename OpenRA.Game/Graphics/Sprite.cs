@@ -24,7 +24,9 @@ namespace OpenRA.Graphics
 		public readonly float3 Size;
 		public readonly float3 Offset;
 		public readonly float3 FractionalOffset;
-		public readonly float Top, Left, Bottom, Right;
+		public  float Top, Left, Bottom, Right;
+		public int SpriteType;
+		public int SpriteArrayNum;
 
 		public Sprite(Sheet sheet, Rectangle bounds, TextureChannel channel)
 			: this(sheet, bounds, 0, float2.Zero, channel) { }

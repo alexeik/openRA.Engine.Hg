@@ -441,6 +441,11 @@ namespace OpenRA.Platforms.Default
 		{
 			Post(doSaveScreenshot, path);
 		}
+
+		public ITexture CreateTexture2DArray()
+		{
+			throw new NotImplementedException();
+		}
 	}
 
 	class ThreadedFrameBuffer : IFrameBuffer
@@ -616,6 +621,16 @@ namespace OpenRA.Platforms.Default
 		public void Dispose()
 		{
 			device.Post(dispose);
+		}
+
+		public void SetData(byte[] colors, int width, int height, int depth)
+		{
+			throw new NotImplementedException();
+		}
+
+		public void SetEmpty(int width, int height, int depth)
+		{
+			throw new NotImplementedException();
 		}
 	}
 

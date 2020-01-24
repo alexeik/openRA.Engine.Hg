@@ -37,16 +37,17 @@ namespace OpenRA.Graphics
 			this.size = size;
 			this.builder = builder;
 
-			font = Game.Renderer.CreateFont(data);
+			font = Game.Renderer.CreateFont(data); // FreeTypeFont библиотека создает IFont структуру, где есть байтовое представление символа.
 			font.SetSize(size, deviceScale);
 
 			glyphs = new Cache<Pair<char, Color>, GlyphInfo>(CreateGlyph, Pair<char, Color>.EqualityComparer);
 
 			// PERF: Cache these delegates for Measure calls.
-			Func<char, float> characterWidth = character => glyphs[Pair.New(character, Color.White)].Advance;
-			lineWidth = line => line.Sum(characterWidth) / deviceScale;
+			Func<char, float> characterWidth = character => glyphs[Pair.New(character, Color.White)].Advance; // это одна функция с аргументом character, а телом из glyphs[Pair.New(character, Color.White)].Advance
 
-			if (size <= 24)
+			lineWidth = line => line.Sum(characterWidth) / deviceScale; // тоже функция как и characterWidth
+
+			if (size <= 24) // пытается, подобрать size? чтобы в строку влезло 24 символа.
 				PrecacheColor(Color.White, name);
 
 			TopOffset = size - font.Height;
@@ -62,12 +63,22 @@ namespace OpenRA.Graphics
 			TopOffset = size - font.Height;
 		}
 
+		/// <summary>
+		/// Этим методом генерируется обращение к каждой букве в шрифте, что заставляет SpriteFont сгенерировать картинки букв.
+		/// </summary>
+		/// <param name="c">буква.</param>
+		/// <param name="name">название шрифта.</param>
 		void PrecacheColor(Color c, string name)
 		{
 			using (new PerfTimer("PrecacheColor {0} {1}px {2}".F(name, size, c)))
+
 				for (var n = (char)0x20; n < (char)0x7f; n++)
+				{
 					if (glyphs[Pair.New(n, c)] == null)
+					{
 						throw new InvalidOperationException();
+					}
+				}
 		}
 
 		public void DrawText(string text, float2 location, Color c)
@@ -86,15 +97,27 @@ namespace OpenRA.Graphics
 				}
 
 				var g = glyphs[Pair.New(s, c)];
+
+				float3 tempXY = new float2((int)Math.Round(p.X * deviceScale + g.Offset.X, 0) / deviceScale, p.Y + g.Offset.Y / deviceScale);
+
 				if (g.Sprite != null)
-					Game.Renderer.RgbaSpriteRenderer.DrawSprite(g.Sprite,
-						new float2(
-							(int)Math.Round(p.X * deviceScale + g.Offset.X, 0) / deviceScale,
-							p.Y + g.Offset.Y / deviceScale),
-						g.Sprite.Size / deviceScale);
+				{
+					g.Sprite.SpriteType = 1; // 1 будет для FontMSDF
+					g.Sprite.SpriteArrayNum = (int)s;
+					g.Sprite.Top = 0.3594f;
+					g.Sprite.Left = 0;
+					g.Sprite.Bottom = 0;
+					g.Sprite.Right = 0.5781f;
+					Game.Renderer.FontSpriteRenderer.DrawSprite(g.Sprite, tempXY, 0, g.Sprite.Size / deviceScale);
+
+					// Game.Renderer.RgbaSpriteRenderer.DrawSprite(g.Sprite, tempXY, g.Sprite.Size / deviceScale);
+				}
 
 				p += new float2(g.Advance / deviceScale, 0);
 			}
+			Game.Renderer.FontSpriteRenderer.SetTextColor(c);
+
+			// + добавить юсда передачу параметра в шейдер , цвет шрифта.
 		}
 
 		public void DrawTextWithContrast(string text, float2 location, Color fg, Color bg, int offset)
@@ -137,6 +160,11 @@ namespace OpenRA.Graphics
 			return new int2((int)Math.Ceiling(lines.Max(lineWidth)), lines.Length * size);
 		}
 
+		/// <summary>
+		/// Запускается из PrecacheColor.
+		/// </summary>
+		/// <param name="c">Буква шрифта.</param>
+		/// <returns>Один визуальный образ буквы.</returns>
 		GlyphInfo CreateGlyph(Pair<char, Color> c)
 		{
 			var glyph = font.CreateGlyph(c.First);

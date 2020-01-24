@@ -11,17 +11,31 @@
 
 using System;
 using System.IO;
+using System.Threading;
 using OpenRA.Primitives;
 
 namespace OpenRA.Platforms.Default
 {
-	sealed class Texture : ThreadAffine, ITextureInternal
+	class Texture : ITextureInternal
 	{
-		uint texture;
-		TextureScaleFilter scaleFilter;
+		volatile int managedThreadId;
 
+		protected void SetThreadAffinity()
+		{
+			managedThreadId = Thread.CurrentThread.ManagedThreadId;
+		}
+
+		protected void VerifyThreadAffinity()
+		{
+			if (managedThreadId != Thread.CurrentThread.ManagedThreadId)
+				throw new InvalidOperationException("Cross-thread operation not valid: This method must only be called from the thread that owns this object.");
+		}
+
+		public uint texture;
+		public TextureScaleFilter scaleFilter;
+		public int TextureType;
 		public uint ID { get { return texture; } }
-		public Size Size { get; private set; }
+		public Size Size { get; set; }
 
 		bool disposed;
 
@@ -47,9 +61,10 @@ namespace OpenRA.Platforms.Default
 		{
 			OpenGL.glGenTextures(1, out texture);
 			OpenGL.CheckGLError();
+			SetThreadAffinity();
 		}
 
-		void PrepareTexture()
+		public virtual void PrepareTexture()
 		{
 			OpenGL.CheckGLError();
 			OpenGL.glBindTexture(OpenGL.GL_TEXTURE_2D, texture);
@@ -72,7 +87,7 @@ namespace OpenRA.Platforms.Default
 			OpenGL.CheckGLError();
 		}
 
-		public void SetData(byte[] colors, int width, int height)
+		public virtual void SetData(byte[] colors, int width, int height)
 		{
 			VerifyThreadAffinity();
 			if (!Exts.IsPowerOf2(width) || !Exts.IsPowerOf2(height))
@@ -93,7 +108,7 @@ namespace OpenRA.Platforms.Default
 		}
 
 		// An array of RGBA
-		public void SetData(uint[,] colors)
+		public virtual void SetData(uint[,] colors)
 		{
 			VerifyThreadAffinity();
 			var width = colors.GetUpperBound(1) + 1;
@@ -116,7 +131,7 @@ namespace OpenRA.Platforms.Default
 			}
 		}
 
-		public byte[] GetData()
+		public virtual byte[] GetData()
 		{
 			VerifyThreadAffinity();
 			var data = new byte[4 * Size.Width * Size.Height];
@@ -137,7 +152,7 @@ namespace OpenRA.Platforms.Default
 			return data;
 		}
 
-		public void SetEmpty(int width, int height)
+		public virtual void SetEmpty(int width, int height)
 		{
 			VerifyThreadAffinity();
 			if (!Exts.IsPowerOf2(width) || !Exts.IsPowerOf2(height))
@@ -162,6 +177,16 @@ namespace OpenRA.Platforms.Default
 				return;
 			disposed = true;
 			OpenGL.glDeleteTextures(1, ref texture);
+		}
+
+		public virtual void SetData(byte[] colors, int width, int height, int depth)
+		{
+			throw new NotImplementedException();
+		}
+
+		public virtual void SetEmpty(int width, int height, int depth)
+		{
+			throw new NotImplementedException();
 		}
 	}
 }

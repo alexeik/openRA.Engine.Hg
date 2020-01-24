@@ -58,6 +58,7 @@ namespace OpenRA
 	{
 		IVertexBuffer<Vertex> CreateVertexBuffer(int size);
 		ITexture CreateTexture();
+		ITexture CreateTexture2DArray();
 		IFrameBuffer CreateFrameBuffer(Size s);
 		IShader CreateShader(string name);
 		void EnableScissor(int left, int top, int width, int height);
@@ -99,6 +100,8 @@ namespace OpenRA
 	{
 		void SetData(uint[,] colors);
 		void SetData(byte[] colors, int width, int height);
+		void SetData(byte[] colors, int width, int height, int depth);
+		void SetEmpty(int width, int height, int depth);
 		byte[] GetData();
 		Size Size { get; }
 		TextureScaleFilter ScaleFilter { get; set; }

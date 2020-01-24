@@ -109,6 +109,7 @@ namespace OpenRA.Platforms.Default
 
 			OpenGL.CheckGLError();
 
+			// забираем все переменные из shader и потом используем для связи с ними текстур
 			var nextTexUnit = 0;
 			for (var i = 0; i < numUniforms; i++)
 			{
@@ -120,6 +121,17 @@ namespace OpenRA.Platforms.Default
 				OpenGL.CheckGLError();
 
 				if (type == OpenGL.GL_SAMPLER_2D)
+				{
+					samplers.Add(sampler, nextTexUnit);
+
+					var loc = OpenGL.glGetUniformLocation(program, sampler);
+					OpenGL.CheckGLError();
+					OpenGL.glUniform1i(loc, nextTexUnit);
+					OpenGL.CheckGLError();
+
+					nextTexUnit++;
+				}
+				if (type == OpenGL.GL_SAMPLER_2D_ARRAY)
 				{
 					samplers.Add(sampler, nextTexUnit);
 
@@ -142,12 +154,25 @@ namespace OpenRA.Platforms.Default
 			foreach (var kv in textures)
 			{
 				OpenGL.glActiveTexture(OpenGL.GL_TEXTURE0 + kv.Key);
-				OpenGL.glBindTexture(OpenGL.GL_TEXTURE_2D, ((ITextureInternal)kv.Value).ID);
+				if ((kv.Value as Texture).TextureType == OpenGL.GL_TEXTURE_2D_ARRAY)
+				{
+					OpenGL.glBindTexture(OpenGL.GL_TEXTURE_2D_ARRAY, ((ITextureInternal)kv.Value).ID);
+				}
+				else
+				{
+					OpenGL.glBindTexture(OpenGL.GL_TEXTURE_2D, ((ITextureInternal)kv.Value).ID);
+				}
 			}
 
 			OpenGL.CheckGLError();
 		}
 
+		/// <summary>
+		/// Устанавливает связь между названием текстуры и именем сэмплера в шейдере.
+		/// Должны быть одинаковые. Для упрощения так сделано.
+		/// </summary>
+		/// <param name="name">имя текстуры.</param>
+		/// <param name="t">ссылка на текстуру.</param>
 		public void SetTexture(string name, ITexture t)
 		{
 			VerifyThreadAffinity();

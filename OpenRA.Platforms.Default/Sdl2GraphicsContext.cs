@@ -59,6 +59,11 @@ namespace OpenRA.Platforms.Default
 			VerifyThreadAffinity();
 			return new Texture();
 		}
+		public ITexture CreateTexture2DArray()
+		{
+			VerifyThreadAffinity();
+			return new TextureArray();
+		}
 
 		public IFrameBuffer CreateFrameBuffer(Size s)
 		{

@@ -15,5 +15,6 @@ namespace OpenRA.Platforms.Default
 	{
 		uint ID { get; }
 		void SetEmpty(int width, int height);
+		
 	}
 }

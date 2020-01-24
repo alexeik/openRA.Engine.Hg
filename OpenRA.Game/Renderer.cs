@@ -27,7 +27,9 @@ namespace OpenRA
 		public RgbaColorRenderer RgbaColorRenderer { get; private set; }
 		public SpriteRenderer SpriteRenderer { get; private set; }
 		public RgbaSpriteRenderer RgbaSpriteRenderer { get; private set; }
+		public SpriteRenderer FontSpriteRenderer { get; private set; }
 		public IReadOnlyDictionary<string, SpriteFont> Fonts;
+		public FontMSDF Mfont;
 
 		internal IPlatformWindow Window { get; private set; }
 		internal IGraphicsContext Context { get; private set; }
@@ -61,14 +63,14 @@ namespace OpenRA
 			TempBufferSize = graphicSettings.BatchSize;
 			SheetSize = graphicSettings.SheetSize;
 
-			WorldSpriteRenderer = new SpriteRenderer(this, Context.CreateShader("combined"));
+			WorldSpriteRenderer = new SpriteRenderer(this, Context.CreateShader("combined")); // каждый имеет свой VBO
 			WorldRgbaSpriteRenderer = new RgbaSpriteRenderer(WorldSpriteRenderer);
 			WorldRgbaColorRenderer = new RgbaColorRenderer(WorldSpriteRenderer);
-			WorldModelRenderer = new ModelRenderer(this, Context.CreateShader("model"));
-			SpriteRenderer = new SpriteRenderer(this, Context.CreateShader("combined"));
-			RgbaSpriteRenderer = new RgbaSpriteRenderer(SpriteRenderer);
-			RgbaColorRenderer = new RgbaColorRenderer(SpriteRenderer);
-
+			WorldModelRenderer = new ModelRenderer(this, Context.CreateShader("model")); // каждый имеет свой VBO
+			SpriteRenderer = new SpriteRenderer(this, Context.CreateShader("combined")); // каждый имеет свой VBO
+			RgbaSpriteRenderer = new RgbaSpriteRenderer(SpriteRenderer); // эти пишут в родительский VBO
+			RgbaColorRenderer = new RgbaColorRenderer(SpriteRenderer); // эти пишут в родительский VBO
+			FontSpriteRenderer = new SpriteRenderer(this, Context.CreateShader("text")); // каждый имеет свой VBO
 			tempBuffer = Context.CreateVertexBuffer(TempBufferSize);
 		}
 
@@ -85,11 +87,17 @@ namespace OpenRA
 			if (Fonts != null)
 				foreach (var font in Fonts.Values)
 					font.Dispose();
+			Mfont = new FontMSDF();
+			Mfont.LoadFontTextures();
+
 			using (new PerfTimer("SpriteFonts"))
 			{
 				if (fontSheetBuilder != null)
+				{
 					fontSheetBuilder.Dispose();
+				}
 				fontSheetBuilder = new SheetBuilder(SheetType.BGRA, 512);
+
 				Fonts = modData.Manifest.Fonts.ToDictionary(x => x.Key,
 					x => new SpriteFont(x.Value.First, modData.DefaultFileSystem.Open(x.Value.First).ReadAllBytes(),
 										x.Value.Second, Window.WindowScale, fontSheetBuilder)).AsReadOnly();
@@ -103,6 +111,7 @@ namespace OpenRA
 						f.Value.SetScale(after);
 				});
 			};
+			FontSpriteRenderer.SetFontMSDF(Mfont.Texture);
 		}
 
 		public void InitializeDepthBuffer(MapGrid mapGrid)
@@ -133,6 +142,7 @@ namespace OpenRA
 			{
 				lastResolution = Resolution;
 				SpriteRenderer.SetViewportParams(lastResolution, 0f, 0f, 1f, int2.Zero);
+				FontSpriteRenderer.SetViewportParams(lastResolution, 0f, 0f, 1f, int2.Zero);
 			}
 
 			// If zoom evaluates as different due to floating point weirdness that's OK, setting the parameters again is harmless.
@@ -154,6 +164,7 @@ namespace OpenRA
 			currentPaletteTexture = palette.Texture;
 
 			SpriteRenderer.SetPalette(currentPaletteTexture);
+			FontSpriteRenderer.SetPalette(currentPaletteTexture);
 			WorldSpriteRenderer.SetPalette(currentPaletteTexture);
 			WorldModelRenderer.SetPalette(currentPaletteTexture);
 		}

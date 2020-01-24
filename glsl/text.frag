@@ -1,4 +1,5 @@
 #version 130
+
 out vec4 fragColor;
 
 uniform sampler2D Texture0;
@@ -9,9 +10,11 @@ uniform sampler2D Texture4;
 uniform sampler2D Texture5;
 uniform sampler2D Texture6;
 uniform sampler2D Palette;
+uniform sampler2DArray TextureFontMSDF;
 
 uniform bool EnableDepthPreview;
 uniform float DepthTextureScale;
+
 
 in vec4 vTexCoord;
 in vec2 vTexMetadata;
@@ -19,26 +22,12 @@ in vec4 vChannelMask;
 in vec4 vDepthMask;
 in vec2 vTexSampler;
 
+in vec4 vColorInfo;
 in vec4 vColorFraction;
 in vec4 vRGBAFraction;
 in vec4 vPalettedFraction;
+in vec4 vTextColor;
 
-
-	
-float jet_r(float x)
-{
-	return x < 0.7 ? 4.0 * x - 1.5 : -4.0 * x + 4.5;
-}
-
-float jet_g(float x)
-{
-	return x < 0.5 ? 4.0 * x - 0.5 : -4.0 * x + 3.5;
-}
-
-float jet_b(float x)
-{
-	return x < 0.3 ? 4.0 * x + 0.5 : -4.0 * x + 2.5;
-}
 
 vec4 Sample(float samplerIndex, vec2 pos)
 {
@@ -57,38 +46,58 @@ vec4 Sample(float samplerIndex, vec2 pos)
 
 	return texture2D(Texture6, pos);
 }
+float median(float r, float g, float b) {
+    return max(min(r, g), min(max(r, g), b));
+}
 
 void main()
 {
-	vec4 x = Sample(vTexSampler.s, vTexCoord.st);
+	/* vec4 x = Sample(vTexSampler.s, vTexCoord.st);
 	vec2 p = vec2(dot(x, vChannelMask), vTexMetadata.s);
 	vec4 c = vPalettedFraction * texture2D(Palette, p) + vRGBAFraction * x + vColorFraction * vTexCoord;
+ */
 
+	//fragColor= texture(TextureFontMSDF, vec3(0,0,1)); 
+
+		
+	vec3 flipped_texCoords = vec3(vTexCoord.s,vTexCoord.t,vColorInfo.p); 	//vec3 flipped_texCoords = vec3(0.0,0.0,84);
+	
+	vec3 sample = texture(TextureFontMSDF, flipped_texCoords).rgb;
+	
+	vec2 pos = flipped_texCoords.xy;
+    
+	float pxRange=12; //так было при генерации png в msdfgen.
+	
+	vec2 msdfUnit = pxRange/vec2(textureSize(TextureFontMSDF, 0));
+    float sigDist = median(sample.r, sample.g, sample.b) - 0.5;
+    sigDist *= dot(msdfUnit, 0.5/fwidth(pos));
+    float opacity = clamp(sigDist + 0.5, 0.0, 1.0);
+	
+	fragColor = vec4(vTextColor.rgb , opacity); 
+    //fragColor = vec4(vec3(0,0,0) , opacity); 
+	/*
+    ivec2 sz =  textureSize(TextureFontMSDF, 0).xy; // ivec2(96,96); // возвращает h & w текстуры буквы
+    float dx = dFdx(pos.x) * sz.x; 
+    float dy = dFdy(pos.y) * sz.y;
+    float toPixels = 8.0 * inversesqrt(dx * dx + dy * dy);
+    float sigDist = median(sample.r, sample.g, sample.b);
+    float w = fwidth(sigDist);
+    float opacity = smoothstep(0.5 - w, 0.5 + w, sigDist); 
+
+    fragColor = vec4(vTextColor, opacity);*/
+	//c=vec4(sample,1);
+	
+	// orig vec4 x = Sample(vTexSampler.s, vTexCoord.st); //возвращает структуру (R,G,B,A) из текстуры
+	//vec4 c = vRGBAFraction * x ;
+	// orig c =  x ; // vRGBAFraction всегда 1,1,1,1
+	
+	
 	// Discard any transparent fragments (both color and depth)
-	if (c.a == 0.0)
-		discard;
+	// if (c.a == 0.0)
+	//	discard; 
 
-	float depth = gl_FragCoord.z;
-	if (length(vDepthMask) > 0.0)
-	{
-		vec4 y = Sample(vTexSampler.t, vTexCoord.pq);
-		depth = depth + DepthTextureScale * dot(y, vDepthMask);
-	}
-
-	// Convert to window coords
-	gl_FragDepth = 0.5 * depth + 0.5;
-
-	if (EnableDepthPreview)
-	{
-		float x = 1.0 - gl_FragDepth;
-		float r = clamp(jet_r(x), 0.0, 1.0);
-		float g = clamp(jet_g(x), 0.0, 1.0);
-		float b = clamp(jet_b(x), 0.0, 1.0);
-		fragColor = vec4(r, g, b, 1.0);
-	}
-	else
-	{
-		if ( c.a != 0) 
+	
+		/* if ( c.a != -1) 
 		{
 						// Get the neighbouring four pixels.
 			vec2 textureSize2d =textureSize(Texture1,0);
@@ -118,14 +127,14 @@ void main()
 			  // 5
 			  //color.rgb = vec3((color.r + color.g + color.b) / 3.0);
 			  //fragColor = vec4(color.rgb*colororig, 1);
-		}
+		} */
 
        //c.rgb *= c.a;
 				
-		fragColor = c;
+		//fragColor = c;
 		
 
 	
-	}
+	
 	
 }

@@ -31,6 +31,11 @@ namespace OpenRA.Primitives
 		public Cache(Func<T, U> loader)
 			: this(loader, EqualityComparer<T>.Default) { }
 
+		/// <summary>
+		/// Это функция переопределена внутри этого словаря. При обращении к индексу пытается создать элемент, если его нету.
+		/// </summary>
+		/// <param name="key">ключ словаря.</param>
+		/// <returns>возвращает элемент с помощью раннее созданного делегата CreateGlyph.</returns>
 		public U this[T key]
 		{
 			get { return cache.GetOrAdd(key, loader); }

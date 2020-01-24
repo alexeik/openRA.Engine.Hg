@@ -41,7 +41,7 @@ namespace OpenRA.Graphics
 			// тут r трактуется как класс Sprite
 			if (r.Channel == TextureChannel.RGBA)
 			{
-				ct1 = 0.4f;
+				ct1 = 0.4f; // это потому что, выбор текстуры зависит от 0.0 чисел в шейдере в методе vec4 Sample()
 			}
 			else
 			{
@@ -91,7 +91,12 @@ namespace OpenRA.Graphics
 
 				// режим через палитру, в основном из канала R в текстуре идем к цвету в палитре
 
-			// drawmode=2 ставится для рисования прямоугольников и т.п. в RgbaColorRenderer
+			// drawmode=2 ставится для рисования прямоугольников и т.п. в RgbaColorRenderer, так как у него свой VBO
+			}
+			if (r.SpriteType == 1)
+			{
+				ct3 = r.SpriteArrayNum; // положим сюда цифру указывающую на спрайт внутри Texture2dArray в TextureFontMSDF параметра шейдера.
+				drawmode = 3; // FontMSDF
 			}
 
 			// var fAttribC = (float)attribC;

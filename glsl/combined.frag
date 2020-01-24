@@ -1,3 +1,7 @@
+#version 130
+
+out vec4 fragColor;
+
 uniform sampler2D Texture0;
 uniform sampler2D Texture1;
 uniform sampler2D Texture2;
@@ -6,20 +10,21 @@ uniform sampler2D Texture4;
 uniform sampler2D Texture5;
 uniform sampler2D Texture6;
 uniform sampler2D Palette;
+uniform sampler2DArray TextureFontMSDF;
 
 uniform bool EnableDepthPreview;
 uniform float DepthTextureScale;
 
-varying vec4 vTexCoord;
-varying vec2 vTexMetadata;
-varying vec4 vChannelMask;
-varying vec4 vDepthMask;
-varying vec2 vTexSampler;
+in vec4 vTexCoord;
+in vec2 vTexMetadata;
+in vec4 vChannelMask;
+in vec4 vDepthMask;
+in vec2 vTexSampler;
 
-varying vec4 vColorInfo;
-varying vec4 vColorFraction;
-varying vec4 vRGBAFraction;
-varying vec4 vPalettedFraction;
+in vec4 vColorInfo;
+in vec4 vColorFraction;
+in vec4 vRGBAFraction;
+in vec4 vPalettedFraction;
 
 float jet_r(float x)
 {
@@ -60,6 +65,7 @@ vec4 Sample(float samplerIndex, vec2 pos)
 void main()
 {
 	vec4 c ;
+		c= texture(TextureFontMSDF, vec3(0,0,1)); 
 	if (vTexMetadata.t==0.0)
 	{
 	vec4 x = Sample(vTexSampler.s, vTexCoord.st); //возвращает структуру (R,G,B,A) из текстуры
@@ -119,11 +125,11 @@ void main()
 		float r = clamp(jet_r(x), 0.0, 1.0);
 		float g = clamp(jet_g(x), 0.0, 1.0);
 		float b = clamp(jet_b(x), 0.0, 1.0);
-		gl_FragColor = vec4(r, g, b, 1.0);
+		fragColor = vec4(r, g, b, 1.0);
 	}
 	else
 	{
-		gl_FragColor = c;
+		fragColor = c;
 		
 
 	
