@@ -91,11 +91,11 @@ namespace OpenRA.Graphics
 
 				// режим через палитру, в основном из канала R в текстуре идем к цвету в палитре
 
-			// drawmode=2 ставится для рисования прямоугольников и т.п. в RgbaColorRenderer, так как у него свой VBO
+				// drawmode=2 ставится для рисования прямоугольников и т.п. в RgbaColorRenderer, так как у него свой VBO
 			}
 			if (r.SpriteType == 1)
 			{
-				ct3 = r.SpriteArrayNum; // положим сюда цифру указывающую на спрайт внутри Texture2dArray в TextureFontMSDF параметра шейдера.
+				paletteTextureIndex = r.SpriteArrayNum; // положим сюда цифру указывающую на спрайт внутри Texture2dArray в TextureFontMSDF параметра шейдера.
 				drawmode = 3; // FontMSDF
 			}
 
@@ -106,6 +106,8 @@ namespace OpenRA.Graphics
 			vertices[nv + 3] = new Vertex(c, r.Right, r.Bottom, sr, sb, paletteTextureIndex, drawmode, ct1, ct2, ct3, ct4);
 			vertices[nv + 4] = new Vertex(d, r.Left, r.Bottom, sl, sb, paletteTextureIndex, drawmode, ct1, ct2, ct3, ct4);
 			vertices[nv + 5] = new Vertex(a, r.Left, r.Top, sl, st, paletteTextureIndex, drawmode, ct1, ct2, ct3, ct4);
+
+
 		}
 
 		public static void FastCopyIntoChannel(Sprite dest, byte[] src)

@@ -8,7 +8,7 @@ in vec4 aVertexTexCoord;
 in vec2 aVertexTexMetadata;
 in vec4 aVertexColorInfo;
 
-uniform vec3 TextColor;
+
 
 out vec4 vTexCoord;
 out vec2 vTexMetadata;
@@ -35,7 +35,7 @@ void main()
 	//vec4 drawMode = vec4(aVertexTexMetadata.t;
 	
 	vColorInfo = aVertexColorInfo; //теперь передаем сразу эти 4 числа float
-	
+
 	//vChannelMask = SelectChannelMask(attrib.s);
 	//vColorFraction = SelectColorFraction(attrib.s);
 	//vRGBAFraction = SelectRGBAFraction(attrib.s);
@@ -44,6 +44,6 @@ void main()
 	
 	vChannelMask = vec4(aVertexColorInfo.s,0,0,0); 
 	//тут нужно из целого числа, сделать вектор, чтобы потом умножить и оставить токо ту часть, которая содержит Х коориданату в палитре
-	vTextColor= vec4(TextColor,0);
+	//vTextColor= vec4(TextColor,1);
 	vTexSampler = vec2(aVertexColorInfo.t,0);
 } 

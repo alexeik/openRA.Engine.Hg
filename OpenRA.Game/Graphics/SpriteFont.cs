@@ -104,10 +104,21 @@ namespace OpenRA.Graphics
 				{
 					g.Sprite.SpriteType = 1; // 1 будет для FontMSDF
 					g.Sprite.SpriteArrayNum = (int)s;
-					g.Sprite.Top = 0.3594f;
-					g.Sprite.Left = 0;
-					g.Sprite.Bottom = 0;
-					g.Sprite.Right = 0.5781f;
+
+					if ((int)s > 90 || (int)s < 65)
+					{
+						g.Sprite.Top = 0.8406f;
+						g.Sprite.Left = 0;
+						g.Sprite.Bottom = 0;
+						g.Sprite.Right = 0.6531f;
+					}
+					if ((int)s >= 65 && (int)s <= 90)
+					{
+						g.Sprite.Top = 0.9844f;
+						g.Sprite.Left = 0;
+						g.Sprite.Bottom = 0;
+						g.Sprite.Right = 0.7813f;
+					}
 					Game.Renderer.FontSpriteRenderer.DrawSprite(g.Sprite, tempXY, 0, g.Sprite.Size / deviceScale);
 
 					// Game.Renderer.RgbaSpriteRenderer.DrawSprite(g.Sprite, tempXY, g.Sprite.Size / deviceScale);

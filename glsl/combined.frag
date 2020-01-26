@@ -65,7 +65,7 @@ vec4 Sample(float samplerIndex, vec2 pos)
 void main()
 {
 	vec4 c ;
-		c= texture(TextureFontMSDF, vec3(0,0,1)); 
+		//c= texture(TextureFontMSDF, vec3(0,0,1)); 
 	if (vTexMetadata.t==0.0)
 	{
 	vec4 x = Sample(vTexSampler.s, vTexCoord.st); //возвращает структуру (R,G,B,A) из текстуры

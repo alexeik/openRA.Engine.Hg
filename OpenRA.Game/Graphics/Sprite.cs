@@ -24,7 +24,7 @@ namespace OpenRA.Graphics
 		public readonly float3 Size;
 		public readonly float3 Offset;
 		public readonly float3 FractionalOffset;
-		public  float Top, Left, Bottom, Right;
+		public float Top, Left, Bottom, Right;
 		public int SpriteType;
 		public int SpriteArrayNum;
 
