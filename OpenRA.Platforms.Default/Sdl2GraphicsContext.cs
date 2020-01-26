@@ -237,7 +237,7 @@ namespace OpenRA.Platforms.Default
 				case BlendMode.Alpha:
 					OpenGL.glEnable(OpenGL.GL_BLEND);
 					OpenGL.CheckGLError();
-					OpenGL.glBlendFunc(OpenGL.GL_ONE, OpenGL.GL_ONE_MINUS_SRC_ALPHA);
+					OpenGL.glBlendFunc(OpenGL.GL_SRC_ALPHA, OpenGL.GL_ONE_MINUS_SRC_ALPHA);
 					break;
 				case BlendMode.Additive:
 				case BlendMode.Subtractive:
