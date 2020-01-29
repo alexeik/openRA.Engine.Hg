@@ -144,16 +144,17 @@ namespace OpenRA.Graphics
 						}
 						
 						gli.Sprite.Left = 4 * onepixel ;
-						gli.Sprite.Bottom = 5 * onepixel - (gli.fg.Size.Height - gli.fg.Bearing.Y) *onepixel;
+						gli.Sprite.Bottom = 5 * onepixel - (gli.fg.Size.Height - gli.fg.Bearing.Y)* onepixel;
+						gli.Sprite.Top = gli.Sprite.Bottom + gli.fg.Size.Height * onepixel - 0.0f * onepixel;
 						gli.Sprite.Right = gli.Sprite.Left+ gli.fg.Size.Width * onepixel + 2 * onepixel;
-						gli.Sprite.Top = gli.Sprite.Bottom + gli.fg.Size.Height * onepixel;
+						//gli.Sprite.Right = 0.375f + 2 * onepixel;
 						//Game.Renderer.FontSpriteRenderer.DrawSprite(glp.Sprite, tempXY, 0, new float3(27, 27,27));
 					}
 					if ((int)s >= 65 && (int)s <= 90)
 					{
 						tempXY = new float2((int)Math.Round(p.X * deviceScale + gli.Offset.X, 0) / deviceScale, (p.Y - (gli.fg.Size.Height - gli.fg.Bearing.Y) - gli.fg.Bearing.Y) / deviceScale);
 						
-						gli.Sprite.Left = 3 * onepixel;
+						gli.Sprite.Left = 4 * onepixel;
 						gli.Sprite.Bottom = 5 * onepixel - (gli.fg.Size.Height - gli.fg.Bearing.Y) * onepixel;
 						gli.Sprite.Top = gli.Sprite.Bottom+ gli.fg.Size.Height * onepixel;
 						gli.Sprite.Right = gli.Sprite.Left + 3* onepixel + gli.fg.Size.Width * onepixel;
@@ -162,13 +163,21 @@ namespace OpenRA.Graphics
 					//Game.Renderer.FontSpriteRenderer.DrawSprite(gli.Sprite, tempXY, 0, new float3(gli.fg.Size.Width , gli.fg.Size.Height , gli.fg.Size.Height));
 					//Game.Renderer.FontSpriteRenderer.DrawSprite(gli.Sprite, tempXY, 0, new float3(font.Height, font.Height, font.Height));
 					//Game.Renderer.FontSpriteRenderer.DrawSprite(gli.Sprite, tempXY, 0, gli.Sprite.Size);
+					
 					tempXY = new float2((int)Math.Round(p.X * deviceScale , 0) / deviceScale, (p.Y - (gli.fg.Size.Height)+ (gli.fg.Size.Height - gli.fg.Bearing.Y)) / deviceScale);
 					float coof = gli.Sprite.Size.X / gli.Sprite.Size.Y;
+					if ((gli.fg.Size.Height - gli.fg.Bearing.Y) == 1)
+					{
+						Game.Renderer.FontSpriteRenderer.DrawSprite(gli.Sprite, tempXY, 0, new float3(gli.Sprite.Size.X, gli.Sprite.Size.Y-0.5f, 0));
+					}
+					else
+					{
+						Game.Renderer.FontSpriteRenderer.DrawSprite(gli.Sprite, tempXY, 0, new float3(gli.Sprite.Size.X, gli.Sprite.Size.Y, 0));
+					}
 					
-					Game.Renderer.FontSpriteRenderer.DrawSprite(gli.Sprite, tempXY, 0, new float3(gli.Sprite.Size.X, gli.Sprite.Size.Y, 0));
 				}
 				//p += new float2(gli.Advance-1 / deviceScale, 0);
-				p += new float2(gli.Advance / deviceScale, 0);
+				p += new float2(gli.Advance -1 + gli.Sprite.Left / deviceScale, 0);
 			}
 			Game.Renderer.FontSpriteRenderer.SetTextColor(c);
 
