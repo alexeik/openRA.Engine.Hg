@@ -47,7 +47,7 @@ namespace OpenRA.Graphics
 
 			lineWidth = line => line.Sum(characterWidth) / deviceScale; // тоже функция как и characterWidth
 
-			if (size <= 24) // пытается, подобрать size? чтобы в строку влезло 24 символа.
+			//if (size <= 24) // пытается, подобрать size? чтобы в строку влезло 24 символа.
 				PrecacheColor(Color.White, name);
 
 			TopOffset = size - font.Height;
@@ -85,11 +85,7 @@ namespace OpenRA.Graphics
 		{
 			// Offset from the baseline position to the top-left of the glyph for rendering
 			location += new float2(0, size);
-			if (text.Contains("Settings"))
-			{
-
-			}
-			var p =new float2( location.X ,location.Y);
+			var p = new float2(location.X, location.Y);
 
 			foreach (var s in text)
 			{
@@ -101,83 +97,28 @@ namespace OpenRA.Graphics
 				}
 
 				GlyphInfo gli = glyphs[Pair.New(s, c)];
-			
-				//тут левый верхний спрайта - в каждом спрайте есть смещение самой буквы от краев спрайта. 
 
-				float3 tempXY = new float2();//= new float2((int)Math.Round(p.X * deviceScale + glp.Offset.X, 0) / deviceScale, p.Y - 15 - (Math.Max(glp.fg.Size.Height - glp.fg.Bearing.Y, 1)) / deviceScale); ;
-											 //= new float2((int)Math.Round(p.X * deviceScale + glp.Offset.X, 0) / deviceScale, p.Y-15- (Math.Max(glp.fg.Size.Height - glp.fg.Bearing.Y,1)) / deviceScale);
+				//размер квада буквы равен размеру текстуры * масштаб. 
 
-				// float3 tempXY = new float2((int)Math.Round(p.X * deviceScale + g.Offset.X, 0) / deviceScale, p.Y + g.Offset.Y / deviceScale);
-
-				float onepixel = 1f / 32f;
+				float3 tempXY = new float2();
 
 				if (gli.Sprite != null)
 				{
 					gli.Sprite.SpriteType = 1; // 1 будет для FontMSDF
 					gli.Sprite.SpriteArrayNum = (int)s;
-
-					if ((int)s <= 64)
-					{
-						tempXY = new float2((int)Math.Round(p.X * deviceScale + gli.fg.Bearing.X, 0) , (p.Y - (gli.fg.Size.Height - gli.fg.Bearing.Y) - gli.fg.Bearing.Y));
-						gli.Sprite.Left = 6 * onepixel;
-						gli.Sprite.Bottom = 5 * onepixel - (gli.fg.Size.Height - gli.fg.Bearing.Y) * onepixel;
-						gli.Sprite.Top = gli.Sprite.Bottom + gli.fg.Size.Height * onepixel;
-						gli.Sprite.Right = gli.Sprite.Left + gli.fg.Size.Width * onepixel + 1 * onepixel;
-					}
-					if ((int)s >= 97)
-					{
-						if (gli.fg.Size.Height - gli.fg.Bearing.Y > 1)
-						{
-							tempXY = new float2((int)Math.Round(p.X * deviceScale + gli.Offset.X, 0) / deviceScale, (p.Y - (gli.fg.Size.Height - gli.fg.Bearing.Y) - gli.fg.Bearing.Y) / deviceScale);
-						}
-						else if (gli.fg.Size.Height - gli.fg.Bearing.Y == 1)
-						{
-							tempXY = new float2((int)Math.Round(p.X * deviceScale + gli.Offset.X, 0) / deviceScale, (p.Y - (gli.fg.Size.Height - gli.fg.Bearing.Y) - gli.fg.Bearing.Y) / deviceScale);
-						}
-						else
-						{
-							tempXY = new float2((int)Math.Round(p.X * deviceScale + gli.Offset.X, 0) / deviceScale, (p.Y - (gli.fg.Size.Height - gli.fg.Bearing.Y) - gli.fg.Bearing.Y) / deviceScale);
-						}
-						if ((int)s == 105 || (int)s == 108 || (int)s == 116)
-						{
-							tempXY = new float2((int)Math.Round(p.X * deviceScale + gli.Offset.X, 0) / deviceScale, (p.Y - (gli.fg.Size.Height - gli.fg.Bearing.Y) - gli.fg.Bearing.Y) / deviceScale);
-						}
-						
-						gli.Sprite.Left = 4 * onepixel ;
-						gli.Sprite.Bottom = 5 * onepixel - (gli.fg.Size.Height - gli.fg.Bearing.Y)* onepixel;
-						gli.Sprite.Top = gli.Sprite.Bottom + gli.fg.Size.Height * onepixel - 0.0f * onepixel;
-						gli.Sprite.Right = gli.Sprite.Left+ gli.fg.Size.Width * onepixel + 2 * onepixel;
-						//gli.Sprite.Right = 0.375f + 2 * onepixel;
-						//Game.Renderer.FontSpriteRenderer.DrawSprite(glp.Sprite, tempXY, 0, new float3(27, 27,27));
-					}
-					if ((int)s >= 65 && (int)s <= 90)
-					{
-						tempXY = new float2((int)Math.Round(p.X * deviceScale + gli.Offset.X, 0) / deviceScale, (p.Y - (gli.fg.Size.Height - gli.fg.Bearing.Y) - gli.fg.Bearing.Y) / deviceScale);
-						
-						gli.Sprite.Left = 4 * onepixel;
-						gli.Sprite.Bottom = 5 * onepixel - (gli.fg.Size.Height - gli.fg.Bearing.Y) * onepixel;
-						gli.Sprite.Top = gli.Sprite.Bottom+ gli.fg.Size.Height * onepixel;
-						gli.Sprite.Right = gli.Sprite.Left + 3* onepixel + gli.fg.Size.Width * onepixel;
-						//Game.Renderer.FontSpriteRenderer.DrawSprite(glp.Sprite, tempXY, 0, new float3(27, 27, 27));
-					}
-					//Game.Renderer.FontSpriteRenderer.DrawSprite(gli.Sprite, tempXY, 0, new float3(gli.fg.Size.Width , gli.fg.Size.Height , gli.fg.Size.Height));
-					//Game.Renderer.FontSpriteRenderer.DrawSprite(gli.Sprite, tempXY, 0, new float3(font.Height, font.Height, font.Height));
-					//Game.Renderer.FontSpriteRenderer.DrawSprite(gli.Sprite, tempXY, 0, gli.Sprite.Size);
-					
-					tempXY = new float2((int)Math.Round(p.X * deviceScale , 0) / deviceScale, (p.Y - (gli.fg.Size.Height)+ (gli.fg.Size.Height - gli.fg.Bearing.Y)) / deviceScale);
+					float scale = 1;
+					scale = (FontMSDF.Size * font.Height) / 18f;
+					///scale = 64;
+					tempXY = new float2((int)Math.Round(p.X * deviceScale-5, 0) / deviceScale, (p.Y - scale+5) / deviceScale);
 					float coof = gli.Sprite.Size.X / gli.Sprite.Size.Y;
-					if ((gli.fg.Size.Height - gli.fg.Bearing.Y) == 1)
-					{
-						Game.Renderer.FontSpriteRenderer.DrawSprite(gli.Sprite, tempXY, 0, new float3(gli.Sprite.Size.X, gli.Sprite.Size.Y-0.5f, 0));
-					}
-					else
-					{
-						Game.Renderer.FontSpriteRenderer.DrawSprite(gli.Sprite, tempXY, 0, new float3(gli.Sprite.Size.X, gli.Sprite.Size.Y, 0));
-					}
-					
+					gli.Sprite.Left = 0f;
+					gli.Sprite.Bottom = 0f;
+					gli.Sprite.Top = 1f;
+					gli.Sprite.Right = 1f;
+					Game.Renderer.FontSpriteRenderer.DrawSprite(gli.Sprite, tempXY, 0, new float3(scale, scale, 0));
 				}
-				//p += new float2(gli.Advance-1 / deviceScale, 0);
-				p += new float2(gli.Advance -1 + gli.Sprite.Left / deviceScale, 0);
+
+				p += new float2(gli.Advance / deviceScale, 0);
 			}
 			Game.Renderer.FontSpriteRenderer.SetTextColor(c);
 
@@ -207,7 +148,7 @@ namespace OpenRA.Graphics
 			if (offset != 0)
 				//DrawText(text, location + new float2(offset, offset), bg);
 
-			DrawText(text, location, fg);
+				DrawText(text, location, fg);
 		}
 
 		public void DrawTextWithShadow(string text, float2 location, Color fg, Color bgDark, Color bgLight, int offset)
@@ -252,29 +193,29 @@ namespace OpenRA.Graphics
 				fg = glyph
 			};
 
-			var dest = s.Sheet.GetData();
-			var destStride = s.Sheet.Size.Width * 4;
+			//var dest = s.Sheet.GetData();
+			//var destStride = s.Sheet.Size.Width * 4;
 
-			for (var j = 0; j < s.Size.Y; j++)
-			{
-				for (var i = 0; i < s.Size.X; i++)
-				{
-					// тут происходит копирование байтов из глифа в "p", а после в dest общий массив текстуры.
-					var p = glyph.Data[j * glyph.Size.Width + i];
-					if (p != 0)
-					{
-						var q = destStride * (j + s.Bounds.Top) + 4 * (i + s.Bounds.Left);
-						var pmc = Util.PremultiplyAlpha(Color.FromArgb(p, c.Second));
+			//for (var j = 0; j < s.Size.Y; j++)
+			//{
+			//	for (var i = 0; i < s.Size.X; i++)
+			//	{
+			//		// тут происходит копирование байтов из глифа в "p", а после в dest общий массив текстуры.
+			//		var p = glyph.Data[j * glyph.Size.Width + i];
+			//		if (p != 0)
+			//		{
+			//			var q = destStride * (j + s.Bounds.Top) + 4 * (i + s.Bounds.Left);
+			//			var pmc = Util.PremultiplyAlpha(Color.FromArgb(p, c.Second));
 
-						dest[q] = pmc.B;
-						dest[q + 1] = pmc.G;
-						dest[q + 2] = pmc.R;
-						dest[q + 3] = pmc.A;
-					}
-				}
-			}
+			//			dest[q] = pmc.B;
+			//			dest[q + 1] = pmc.G;
+			//			dest[q + 2] = pmc.R;
+			//			dest[q + 3] = pmc.A;
+			//		}
+			//	}
+			//}
 
-			s.Sheet.CommitBufferedData();
+			//s.Sheet.CommitBufferedData();
 
 			return g;
 		}
