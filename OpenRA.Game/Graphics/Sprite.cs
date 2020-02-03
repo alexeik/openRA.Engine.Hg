@@ -21,9 +21,12 @@ namespace OpenRA.Graphics
 		public readonly BlendMode BlendMode;
 		public readonly TextureChannel Channel;
 		public readonly float ZRamp;
-		public readonly float3 Size;
+		public  float3 Size;
 		public readonly float3 Offset;
 		public readonly float3 FractionalOffset;
+		/// <summary>
+		/// Коориданты внутри текстуры. vTexCoord
+		/// </summary>
 		public float Top, Left, Bottom, Right;
 		public int SpriteType;
 		public int SpriteArrayNum;
