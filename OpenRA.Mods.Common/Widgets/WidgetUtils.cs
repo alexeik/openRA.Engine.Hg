@@ -31,6 +31,11 @@ namespace OpenRA.Mods.Common.Widgets
 		{
 			Game.Renderer.SpriteRenderer.DrawSprite(s, pos, p);
 		}
+		public static void DrawSHPCentered(Sprite s, float2 pos, PaletteReference p, int2 iconSize)
+		{
+			Game.Renderer.SpriteRenderer.DrawSprite(s, pos - 0.5f * s.Size, p, iconSize);
+		}
+
 		public static void DrawSHPCentered(Sprite s, float2 pos, PaletteReference p)
 		{
 			Game.Renderer.SpriteRenderer.DrawSprite(s, pos - 0.5f * s.Size, p);
@@ -228,7 +233,7 @@ namespace OpenRA.Mods.Common.Widgets
 			return "{0:D}:{1:D2}".F(minutes, seconds % 60);
 		}
 
-		public static string WrapText(string text, int width, SpriteFont font)
+		public static string WrapText(string text, int width, SpriteFontMSDF font)
 		{
 			var textSize = font.Measure(text);
 			if (textSize.X > width)
@@ -270,7 +275,7 @@ namespace OpenRA.Mods.Common.Widgets
 			return text;
 		}
 
-		public static string TruncateText(string text, int width, SpriteFont font)
+		public static string TruncateText(string text, int width, SpriteFontMSDF font)
 		{
 			var trimmedWidth = font.Measure(text).X;
 			if (trimmedWidth <= width)
