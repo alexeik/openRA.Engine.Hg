@@ -143,7 +143,7 @@ namespace OpenRA
 
 	public struct FontGlyph
 	{
-		public int2 Offset;
+		public int2 Bearing;
 		public Size Size;
 		public float Advance;
 		public byte[] Data;

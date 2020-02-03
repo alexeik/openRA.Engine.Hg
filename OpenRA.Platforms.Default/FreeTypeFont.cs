@@ -62,7 +62,7 @@ namespace OpenRA.Platforms.Default
 	{
 		static readonly FontGlyph EmptyGlyph = new FontGlyph
 		{
-			Offset = int2.Zero,
+			Bearing = int2.Zero,
 			Size = new Size(0, 0),
 			Advance = 0,
 			Data = null
@@ -104,6 +104,11 @@ namespace OpenRA.Platforms.Default
 
 		public FontGlyph CreateGlyph(char c)
 		{
+			if (c=='R' || c == 'O')
+			{
+
+			}
+			
 			if (FreeType.FT_Load_Char(face, c, FreeType.FT_LOAD_RENDER) != FreeType.OK)
 				return EmptyGlyph;
 
@@ -113,7 +118,7 @@ namespace OpenRA.Platforms.Default
 
 			var metrics = IntPtr.Add(glyph, FreeType.GlyphSlotMetricsOffset); // face->glyph->metrics
 			var metricsWidth = Marshal.ReadIntPtr(IntPtr.Add(metrics, FreeType.MetricsWidthOffset)); // face->glyph->metrics.width
-			var metricsHeight = Marshal.ReadIntPtr(IntPtr.Add(metrics, FreeType.MetricsHeightOffset)); // face->glyph->metrics.width
+			var metricsHeight = Marshal.ReadIntPtr(IntPtr.Add(metrics, FreeType.MetricsHeightOffset)); // face->glyph->metrics.Height
 			var metricsAdvance = Marshal.ReadIntPtr(IntPtr.Add(metrics, FreeType.MetricsAdvanceOffset)); // face->glyph->metrics.horiAdvance
 
 			var bitmap = IntPtr.Add(glyph, FreeType.GlyphSlotBitmapOffset); // face->glyph->bitmap
@@ -130,7 +135,7 @@ namespace OpenRA.Platforms.Default
 			var g = new FontGlyph
 			{
 				Advance = glyphAdvance,
-				Offset = new int2(bitmapLeft, -bitmapTop),
+				Bearing = new int2(bitmapLeft, bitmapTop),
 				Size = glyphSize,
 				Data = new byte[glyphSize.Width * glyphSize.Height]
 			};
