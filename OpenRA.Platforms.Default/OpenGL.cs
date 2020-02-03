@@ -71,6 +71,7 @@ namespace OpenRA.Platforms.Default
 		public const int GL_TEXTURE_MIN_FILTER = 0x2801;
 		public const int GL_NEAREST = 0x2600;
 		public const int GL_LINEAR = 0x2601;
+		public const int GL_MAX_TEXTURE_LOD_BIAS = 0x84FD;
 
 		// Depth buffer
 		public const int GL_DEPTH_COMPONENT = 0x1902;
@@ -98,6 +99,10 @@ namespace OpenRA.Platforms.Default
 		public const int GL_CLIENT_PIXEL_STORE_BIT = 0x0001;
 		public const int GL_BGRA = 0x80E1;
 		public const int GL_RGBA8 = 0x8058;
+		public const int GL_RGBA = 0x1908;
+		public const int GL_RGB8 = 0x8051;
+
+		public const int GL_RGBA32F = 0x8814;
 		public const int GL_CLAMP_TO_EDGE = 0x812F;
 		public const int GL_TEXTURE_BASE_LEVEL = 0x813C;
 		public const int GL_TEXTURE_MAX_LEVEL = 0x813D;
