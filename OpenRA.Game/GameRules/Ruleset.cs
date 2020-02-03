@@ -177,6 +177,7 @@ namespace OpenRA
 			return new Ruleset(dr.Actors, dr.Weapons, dr.Voices, dr.Notifications, dr.Music, ts, sequences, dr.ModelSequences);
 		}
 
+		// EXP: Loads all yamls files and parses them.
 		public static Ruleset Load(ModData modData, IReadOnlyFileSystem fileSystem, string tileSet,
 			MiniYaml mapRules, MiniYaml mapWeapons, MiniYaml mapVoices, MiniYaml mapNotifications,
 			MiniYaml mapMusic, MiniYaml mapSequences, MiniYaml mapModelSequences)
