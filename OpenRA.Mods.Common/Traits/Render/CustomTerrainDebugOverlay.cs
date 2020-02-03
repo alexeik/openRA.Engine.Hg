@@ -31,7 +31,7 @@ namespace OpenRA.Mods.Common.Traits
 
 		public bool Enabled;
 
-		readonly SpriteFont font;
+		readonly SpriteFontMSDF font;
 
 		public CustomTerrainDebugOverlay(Actor self, CustomTerrainDebugOverlayInfo info)
 		{

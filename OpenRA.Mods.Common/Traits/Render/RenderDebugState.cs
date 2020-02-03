@@ -29,7 +29,7 @@ namespace OpenRA.Mods.Common.Traits.Render
 	class RenderDebugState : INotifyAddedToWorld, INotifyOwnerChanged, INotifyCreated, IRenderAboveShroudWhenSelected
 	{
 		readonly DebugVisualizations debugVis;
-		readonly SpriteFont font;
+		readonly SpriteFontMSDF font;
 		readonly Actor self;
 		readonly WVec offset;
 		SquadManagerBotModule ai;

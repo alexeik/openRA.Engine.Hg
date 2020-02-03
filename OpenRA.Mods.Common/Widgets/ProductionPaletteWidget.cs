@@ -108,7 +108,7 @@ namespace OpenRA.Mods.Common.Widgets
 
 		readonly WorldRenderer worldRenderer;
 
-		SpriteFont overlayFont, symbolFont;
+		SpriteFontMSDF overlayFont, symbolFont;
 		float2 holdOffset, readyOffset, timeOffset, queuedOffset, infiniteOffset;
 
 		[CustomLintableHotkeyNames]

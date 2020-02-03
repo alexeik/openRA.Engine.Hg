@@ -66,7 +66,7 @@ namespace OpenRA.Mods.Common.Widgets
 
 		public override void Draw()
 		{
-			SpriteFont font;
+			SpriteFontMSDF font;
 			if (!Game.Renderer.Fonts.TryGetValue(Font, out font))
 				throw new ArgumentException("Requested font '{0}' was not found.".F(Font));
 

@@ -30,7 +30,7 @@ namespace OpenRA.Mods.Common.Traits.Render
 
 	class RenderNameTag : IRender
 	{
-		readonly SpriteFont font;
+		readonly SpriteFontMSDF font;
 		readonly Color color;
 		readonly string name;
 		readonly IDecorationBounds[] decorationBounds;

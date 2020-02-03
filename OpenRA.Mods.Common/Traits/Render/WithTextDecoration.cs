@@ -59,7 +59,7 @@ namespace OpenRA.Mods.Common.Traits.Render
 
 	public class WithTextDecoration : ConditionalTrait<WithTextDecorationInfo>, IRender, IRenderAboveShroudWhenSelected, INotifyOwnerChanged
 	{
-		readonly SpriteFont font;
+		readonly SpriteFontMSDF font;
 		readonly IDecorationBounds[] decorationBounds;
 		Color color;
 

@@ -52,7 +52,7 @@ namespace OpenRA.Mods.Common.Traits.Render
 	{
 		readonly WithTextControlGroupDecorationInfo info;
 		readonly IDecorationBounds[] decorationBounds;
-		readonly SpriteFont font;
+		readonly SpriteFontMSDF font;
 
 		Color color;
 

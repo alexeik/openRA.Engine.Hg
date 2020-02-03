@@ -28,7 +28,7 @@ namespace OpenRA.Mods.Common.Traits
 		const string CommandName = "exits-overlay";
 		const string CommandHelp = "Displays exits for factories.";
 
-		public readonly SpriteFont Font;
+		public readonly SpriteFontMSDF Font;
 		public readonly ExitsDebugOverlayManagerInfo Info;
 
 		public bool Enabled;

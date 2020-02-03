@@ -63,7 +63,7 @@ namespace OpenRA.Mods.Common.Widgets
 
 		Rectangle eventBounds;
 		public override Rectangle EventBounds { get { return eventBounds; } }
-		SpriteFont overlayFont;
+		SpriteFontMSDF overlayFont;
 		float2 holdOffset, readyOffset, timeOffset;
 
 		[CustomLintableHotkeyNames]

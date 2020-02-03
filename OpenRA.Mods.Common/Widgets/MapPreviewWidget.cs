@@ -65,7 +65,7 @@ namespace OpenRA.Mods.Common.Widgets
 		readonly Lazy<TooltipContainerWidget> tooltipContainer;
 
 		readonly Sprite spawnClaimed, spawnUnclaimed;
-		readonly SpriteFont spawnFont;
+		readonly SpriteFontMSDF spawnFont;
 		readonly Color spawnColor, spawnContrastColor;
 		readonly int2 spawnLabelOffset;
 
