@@ -40,21 +40,23 @@ void main()
 	vec4 c = vPalettedFraction * texture2D(Palette, p) + vRGBAFraction * x + vColorFraction * vTexCoord;
  */
 
-	//fragColor= texture(TextureFontMSDF, vec3(0,0,1)); 
-
-	 vec3 flipped_texCoords = vec3(vTexCoord.s, 1.0 - vTexCoord.t, vTexMetadata.s);
+//fragColor= texture(TextureFontMSDF, vec3(0,0,1)); 
+/*
+	vec3 flipped_texCoords = vec3(vTexCoord.s, 1.0 - vTexCoord.t, vTexMetadata.s);
     vec2 pos = flipped_texCoords.xy;
     vec3 sample = texture(TextureFontMSDF, flipped_texCoords).rgb;
     ivec2 sz = textureSize(TextureFontMSDF, 0).xy;
     float dx = dFdx(pos.x) * sz.x; 
     float dy = dFdy(pos.y) * sz.y;
-    float toPixels = 8.0 * inversesqrt(dx * dx + dy * dy);
+    float toPixels = 12 * inversesqrt(dx * dx + dy * dy);
     float sigDist = median(sample.r, sample.g, sample.b);
     float w = fwidth(sigDist);
     float opacity = smoothstep(0.5 - w, 0.5 + w, sigDist);
     fragColor = vec4(TextColor.rgb, opacity);
-	/*
-	vec3 flipped_texCoords = vec3(vTexCoord.s,1-vTexCoord.t,vTexMetadata.s); 	//vec3 flipped_texCoords = vec3(0.0,0.0,84);
+	
+	*/
+	
+	vec3 flipped_texCoords = vec3(vTexCoord.s,1.0-vTexCoord.t,vTexMetadata.s); 	//vec3 flipped_texCoords = vec3(0.0,0.0,84);
 	
 	vec3 sample = texture(TextureFontMSDF, flipped_texCoords).rgb;
 	
@@ -68,7 +70,7 @@ void main()
     float opacity = clamp(sigDist + 0.5, 0.0, 1.0);
 
 	fragColor =vec4(TextColor.rgb,opacity ) ;
-*/
+
 	//fragColor = vec4(fragColor.rgb ,opacity); 
 	//if(fragColor.a <0.1)
      // discard;
