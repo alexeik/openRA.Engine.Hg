@@ -44,11 +44,6 @@
     </ItemGroup>
   </Target>
   <ItemGroup>
-    <Content Include="OpenRA.Platforms.Default.dll.config">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\OpenRA.Game\OpenRA.Game.csproj" />
   </ItemGroup>
 </Project>
