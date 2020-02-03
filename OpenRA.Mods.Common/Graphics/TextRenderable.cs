@@ -18,7 +18,7 @@ namespace OpenRA.Mods.Common.Graphics
 {
 	public struct TextRenderable : IRenderable, IFinalizedRenderable
 	{
-		readonly SpriteFont font;
+		readonly SpriteFontMSDF font;
 		readonly WPos pos;
 		readonly int zOffset;
 		readonly Color color;
@@ -26,7 +26,7 @@ namespace OpenRA.Mods.Common.Graphics
 		readonly Color bgLight;
 		readonly string text;
 
-		public TextRenderable(SpriteFont font, WPos pos, int zOffset, Color color, Color bgDark, Color bgLight, string text)
+		public TextRenderable(SpriteFontMSDF font, WPos pos, int zOffset, Color color, Color bgDark, Color bgLight, string text)
 		{
 			this.font = font;
 			this.pos = pos;
@@ -37,7 +37,7 @@ namespace OpenRA.Mods.Common.Graphics
 			this.text = text;
 		}
 
-		public TextRenderable(SpriteFont font, WPos pos, int zOffset, Color color, string text)
+		public TextRenderable(SpriteFontMSDF font, WPos pos, int zOffset, Color color, string text)
 			: this(font, pos, zOffset, color,
 				ChromeMetrics.Get<Color>("TextContrastColorDark"),
 				ChromeMetrics.Get<Color>("TextContrastColorLight"),

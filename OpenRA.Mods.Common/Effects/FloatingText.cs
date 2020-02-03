@@ -22,7 +22,7 @@ namespace OpenRA.Mods.Common.Effects
 	{
 		static readonly WVec Velocity = new WVec(0, 0, 86);
 
-		readonly SpriteFont font;
+		readonly SpriteFontMSDF font;
 		readonly string text;
 		Color color;
 		int remaining;
