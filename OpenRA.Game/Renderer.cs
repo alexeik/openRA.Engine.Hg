@@ -28,7 +28,7 @@ namespace OpenRA
 		public SpriteRenderer SpriteRenderer { get; private set; }
 		public RgbaSpriteRenderer RgbaSpriteRenderer { get; private set; }
 		public SpriteRenderer FontSpriteRenderer { get; private set; }
-		public IReadOnlyDictionary<string, SpriteFont> Fonts;
+		public IReadOnlyDictionary<string, SpriteFontMSDF> Fonts;
 		public FontMSDF Mfont;
 
 		internal IPlatformWindow Window { get; private set; }
@@ -88,7 +88,7 @@ namespace OpenRA
 				foreach (var font in Fonts.Values)
 					font.Dispose();
 			Mfont = new FontMSDF();
-			Mfont.LoadFontTextures();
+			Mfont.LoadFontTexturesAsPng();
 
 			using (new PerfTimer("SpriteFonts"))
 			{
@@ -99,7 +99,7 @@ namespace OpenRA
 				fontSheetBuilder = new SheetBuilder(SheetType.BGRA, 512);
 
 				Fonts = modData.Manifest.Fonts.ToDictionary(x => x.Key,
-					x => new SpriteFont(x.Value.First, modData.DefaultFileSystem.Open(x.Value.First).ReadAllBytes(),
+					x => new SpriteFontMSDF(x.Value.First, modData.DefaultFileSystem.Open(x.Value.First).ReadAllBytes(),
 										x.Value.Second, Window.WindowScale, fontSheetBuilder)).AsReadOnly();
 			}
 
