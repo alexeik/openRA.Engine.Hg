@@ -54,7 +54,7 @@ namespace OpenRA.Graphics
 		}
 
 		/// <summary>
-		/// Этот метод, косвенно может запустить opengl DrawBatch  если спрайт принадлежит другому Sheet(Текстуре).
+		/// Этот метод, косвенно запускает opengl DrawBatch если текущий Renderer(наследник Renderer.IBatchRenderer) отличается от новогого.
 		/// </summary>
 		/// <param name="s">Спрайт, который записывается в VBO.</param>
 		/// <returns>Возвращает индекс Sheet куда попал спрайт.</returns>
