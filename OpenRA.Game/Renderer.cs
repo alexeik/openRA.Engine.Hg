@@ -12,6 +12,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using ImGuiNET;
 using OpenRA.Graphics;
 using OpenRA.Primitives;
 using OpenRA.Support;
@@ -28,6 +29,8 @@ namespace OpenRA
 		public SpriteRenderer SpriteRenderer { get; private set; }
 		public RgbaSpriteRenderer RgbaSpriteRenderer { get; private set; }
 		public SpriteRenderer FontSpriteRenderer { get; private set; }
+		public SpriteRenderer ImguiSpriteRenderer { get; private set; }
+
 		public IReadOnlyDictionary<string, SpriteFontMSDF> Fonts;
 		public FontMSDF Mfont;
 
@@ -71,6 +74,11 @@ namespace OpenRA
 			RgbaSpriteRenderer = new RgbaSpriteRenderer(SpriteRenderer); // эти пишут в родительский VBO
 			RgbaColorRenderer = new RgbaColorRenderer(SpriteRenderer); // эти пишут в родительский VBO
 			FontSpriteRenderer = new SpriteRenderer(this, Context.CreateShader("text")); // каждый имеет свой VBO
+			ImguiSpriteRenderer = new SpriteRenderer(this, Context.CreateShader("combined"));// для ImGui
+
+			IntPtr context = ImGui.CreateContext();
+			ImGui.SetCurrentContext(context);
+
 			tempBuffer = Context.CreateVertexBuffer(TempBufferSize);
 		}
 
@@ -142,6 +150,7 @@ namespace OpenRA
 			{
 				lastResolution = Resolution;
 				SpriteRenderer.SetViewportParams(lastResolution, 0f, 0f, 1f, int2.Zero);
+				ImguiSpriteRenderer.SetViewportParams(lastResolution, 0f, 0f, 1f, int2.Zero);
 				FontSpriteRenderer.SetViewportParams(lastResolution, 0f, 0f, 1f, int2.Zero);
 			}
 
