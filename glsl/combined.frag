@@ -71,6 +71,7 @@ void main()
 	vec4 x = Sample(vTexSampler.s, vTexCoord.st); //возвращает структуру (R,G,B,A) из текстуры
 	//vec4 c = vRGBAFraction * x ;
 	 c =  x ; // vRGBAFraction всегда 1,1,1,1
+
 	}
 	if (vTexMetadata.t==1.0)
 	{
@@ -80,12 +81,22 @@ void main()
 		//vec2 p = vec2(dot(x, vChannelMask), vTexMetadata.s);
 		vec2 p = vec2(dot(x, vec4(1,0,0,0)), vTexMetadata.s);
 		 c = vec4(1,1,1,1) * texture2D(Palette, p) ;
+	
 	}
 	if (vTexMetadata.t==2.0)
 	{
 		//vec4 c = vColorFraction * vTexCoord;
 		 c =  vTexCoord; // vColorFraction всегда 1,1,1,1
+
 	}
+	if (vTexMetadata.t==4.0)
+	{
+		//vec4 c = vColorFraction * vTexCoord;
+		 c =  vec4(vColorInfo)* texture2D(Texture0,vTexCoord.st); // vColorFraction всегда 1,1,1,1
+	}
+	if (c.a == 0.0)
+		discard;
+	
 	//для attrib.s=1, vChannelMask будет vec4(1,0,0,0)
 	//dot это просто перемножение каждой компоненты vec4 на такую же компоненту из другого vec4
 	//dot(x, vChannelMask) это будет Х координата для цвета в палитре ,
@@ -105,8 +116,7 @@ void main()
 //Пишет вместо vTexCoord значения RGBA и таким образом рисует линии;
 
 	// Discard any transparent fragments (both color and depth)
-	if (c.a == 0.0)
-		discard;
+
 
 	float depth = gl_FragCoord.z;
 	//используется для дебаг режима
