@@ -58,7 +58,7 @@ namespace OpenRA.Graphics
 		/// </summary>
 		/// <param name="s">Спрайт, который записывается в VBO.</param>
 		/// <returns>Возвращает индекс Sheet куда попал спрайт.</returns>
-		int2 SetRenderStateForSprite(Sprite s)
+		public int2 SetRenderStateForSprite(Sprite s)
 		{
 			renderer.CurrentBatchRenderer = this;
 
@@ -111,7 +111,7 @@ namespace OpenRA.Graphics
 
 		internal void DrawSprite(Sprite s, float3 location, float paletteTextureIndex, float3 size)
 		{
-			var samplers = SetRenderStateForSprite(s); // узнает номер текстуры из которой этой спрайт, чтобы потом записать это в VBO
+			var samplers = SetRenderStateForSprite(s); // узнает номер текстуры из которой этой спрайт в переменную samplers, чтобы потом записать это в VBO
 			Util.FastCreateQuad(vertices, location + s.FractionalOffset * size, s, samplers, paletteTextureIndex, nv, size);
 			nv += 6;
 		}
@@ -143,7 +143,7 @@ namespace OpenRA.Graphics
 		}
 
 		// For RGBAColorRenderer
-		internal void DrawRGBAVertices(Vertex[] v)
+		public void DrawRGBAVertices(Vertex[] v)
 		{
 			renderer.CurrentBatchRenderer = this;
 
