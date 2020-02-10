@@ -46,12 +46,18 @@ namespace OpenRA.Graphics
 		{
 			return new Sheet(type, new Size(sheetSize, sheetSize));
 		}
-
+		public static Sheet AllocateSheet(SheetType type, int w, int h)
+		{
+			return new Sheet(type, new Size(w, h));
+		}
 		public SheetBuilder(SheetType t)
 			: this(t, Game.Settings.Graphics.SheetSize) { }
 
 		public SheetBuilder(SheetType t, int sheetSize)
 			: this(t, () => AllocateSheet(t, sheetSize)) { }
+
+		public SheetBuilder(SheetType t, int w, int h)
+			: this(t, () => AllocateSheet(t, w, h)) { }
 
 		public SheetBuilder(SheetType t, Func<Sheet> allocateSheet)
 		{
@@ -75,7 +81,17 @@ namespace OpenRA.Graphics
 			current.CommitBufferedData();
 			return rect;
 		}
+		public Sprite AddRGBA(byte[] src, Size size)
+		{
+			// Don't bother allocating empty sprites
+			if (size.Width == 0 || size.Height == 0)
+				return new Sprite(current, Rectangle.Empty, 0, float3.Zero, channel, BlendMode.Alpha);
 
+			var rect = Allocate(size, 0, float3.Zero);
+			Util.FastCopyIntoRGBA(rect, src);
+			current.CommitBufferedData();
+			return rect;
+		}
 		public Sprite Add(Png src)
 		{
 			var rect = Allocate(new Size(src.Width, src.Height));

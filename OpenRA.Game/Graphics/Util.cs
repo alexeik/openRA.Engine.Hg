@@ -131,6 +131,27 @@ namespace OpenRA.Graphics
 				destOffset += destSkip;
 			}
 		}
+		public static void FastCopyIntoRGBA(Sprite dest, byte[] src)
+		{
+			var data = dest.Sheet.GetData();
+			var srcStride = dest.Bounds.Width;
+			var destStride = dest.Sheet.Size.Width * 4;
+			var destOffset = destStride * dest.Bounds.Top + dest.Bounds.Left * 4 + ChannelMasks[(int)dest.Channel];
+			var destSkip = destStride - 4 * srcStride;
+			var height = dest.Bounds.Height;
+
+			var srcOffset = 0;
+			for (var j = 0; j < height * 4; j++)
+			{
+				for (var i = 0; i < srcStride; i++, srcOffset++)
+				{
+					data[srcOffset] = src[srcOffset];
+					destOffset += 4;
+				}
+
+				destOffset += destSkip;
+			}
+		}
 
 		public static void FastCopyIntoSprite(Sprite dest, Png src)
 		{
