@@ -154,7 +154,7 @@ namespace OpenRA.Mods.Common.Traits.Render
 
 		public readonly RenderSpritesInfo Info;
 		readonly string faction;
-		readonly List<AnimationWrapper> anims = new List<AnimationWrapper>();
+		readonly List<AnimationWrapper> animsWrapperList = new List<AnimationWrapper>();
 		string cachedImage;
 
 		public static Func<int> MakeFacingFunc(Actor self)
@@ -180,7 +180,7 @@ namespace OpenRA.Mods.Common.Traits.Render
 
 		public void UpdatePalette()
 		{
-			foreach (var anim in anims)
+			foreach (var anim in animsWrapperList)
 				anim.OwnerChanged();
 		}
 
@@ -189,7 +189,7 @@ namespace OpenRA.Mods.Common.Traits.Render
 
 		public virtual IEnumerable<IRenderable> Render(Actor self, WorldRenderer wr)
 		{
-			foreach (var a in anims)
+			foreach (var a in animsWrapperList)
 			{
 				if (!a.IsVisible)
 					continue;
@@ -207,7 +207,7 @@ namespace OpenRA.Mods.Common.Traits.Render
 
 		public virtual IEnumerable<Rectangle> ScreenBounds(Actor self, WorldRenderer wr)
 		{
-			foreach (var a in anims)
+			foreach (var a in animsWrapperList)
 				if (a.IsVisible)
 					yield return a.AnimationWithOffset.ScreenBounds(self, wr, Info.Scale);
 		}
@@ -220,7 +220,7 @@ namespace OpenRA.Mods.Common.Traits.Render
 		protected virtual void Tick(Actor self)
 		{
 			var updated = false;
-			foreach (var a in anims)
+			foreach (var a in animsWrapperList)
 				updated |= a.Tick();
 
 			if (updated)
@@ -236,12 +236,12 @@ namespace OpenRA.Mods.Common.Traits.Render
 				isPlayerPalette = Info.Palette == null;
 			}
 
-			anims.Add(new AnimationWrapper(anim, palette, isPlayerPalette));
+			animsWrapperList.Add(new AnimationWrapper(anim, palette, isPlayerPalette));
 		}
 
 		public void Remove(AnimationWithOffset anim)
 		{
-			anims.RemoveAll(a => a.AnimationWithOffset == anim);
+			animsWrapperList.RemoveAll(a => a.AnimationWithOffset == anim);
 		}
 
 		public static string UnnormalizeSequence(string sequence)
@@ -280,7 +280,7 @@ namespace OpenRA.Mods.Common.Traits.Render
 		// Required by WithSpriteBody and WithInfantryBody
 		public int2 AutoRenderSize(Actor self)
 		{
-			return anims.Where(b => b.IsVisible
+			return animsWrapperList.Where(b => b.IsVisible
 				&& b.AnimationWithOffset.Animation.CurrentSequence != null)
 					.Select(a => (a.AnimationWithOffset.Animation.Image.Size.XY * Info.Scale).ToInt2())
 					.FirstOrDefault();
