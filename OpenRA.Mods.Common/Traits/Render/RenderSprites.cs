@@ -189,18 +189,18 @@ namespace OpenRA.Mods.Common.Traits.Render
 
 		public virtual IEnumerable<IRenderable> Render(Actor self, WorldRenderer wr)
 		{
-			foreach (var a in animsWrapperList)
+			foreach (var animWrapperItem in animsWrapperList)
 			{
-				if (!a.IsVisible)
+				if (!animWrapperItem.IsVisible)
 					continue;
 
-				if (a.PaletteReference == null)
+				if (animWrapperItem.PaletteReference == null)
 				{
 					var owner = self.EffectiveOwner != null && self.EffectiveOwner.Disguised ? self.EffectiveOwner.Owner : self.Owner;
-					a.CachePalette(wr, owner);
+					animWrapperItem.CachePalette(wr, owner);
 				}
 
-				foreach (var r in a.AnimationWithOffset.Render(self, wr, a.PaletteReference, Info.Scale))
+				foreach (var r in animWrapperItem.AnimationWithOffset.Render(self, wr, animWrapperItem.PaletteReference, Info.Scale))
 					yield return r;
 			}
 		}
