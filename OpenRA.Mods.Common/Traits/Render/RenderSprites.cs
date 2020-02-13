@@ -97,7 +97,7 @@ namespace OpenRA.Mods.Common.Traits.Render
 
 		class AnimationWrapper
 		{
-			public readonly AnimationWithOffset Animation;
+			public readonly AnimationWithOffset AnimationWithOffset;
 			public readonly string Palette;
 			public readonly bool IsPlayerPalette;
 			public PaletteReference PaletteReference { get; private set; }
@@ -108,7 +108,7 @@ namespace OpenRA.Mods.Common.Traits.Render
 
 			public AnimationWrapper(AnimationWithOffset animation, string palette, bool isPlayerPalette)
 			{
-				Animation = animation;
+				AnimationWithOffset = animation;
 				Palette = palette;
 				IsPlayerPalette = isPlayerPalette;
 			}
@@ -129,19 +129,19 @@ namespace OpenRA.Mods.Common.Traits.Render
 			{
 				get
 				{
-					return Animation.DisableFunc == null || !Animation.DisableFunc();
+					return AnimationWithOffset.DisableFunc == null || !AnimationWithOffset.DisableFunc();
 				}
 			}
 
 			public bool Tick()
 			{
 				// Tick the animation
-				Animation.Animation.Tick();
+				AnimationWithOffset.Animation.Tick();
 
 				// Return to the caller whether the renderable position or size has changed
 				var visible = IsVisible;
-				var offset = Animation.OffsetFunc != null ? Animation.OffsetFunc() : WVec.Zero;
-				var sequence = Animation.Animation.CurrentSequence;
+				var offset = AnimationWithOffset.OffsetFunc != null ? AnimationWithOffset.OffsetFunc() : WVec.Zero;
+				var sequence = AnimationWithOffset.Animation.CurrentSequence;
 
 				var updated = visible != cachedVisible || offset != cachedOffset || sequence != cachedSequence;
 				cachedVisible = visible;
@@ -200,7 +200,7 @@ namespace OpenRA.Mods.Common.Traits.Render
 					a.CachePalette(wr, owner);
 				}
 
-				foreach (var r in a.Animation.Render(self, wr, a.PaletteReference, Info.Scale))
+				foreach (var r in a.AnimationWithOffset.Render(self, wr, a.PaletteReference, Info.Scale))
 					yield return r;
 			}
 		}
@@ -209,7 +209,7 @@ namespace OpenRA.Mods.Common.Traits.Render
 		{
 			foreach (var a in anims)
 				if (a.IsVisible)
-					yield return a.Animation.ScreenBounds(self, wr, Info.Scale);
+					yield return a.AnimationWithOffset.ScreenBounds(self, wr, Info.Scale);
 		}
 
 		void ITick.Tick(Actor self)
@@ -241,7 +241,7 @@ namespace OpenRA.Mods.Common.Traits.Render
 
 		public void Remove(AnimationWithOffset anim)
 		{
-			anims.RemoveAll(a => a.Animation == anim);
+			anims.RemoveAll(a => a.AnimationWithOffset == anim);
 		}
 
 		public static string UnnormalizeSequence(string sequence)
@@ -281,8 +281,8 @@ namespace OpenRA.Mods.Common.Traits.Render
 		public int2 AutoRenderSize(Actor self)
 		{
 			return anims.Where(b => b.IsVisible
-				&& b.Animation.Animation.CurrentSequence != null)
-					.Select(a => (a.Animation.Animation.Image.Size.XY * Info.Scale).ToInt2())
+				&& b.AnimationWithOffset.Animation.CurrentSequence != null)
+					.Select(a => (a.AnimationWithOffset.Animation.Image.Size.XY * Info.Scale).ToInt2())
 					.FirstOrDefault();
 		}
 
