@@ -40,7 +40,7 @@ namespace OpenRA
 		public static Settings Settings;
 		public static ICursor Cursor;
 		public static bool HideCursor;
-		static WorldRenderer worldRenderer;
+		public static WorldRenderer worldRenderer;
 
 		internal static OrderManager OrderManager;
 		static Server.Server server;
