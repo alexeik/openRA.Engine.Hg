@@ -58,7 +58,10 @@ namespace OpenRA.Orders
 			};
 
 			foreach (var o in orders)
-				yield return CheckSameOrder(o.Order, o.Trait.IssueOrder(o.Actor, o.Order, o.Target, mi.Modifiers.HasModifier(Modifiers.Shift)));
+			{
+				Order unitorder = o.Trait.IssueOrder(o.Actor, o.Order, o.Target, mi.Modifiers.HasModifier(Modifiers.Shift));
+				yield return CheckSameOrder(o.Order, unitorder);
+			}
 		}
 
 		public virtual void Tick(World world) { }
