@@ -154,6 +154,10 @@ namespace OpenRA.Mods.Common.Traits.Render
 
 		public readonly RenderSpritesInfo Info;
 		readonly string faction;
+
+		/// <summary>
+		/// Contains all animations loaded from sequences folder grouped by state: idle, harvest, run, die and etc.
+		/// </summary>
 		readonly List<AnimationWrapper> animsWrapperList = new List<AnimationWrapper>();
 		string cachedImage;
 
@@ -220,8 +224,8 @@ namespace OpenRA.Mods.Common.Traits.Render
 		protected virtual void Tick(Actor self)
 		{
 			var updated = false;
-			foreach (var a in animsWrapperList)
-				updated |= a.Tick();
+			foreach (var aminWrapperItem in animsWrapperList)
+				updated |= aminWrapperItem.Tick();
 
 			if (updated)
 				self.World.ScreenMap.AddOrUpdate(self);
