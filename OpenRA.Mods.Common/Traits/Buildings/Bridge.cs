@@ -194,11 +194,11 @@ namespace OpenRA.Mods.Common.Traits
 			return bridges.GetBridge(self.Location + new CVec(offset[0], offset[1]));
 		}
 
-		IRenderable[] TemplateRenderables(WorldRenderer wr, PaletteReference palette, ushort template)
+		IRenderable[] TemplateRenderables(Actor self, WorldRenderer wr, PaletteReference palette, ushort template)
 		{
 			var offset = buildingInfo.CenterOffset(self.World).Y + 1024;
 
-			return footprint.Select(c => (IRenderable)(new SpriteRenderable(
+			return footprint.Select(c => (IRenderable)(new SpriteRenderable(self,
 				wr.Theater.TileSprite(new TerrainTile(template, c.Value)),
 				wr.World.Map.CenterOfCell(c.Key), WVec.Zero, -offset, palette, 1f, true))).ToArray();
 		}
@@ -212,7 +212,7 @@ namespace OpenRA.Mods.Common.Traits
 				var palette = wr.Palette(TileSet.TerrainPaletteInternalName);
 				renderables = new Dictionary<ushort, IRenderable[]>();
 				foreach (var t in info.Templates)
-					renderables.Add(t.First, TemplateRenderables(wr, palette, t.First));
+					renderables.Add(t.First, TemplateRenderables(self, wr, palette, t.First));
 
 				initialized = true;
 			}

@@ -87,12 +87,12 @@ namespace OpenRA.Mods.Common.Traits
 
 			if (CopyRegion != null)
 				foreach (var c in CopyRegion)
-					new SpriteRenderable(copySprite, wr.World.Map.CenterOfCell(c),
+					new SpriteRenderable(self, copySprite, wr.World.Map.CenterOfCell(c),
 						WVec.Zero, -511, palette, 1f, true).PrepareRender(wr).Render(wr);
 
 			if (PasteRegion != null)
 				foreach (var c in PasteRegion)
-					new SpriteRenderable(pasteSprite, wr.World.Map.CenterOfCell(c),
+					new SpriteRenderable(self, pasteSprite, wr.World.Map.CenterOfCell(c),
 						WVec.Zero, -511, palette, 1f, true).PrepareRender(wr).Render(wr);
 		}
 	}

@@ -38,9 +38,9 @@ namespace OpenRA.Mods.Common.Traits
 		[Desc("Footprint types to draw above the actor preview.")]
 		public readonly PlaceBuildingCellType FootprintOverPreview = PlaceBuildingCellType.Invalid;
 
-		protected override IPlaceBuildingPreview CreatePreview(WorldRenderer wr, ActorInfo ai, TypeDictionary init)
+		protected override IPlaceBuildingPreview CreatePreview(WorldRenderer wr, Actor actor, ActorInfo ai, TypeDictionary init)
 		{
-			return new ActorPreviewPlaceBuildingPreviewPreview(wr, ai, this, init);
+			return new ActorPreviewPlaceBuildingPreviewPreview(wr, actor, ai, this, init);
 		}
 
 		public override object Create(ActorInitializer init)
@@ -57,8 +57,8 @@ namespace OpenRA.Mods.Common.Traits
 		readonly PaletteReference palette;
 		readonly IActorPreview[] preview;
 
-		public ActorPreviewPlaceBuildingPreviewPreview(WorldRenderer wr, ActorInfo ai, ActorPreviewPlaceBuildingPreviewInfo info, TypeDictionary init)
-			: base(wr, ai, info, init)
+		public ActorPreviewPlaceBuildingPreviewPreview(WorldRenderer wr, Actor actor, ActorInfo ai, ActorPreviewPlaceBuildingPreviewInfo info, TypeDictionary init)
+			: base(wr, actor, ai, info, init)
 		{
 			this.info = info;
 			var previewInit = new ActorPreviewInitializer(actorInfo, wr, init);

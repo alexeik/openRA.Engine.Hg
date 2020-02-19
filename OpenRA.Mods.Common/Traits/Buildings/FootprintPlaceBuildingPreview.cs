@@ -29,14 +29,14 @@ namespace OpenRA.Mods.Common.Traits
 		[Desc("Palette to use for rendering the placement sprite for line build segments.")]
 		public readonly string LineBuildSegmentPalette = TileSet.TerrainPaletteInternalName;
 
-		protected virtual IPlaceBuildingPreview CreatePreview(WorldRenderer wr, ActorInfo ai, TypeDictionary init)
+		protected virtual IPlaceBuildingPreview CreatePreview(WorldRenderer wr, Actor actor, ActorInfo ai, TypeDictionary init)
 		{
-			return new FootprintPlaceBuildingPreviewPreview(wr, ai, this, init);
+			return new FootprintPlaceBuildingPreviewPreview(wr, actor, ai, this, init);
 		}
 
-		IPlaceBuildingPreview IPlaceBuildingPreviewGeneratorInfo.CreatePreview(WorldRenderer wr, ActorInfo ai, TypeDictionary init)
+		IPlaceBuildingPreview IPlaceBuildingPreviewGeneratorInfo.CreatePreview(WorldRenderer wr, Actor actor, ActorInfo ai, TypeDictionary init)
 		{
-			return CreatePreview(wr, ai, init);
+			return CreatePreview(wr, actor, ai, init);
 		}
 	}
 
@@ -45,6 +45,7 @@ namespace OpenRA.Mods.Common.Traits
 	public class FootprintPlaceBuildingPreviewPreview : IPlaceBuildingPreview
 	{
 		protected readonly ActorInfo actorInfo;
+		readonly Actor actor;
 		protected readonly WVec centerOffset;
 		readonly FootprintPlaceBuildingPreviewInfo info;
 		readonly IPlaceBuildingDecorationInfo[] decorations;
@@ -58,9 +59,10 @@ namespace OpenRA.Mods.Common.Traits
 			return (value & flag) == value;
 		}
 
-		public FootprintPlaceBuildingPreviewPreview(WorldRenderer wr, ActorInfo ai, FootprintPlaceBuildingPreviewInfo info, TypeDictionary init)
+		public FootprintPlaceBuildingPreviewPreview(WorldRenderer wr, Actor actor, ActorInfo ai, FootprintPlaceBuildingPreviewInfo info, TypeDictionary init)
 		{
 			actorInfo = ai;
+			this.actor = actor;
 			this.info = info;
 			decorations = actorInfo.TraitInfos<IPlaceBuildingDecorationInfo>().ToArray();
 
@@ -93,7 +95,7 @@ namespace OpenRA.Mods.Common.Traits
 				var pal = HasFlag(c.Value, PlaceBuildingCellType.LineBuild) ? linePalette : cellPalette;
 				var pos = wr.World.Map.CenterOfCell(c.Key);
 				var offset = new WVec(0, 0, topLeftPos.Z - pos.Z);
-				yield return new SpriteRenderable(tile, pos, offset, -511, pal, 1f, true);
+				yield return new SpriteRenderable(this.actor, tile, pos, offset, -511, pal, 1f, true);
 			}
 		}
 

@@ -125,24 +125,24 @@ namespace OpenRA.Mods.Common.Effects
 			var palette = r.Palette(isPlayerPalette ? beaconPalette + owner.InternalName : beaconPalette);
 
 			if (beacon != null)
-				foreach (var a in beacon.Render(position, palette))
+				foreach (var a in beacon.Render(owner.PlayerActor, position, palette))
 					yield return a;
 
 			if (circles != null)
-				foreach (var a in circles.Render(position, palette))
+				foreach (var a in circles.Render(owner.PlayerActor, position, palette))
 					yield return a;
 
 			if (arrow != null)
-				foreach (var a in arrow.Render(position + new WVec(0, 0, arrowHeight), palette))
+				foreach (var a in arrow.Render(owner.PlayerActor, position + new WVec(0, 0, arrowHeight), palette))
 					yield return a;
 
 			if (poster != null)
 			{
-				foreach (var a in poster.Render(position, r.Palette(posterPalette)))
+				foreach (var a in poster.Render(owner.PlayerActor, position, r.Palette(posterPalette)))
 					yield return a;
 
 				if (clock != null)
-					foreach (var a in clock.Render(position, r.Palette(posterPalette)))
+					foreach (var a in clock.Render(owner.PlayerActor, position, r.Palette(posterPalette)))
 						yield return a;
 			}
 		}

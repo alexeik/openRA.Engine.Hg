@@ -125,12 +125,12 @@ namespace OpenRA.Mods.Common.Traits
 			var location = activated ? targetLocation : Viewport.LastMousePos;
 			var worldPx = wr.Viewport.ViewToWorldPx(location);
 			var worldPos = wr.ProjectedPosition(worldPx);
-			var renderables = new List<IRenderable>(targetCursor.Render(worldPos, WVec.Zero, -511, targetPalette, 1 / wr.Viewport.Zoom));
+			var renderables = new List<IRenderable>(targetCursor.Render(world.WorldActor.Owner.PlayerActor, worldPos, WVec.Zero, -511, targetPalette, 1 / wr.Viewport.Zoom));
 
 			if (IsOutsideDragZone)
 			{
 				var directionPalette = wr.Palette(directionArrowPalette);
-				renderables.Add(new SpriteRenderable(currentArrow.Sprite, worldPos, WVec.Zero, -511, directionPalette, 1 / wr.Viewport.Zoom, true));
+				renderables.Add(new SpriteRenderable(world.WorldActor.Owner.PlayerActor, currentArrow.Sprite, worldPos, WVec.Zero, -511, directionPalette, 1 / wr.Viewport.Zoom, true));
 			}
 
 			if (hideMouse)

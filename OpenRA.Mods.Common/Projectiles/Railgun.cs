@@ -218,7 +218,7 @@ namespace OpenRA.Mods.Common.Projectiles
 			}
 
 			if (hitanim != null)
-				foreach (var r in hitanim.Render(target, wr.Palette(info.HitAnimPalette)))
+				foreach (var r in hitanim.Render(args.SourceActor, target, wr.Palette(info.HitAnimPalette)))
 					yield return r;
 		}
 	}

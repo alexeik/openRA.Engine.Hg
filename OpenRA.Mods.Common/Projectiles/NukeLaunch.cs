@@ -155,7 +155,7 @@ namespace OpenRA.Mods.Common.Effects
 			if (!isLaunched)
 				return Enumerable.Empty<IRenderable>();
 
-			return anim.Render(pos, wr.Palette(weaponPalette));
+			return anim.Render(firedBy.PlayerActor, pos, wr.Palette(weaponPalette));
 		}
 
 		public float FractionComplete { get { return ticks * 1f / impactDelay; } }

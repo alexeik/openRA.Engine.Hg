@@ -62,7 +62,7 @@ namespace OpenRA.Mods.Common.Effects
 				return SpriteRenderable.None;
 
 			var zoom = scaleSizeWithZoom ? 1f / wr.Viewport.Zoom : 1f;
-			return anim.Render(pos, WVec.Zero, 0, wr.Palette(palette), zoom);
+			return anim.Render(this.world.WorldActor.Owner.PlayerActor, pos, WVec.Zero, 0, wr.Palette(palette), zoom);
 		}
 	}
 }

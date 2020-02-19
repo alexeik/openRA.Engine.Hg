@@ -52,14 +52,14 @@ namespace OpenRA.Graphics
 		public int CurrentFrame { get { return backwards ? CurrentSequence.Length - frame - 1 : frame; } }
 		public Sprite Image { get { return CurrentSequence.GetSprite(CurrentFrame, facingFunc()); } }
 
-		public IRenderable[] Render(WPos pos, WVec offset, int zOffset, PaletteReference palette, float scale)
+		public IRenderable[] Render(Actor actor, WPos pos, WVec offset, int zOffset, PaletteReference palette, float scale)
 		{
-			var imageRenderable = new SpriteRenderable(Image, pos, offset, CurrentSequence.ZOffset + zOffset, palette, scale, IsDecoration);
+			var imageRenderable = new SpriteRenderable(actor, Image, pos, offset, CurrentSequence.ZOffset + zOffset, palette, scale, IsDecoration);
 
 			if (CurrentSequence.ShadowStart >= 0)
 			{
 				var shadow = CurrentSequence.GetShadow(CurrentFrame, facingFunc());
-				var shadowRenderable = new SpriteRenderable(shadow, pos, offset, CurrentSequence.ShadowZOffset + zOffset, palette, scale, true);
+				var shadowRenderable = new SpriteRenderable(actor, shadow, pos, offset, CurrentSequence.ShadowZOffset + zOffset, palette, scale, true);
 				return new IRenderable[] { shadowRenderable, imageRenderable };
 			}
 
@@ -77,9 +77,9 @@ namespace OpenRA.Graphics
 				xy.Y + (int)(cb.Bottom * scale));
 		}
 
-		public IRenderable[] Render(WPos pos, PaletteReference palette)
+		public IRenderable[] Render(Actor actor, WPos pos, PaletteReference palette)
 		{
-			return Render(pos, WVec.Zero, 0, palette, 1f);
+			return Render(actor, pos, WVec.Zero, 0, palette, 1f);
 		}
 
 		public void Play(string sequenceName)
@@ -210,7 +210,10 @@ namespace OpenRA.Graphics
 			}
 		}
 
-		public bool HasSequence(string seq) { return sequenceProvider.HasSequence(Name, seq); }
+		public bool HasSequence(string seq)
+		{
+			return sequenceProvider.HasSequence(Name, seq);
+		}
 
 		public ISpriteSequence GetSequence(string sequenceName)
 		{

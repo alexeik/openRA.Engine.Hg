@@ -108,12 +108,12 @@ namespace OpenRA.Mods.Common.Projectiles
 				{
 					var dat = world.Map.DistanceAboveTerrain(pos);
 					var shadowPos = pos - new WVec(0, 0, dat.Length);
-					foreach (var r in anim.Render(shadowPos, wr.Palette(info.ShadowPalette)))
+					foreach (var r in anim.Render(args.SourceActor, shadowPos, wr.Palette(info.ShadowPalette)))
 						yield return r;
 				}
 
 				var palette = wr.Palette(info.Palette + (info.IsPlayerPalette ? args.SourceActor.Owner.InternalName : ""));
-				foreach (var r in anim.Render(pos, palette))
+				foreach (var r in anim.Render(args.SourceActor, pos, palette))
 					yield return r;
 			}
 		}

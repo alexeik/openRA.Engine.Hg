@@ -26,7 +26,7 @@ namespace OpenRA.Mods.Common.Orders
 	[RequireExplicitImplementation]
 	public interface IPlaceBuildingPreviewGeneratorInfo : ITraitInfoInterface
 	{
-		IPlaceBuildingPreview CreatePreview(WorldRenderer wr, ActorInfo ai, TypeDictionary init);
+		IPlaceBuildingPreview CreatePreview(WorldRenderer wr, Actor actor, ActorInfo ai, TypeDictionary init);
 	}
 
 	public interface IPlaceBuildingPreview
@@ -81,7 +81,7 @@ namespace OpenRA.Mods.Common.Orders
 					foreach (var o in api.ActorPreviewInits(actorInfo, ActorPreviewType.PlaceBuilding))
 						td.Add(o);
 
-				preview = previewGeneratorInfo.CreatePreview(worldRenderer, actorInfo, td);
+				preview = previewGeneratorInfo.CreatePreview(worldRenderer, queue.Actor, actorInfo, td);
 			}
 		}
 

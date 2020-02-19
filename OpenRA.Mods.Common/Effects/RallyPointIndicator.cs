@@ -105,11 +105,11 @@ namespace OpenRA.Mods.Common.Effects
 				var palette = wr.Palette(rp.PaletteName);
 
 				if (circles != null)
-					foreach (var r in circles.Render(targetLine[1], palette))
+					foreach (var r in circles.Render(building, targetLine[1], palette))
 						yield return r;
 
 				if (flag != null)
-					foreach (var r in flag.Render(targetLine[1], palette))
+					foreach (var r in flag.Render(building, targetLine[1], palette))
 						yield return r;
 			}
 		}

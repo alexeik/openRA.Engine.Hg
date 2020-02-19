@@ -37,7 +37,7 @@ namespace OpenRA.Mods.Common.Graphics
 
 		public IEnumerable<IRenderable> Render(WorldRenderer wr, WPos pos)
 		{
-			return animation.Render(pos, offset(), zOffset(), pr, scale);
+			return animation.Render(wr.World.WorldActor.Owner.PlayerActor, pos, offset(), zOffset(), pr, scale);
 		}
 
 		public IEnumerable<Rectangle> ScreenBounds(WorldRenderer wr, WPos pos)

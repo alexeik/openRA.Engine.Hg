@@ -41,7 +41,7 @@ namespace OpenRA.Graphics
 			var offset = OffsetFunc != null ? OffsetFunc() : WVec.Zero;
 
 			var z = (ZOffset != null) ? ZOffset(center + offset) : 0;
-			return Animation.Render(center, offset, z, pal, scale);
+			return Animation.Render(self, center, offset, z, pal, scale);
 		}
 
 		public Rectangle ScreenBounds(Actor self, WorldRenderer wr, float scale)
