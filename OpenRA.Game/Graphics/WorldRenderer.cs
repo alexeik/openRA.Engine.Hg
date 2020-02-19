@@ -109,18 +109,18 @@ namespace OpenRA.Graphics
 			if (World.RenderPlayer != null)
 				actors = actors.Append(World.RenderPlayer.PlayerActor);
 
-			var worldRenderables = actors.SelectMany(a => a.Render(this));
+			var worldRenderables = actors.SelectMany(a => a.Render(this)).ToList();
 			if (World.OrderGenerator != null)
-				worldRenderables = worldRenderables.Concat(World.OrderGenerator.Render(this, World));
+				worldRenderables = worldRenderables.Concat(World.OrderGenerator.Render(this, World)).ToList();
 
 			// Unpartitioned effects
-			worldRenderables = worldRenderables.Concat(World.UnpartitionedEffects.SelectMany(e => e.Render(this)));
+			worldRenderables = worldRenderables.Concat(World.UnpartitionedEffects.SelectMany(e => e.Render(this))).ToList();
 
 			// Partitioned, currently on-screen effects
 			var effectRenderables = World.ScreenMap.RenderableEffectsInBox(Viewport.TopLeft, Viewport.BottomRight);
-			worldRenderables = worldRenderables.Concat(effectRenderables.SelectMany(e => e.Render(this)));
+			worldRenderables = worldRenderables.Concat(effectRenderables.SelectMany(e => e.Render(this))).ToList();
 
-			worldRenderables = worldRenderables.OrderBy(RenderableScreenZPositionComparisonKey);
+			worldRenderables = worldRenderables.OrderBy(RenderableScreenZPositionComparisonKey).ToList();
 
 			Game.Renderer.WorldModelRenderer.BeginFrame();
 			var renderables = worldRenderables.Select(r => r.PrepareRender(this)).ToList();

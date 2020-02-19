@@ -20,21 +20,29 @@ namespace OpenRA.Graphics
 		readonly IShader shader;
 
 		readonly Vertex[] vertices;
-		readonly Sheet[] sheets = new Sheet[7];
+		public readonly Sheet[] sheets = new Sheet[7];
 
 		BlendMode currentBlend = BlendMode.Alpha;
 		int nv = 0;
 		int ns = 0;
-
-		public SpriteRenderer(Renderer renderer, IShader shader)
+		readonly string rendererID;
+		public SpriteRenderer(string rendereID, Renderer renderer, IShader shader)
 		{
+			this.rendererID = rendereID;
 			this.renderer = renderer;
 			this.shader = shader;
 			vertices = new Vertex[renderer.TempBufferSize];
 		}
-
+		public void IncrementNumSheets()
+		{
+			ns += 1;
+		}
 		public void Flush()
 		{
+			if (rendererID == "WorldSpriteRenderer")
+			{
+
+			}
 			if (nv > 0)
 			{
 				for (var i = 0; i < ns; i++)
@@ -60,6 +68,10 @@ namespace OpenRA.Graphics
 		/// <returns>¬озвращает индекс Sheet куда попал спрайт.</returns>
 		public int2 SetRenderStateForSprite(Sprite s)
 		{
+			if (rendererID == "WordlSprireRenderer")
+			{
+
+			}
 			renderer.CurrentBatchRenderer = this;
 
 			if (s.BlendMode != currentBlend || nv + 6 > renderer.TempBufferSize)

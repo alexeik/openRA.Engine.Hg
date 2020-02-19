@@ -89,10 +89,20 @@ void main()
 		 c =  vTexCoord; // vColorFraction всегда 1,1,1,1
 
 	}
+	// 3.0 зарезервировано под MSDF в text.frag
 	if (vTexMetadata.t==4.0)
 	{
-		//vec4 c = vColorFraction * vTexCoord;
+		//IMGUI внутренняя ветка.
+		//vec4 c = vColorFraction * vTexCoord; 
 		 c =  vec4(vColorInfo)* texture2D(Texture0,vTexCoord.st); // vColorFraction всегда 1,1,1,1
+	}
+	if (vTexMetadata.t==5.0)
+	{
+		//IMGUI для спрайтов из игры ветка.
+		//vec4 c = vColorFraction * vTexCoord; 
+		 vec4 x = texture2D(Texture1,vTexCoord.st); // vColorFraction всегда 1,1,1,1
+		 vec2 p = vec2(dot(x, vec4(1,0,0,0)), vTexMetadata.s);
+		 c = vec4(1,1,1,1) * texture2D(Palette, p) ;
 	}
 	if (c.a == 0.0)
 		discard;

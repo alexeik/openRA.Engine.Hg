@@ -34,7 +34,7 @@ namespace OpenRA.Graphics
 	public sealed class SheetBuilder : IDisposable
 	{
 		public readonly SheetType Type;
-		readonly List<Sheet> sheets = new List<Sheet>();
+		public readonly List<Sheet> sheets = new List<Sheet>();
 		readonly Func<Sheet> allocateSheet;
 
 		Sheet current;
