@@ -160,10 +160,14 @@ namespace OpenRA
 
 		public IEnumerable<IRenderable> Render(WorldRenderer wr)
 		{
+			if (this.Info.Name == "refinery")
+			{
+			}
+			//Console.WriteLine(this.Info.Name + " owner:" + this.Owner.PlayerName);
 			// PERF: Avoid LINQ.
-			var renderables = Renderables(wr);
+			var renderables = Renderables(wr).ToList();
 			foreach (var modifier in renderModifiers)
-				renderables = modifier.ModifyRender(this, wr, renderables);
+				renderables = modifier.ModifyRender(this, wr, renderables).ToList();
 			return renderables;
 		}
 
@@ -176,8 +180,8 @@ namespace OpenRA
 			// `yield`) will avoid the need to allocate a large collection.
 			// For small amounts of renderables, allocating a small collection can often be faster and require less
 			// memory than creating the objects needed to represent a sequence.
-			foreach (var render in renders)
-				foreach (var renderable in render.Render(this, wr))
+			foreach (IRender render in renders)
+				foreach (IRenderable renderable in render.Render(this, wr))
 					yield return renderable;
 		}
 
