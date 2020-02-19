@@ -69,3 +69,7 @@ StyleCopViolations.xml
 .idea
 
 /mods/common/OpenRA.Game.exe
+/mods/d2k/*.exe
+/mods/d2k/*.config
+/imgui.ini
+/mods/common/OpenRA.Game.exe.config
