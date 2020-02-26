@@ -14,12 +14,10 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
-using OpenRA.Primitives;
-using OpenRA.Support;
-using OpenRA.Traits;
 
-namespace OpenRA
+namespace OpenRA.Primitives
 {
+	public interface IDisabledTrait { bool IsTraitDisabled { get; } }
 	public static class Exts
 	{
 		public static bool IsUppercase(this string str)
@@ -56,13 +54,13 @@ namespace OpenRA
 			return mi.GetCustomAttributes(typeof(T), true).Length != 0;
 		}
 
-		public static T[] GetCustomAttributes<T>(this MemberInfo mi, bool inherit)
+		public static T[] GetCustomAttributesExts<T>(this MemberInfo mi, bool inherit)
 			where T : class
 		{
 			return (T[])mi.GetCustomAttributes(typeof(T), inherit);
 		}
 
-		public static T[] GetCustomAttributes<T>(this ParameterInfo mi)
+		public static T[] GetCustomAttributesExts<T>(this ParameterInfo mi)
 			where T : class
 		{
 			return (T[])mi.GetCustomAttributes(typeof(T), true);

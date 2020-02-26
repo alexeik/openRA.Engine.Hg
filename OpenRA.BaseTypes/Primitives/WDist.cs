@@ -11,17 +11,13 @@
 
 using System;
 using System.Linq;
-using Eluant;
-using Eluant.ObjectBinding;
-using OpenRA.Scripting;
-using OpenRA.Support;
 
-namespace OpenRA
+namespace OpenRA.Primitives
 {
 	/// <summary>
 	/// 1d world distance - 1024 units = 1 cell.
 	/// </summary>
-	public struct WDist : IComparable, IComparable<WDist>, IEquatable<WDist>, IScriptBindable, ILuaAdditionBinding, ILuaSubtractionBinding, ILuaEqualityBinding, ILuaTableBinding
+	public struct WDist : IComparable, IComparable<WDist>, IEquatable<WDist>, IScriptBindable
 	{
 		public readonly int Length;
 		public long LengthSquared { get { return (long)Length * Length; } }
@@ -111,54 +107,6 @@ namespace OpenRA
 			return Length < 0 ? "-" + absValue : absValue;
 		}
 
-		#region Scripting interface
-		public LuaValue Add(LuaRuntime runtime, LuaValue left, LuaValue right)
-		{
-			WDist a;
-			WDist b;
-			if (!left.TryGetClrValue(out a) || !right.TryGetClrValue(out b))
-				throw new LuaException("Attempted to call WDist.Add(WDist, WDist) with invalid arguments.");
 
-			return new LuaCustomClrObject(a + b);
-		}
-
-		public LuaValue Subtract(LuaRuntime runtime, LuaValue left, LuaValue right)
-		{
-			WDist a;
-			WDist b;
-			if (!left.TryGetClrValue(out a) || !right.TryGetClrValue(out b))
-				throw new LuaException("Attempted to call WDist.Subtract(WDist, WDist) with invalid arguments.");
-
-			return new LuaCustomClrObject(a - b);
-		}
-
-		public LuaValue Equals(LuaRuntime runtime, LuaValue left, LuaValue right)
-		{
-			WDist a;
-			WDist b;
-			if (!left.TryGetClrValue(out a) || !right.TryGetClrValue(out b))
-				throw new LuaException("Attempted to call WDist.Equals(WDist, WDist) with invalid arguments.");
-
-			return a == b;
-		}
-
-		public LuaValue this[LuaRuntime runtime, LuaValue key]
-		{
-			get
-			{
-				switch (key.ToString())
-				{
-					case "Length": return Length;
-					case "Range": Game.Debug("WDist.Range is deprecated. Use WDist.Length instead"); return Length;
-					default: throw new LuaException("WDist does not define a member '{0}'".F(key));
-				}
-			}
-
-			set
-			{
-				throw new LuaException("WDist is read-only. Use WDist.New to create a new value");
-			}
-		}
-		#endregion
 	}
 }

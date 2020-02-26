@@ -11,7 +11,7 @@
 
 using System;
 
-namespace OpenRA
+namespace OpenRA.Primitives
 {
 	/// <summary>
 	/// 1D angle - 1024 units = 360 degrees.

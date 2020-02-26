@@ -12,13 +12,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Eluant;
-using Eluant.ObjectBinding;
-using OpenRA.Scripting;
 
-namespace OpenRA
+namespace OpenRA.Primitives
 {
-	public struct WPos : IScriptBindable, ILuaAdditionBinding, ILuaSubtractionBinding, ILuaEqualityBinding, ILuaTableBinding, IEquatable<WPos>
+	public struct WPos : IScriptBindable, IEquatable<WPos>
 	{
 		public readonly int X, Y, Z;
 
@@ -78,70 +75,7 @@ namespace OpenRA
 
 		public override string ToString() { return X + "," + Y + "," + Z; }
 
-		#region Scripting interface
-
-		public LuaValue Add(LuaRuntime runtime, LuaValue left, LuaValue right)
-		{
-			WPos a;
-			WVec b;
-			if (!left.TryGetClrValue(out a) || !right.TryGetClrValue(out b))
-				throw new LuaException("Attempted to call WPos.Add(WPos, WVec) with invalid arguments ({0}, {1})".F(left.WrappedClrType().Name, right.WrappedClrType().Name));
-
-			return new LuaCustomClrObject(a + b);
-		}
-
-		public LuaValue Subtract(LuaRuntime runtime, LuaValue left, LuaValue right)
-		{
-			WPos a;
-			var rightType = right.WrappedClrType();
-			if (!left.TryGetClrValue(out a))
-				throw new LuaException("Attempted to call WPos.Subtract(WPos, (WPos|WVec)) with invalid arguments ({0}, {1})".F(left.WrappedClrType().Name, rightType.Name));
-
-			if (rightType == typeof(WPos))
-			{
-				WPos b;
-				right.TryGetClrValue(out b);
-				return new LuaCustomClrObject(a - b);
-			}
-			else if (rightType == typeof(WVec))
-			{
-				WVec b;
-				right.TryGetClrValue(out b);
-				return new LuaCustomClrObject(a - b);
-			}
-
-			throw new LuaException("Attempted to call WPos.Subtract(WPos, (WPos|WVec)) with invalid arguments ({0}, {1})".F(left.WrappedClrType().Name, rightType.Name));
-		}
-
-		public LuaValue Equals(LuaRuntime runtime, LuaValue left, LuaValue right)
-		{
-			WPos a, b;
-			if (!left.TryGetClrValue(out a) || !right.TryGetClrValue(out b))
-				return false;
-
-			return a == b;
-		}
-
-		public LuaValue this[LuaRuntime runtime, LuaValue key]
-		{
-			get
-			{
-				switch (key.ToString())
-				{
-					case "X": return X;
-					case "Y": return Y;
-					case "Z": return Z;
-					default: throw new LuaException("WPos does not define a member '{0}'".F(key));
-				}
-			}
-
-			set
-			{
-				throw new LuaException("WPos is read-only. Use WPos.New to create a new value");
-			}
-		}
-
-		#endregion
+	
 	}
 
 	public static class IEnumerableExtensions

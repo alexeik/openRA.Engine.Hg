@@ -11,10 +11,12 @@
 
 using System;
 using System.Globalization;
-using OpenRA.Scripting;
+
 
 namespace OpenRA.Primitives
 {
+	public interface IScriptBindable { }
+
 	public struct Color : IScriptBindable
 	{
 		readonly long argb;

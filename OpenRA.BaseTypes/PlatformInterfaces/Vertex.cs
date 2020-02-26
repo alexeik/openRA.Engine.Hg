@@ -9,6 +9,7 @@
  */
 #endregion
 
+using OpenRA.Primitives;
 using System.Runtime.InteropServices;
 
 namespace OpenRA.Graphics

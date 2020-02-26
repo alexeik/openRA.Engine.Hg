@@ -11,7 +11,7 @@
 
 using System;
 
-namespace OpenRA
+namespace OpenRA.Primitives
 {
 	public interface IInputHandler
 	{

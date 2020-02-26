@@ -11,7 +11,7 @@
 
 using System;
 
-namespace OpenRA.Support
+namespace OpenRA.Primitives
 {
 	// Quick & dirty Mersenne Twister [MT19937] implementation
 	public class MersenneTwister

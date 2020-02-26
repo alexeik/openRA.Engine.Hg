@@ -54,7 +54,7 @@ namespace OpenRA
 		void SetHardwareCursor(IHardwareCursor cursor);
 	}
 
-	public interface IGraphicsContext : IDisposable
+	public interface IGraphicsContext
 	{
 		IVertexBuffer<Vertex> CreateVertexBuffer(int size);
 		ITexture CreateTexture();
