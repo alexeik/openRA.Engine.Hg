@@ -18,6 +18,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using OpenAL;
+using OpenRA.Primitives;
 
 namespace OpenRA.Platforms.Default
 {
@@ -196,7 +197,7 @@ namespace OpenRA.Platforms.Default
 			return new OpenAlSoundSource(data, data.Length, channels, sampleBits, sampleRate);
 		}
 
-		public ISound Play2D(ISoundSource soundSource, bool loop, bool relative, WPos pos, float volume, bool attenuateVolume)
+		public ISound Play2D(int LocalTick, ISoundSource soundSource, bool loop, bool relative, WPos pos, float volume, bool attenuateVolume)
 		{
 			if (soundSource == null)
 			{
@@ -206,7 +207,7 @@ namespace OpenRA.Platforms.Default
 
 			var alSoundSource = (OpenAlSoundSource)soundSource;
 
-			var currFrame = Game.LocalTick;
+			var currFrame = LocalTick;
 			var atten = 1f;
 
 			// Check if max # of instances-per-location reached:
@@ -253,9 +254,9 @@ namespace OpenRA.Platforms.Default
 			return slot.Sound;
 		}
 
-		public ISound Play2DStream(Stream stream, int channels, int sampleBits, int sampleRate, bool loop, bool relative, WPos pos, float volume)
+		public ISound Play2DStream(int LocalTick, Stream stream, int channels, int sampleBits, int sampleRate, bool loop, bool relative, WPos pos, float volume)
 		{
-			var currFrame = Game.LocalTick;
+			var currFrame = LocalTick;
 
 			uint source;
 			if (!TryGetSourceFromPool(out source))

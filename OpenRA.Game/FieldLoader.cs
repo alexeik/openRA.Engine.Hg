@@ -145,7 +145,7 @@ namespace OpenRA
 			var field = target.GetType().GetField(key, Flags);
 			if (field != null)
 			{
-				var sa = field.GetCustomAttributes<SerializeAttribute>(false).DefaultIfEmpty(SerializeAttribute.Default).First();
+				var sa = field.GetCustomAttributesExts<SerializeAttribute>(false).DefaultIfEmpty(SerializeAttribute.Default).First();
 				if (!sa.FromYamlKey)
 					field.SetValue(target, GetValue(field.Name, field.FieldType, value, field));
 				return;
@@ -154,7 +154,7 @@ namespace OpenRA
 			var prop = target.GetType().GetProperty(key, Flags);
 			if (prop != null)
 			{
-				var sa = prop.GetCustomAttributes<SerializeAttribute>(false).DefaultIfEmpty(SerializeAttribute.Default).First();
+				var sa = prop.GetCustomAttributesExts<SerializeAttribute>(false).DefaultIfEmpty(SerializeAttribute.Default).First();
 				if (!sa.FromYamlKey)
 					prop.SetValue(target, GetValue(prop.Name, prop.PropertyType, value, prop), null);
 				return;

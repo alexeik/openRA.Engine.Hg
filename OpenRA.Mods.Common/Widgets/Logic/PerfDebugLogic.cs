@@ -10,6 +10,7 @@
 #endregion
 
 using System.Diagnostics;
+using OpenRA.Primitives;
 using OpenRA.Support;
 using OpenRA.Widgets;
 

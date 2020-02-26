@@ -11,6 +11,7 @@
 
 using System;
 using OpenRA.Mods.Common.Projectiles;
+using OpenRA.Primitives;
 
 namespace OpenRA.Mods.Common.Lint
 {

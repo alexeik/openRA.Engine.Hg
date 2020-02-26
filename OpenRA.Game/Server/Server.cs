@@ -270,7 +270,7 @@ namespace OpenRA.Server
 
 				// Validate player identity by asking them to sign a random blob of data
 				// which we can then verify against the player public key database
-				var token = Convert.ToBase64String(OpenRA.Exts.MakeArray(256, _ => (byte)Random.Next()));
+				var token = Convert.ToBase64String(Primitives.Exts.MakeArray(256, _ => (byte)Random.Next()));
 
 				// Assign the player number.
 				newConn.PlayerIndex = ChooseFreePlayerIndex();
@@ -644,7 +644,7 @@ namespace OpenRA.Server
 				case "Pong":
 					{
 						long pingSent;
-						if (!OpenRA.Exts.TryParseInt64Invariant(so.Data, out pingSent))
+						if (!Primitives.Exts.TryParseInt64Invariant(so.Data, out pingSent))
 						{
 							Log.Write("server", "Invalid order pong payload: {0}", so.Data);
 							break;

@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System.IO;
 using OpenRA.FileSystem;
 using OpenRA.Mods.Common.FileFormats;
+using OpenRA.Primitives;
 using FS = OpenRA.FileSystem.FileSystem;
 
 namespace OpenRA.Mods.Common.FileSystem

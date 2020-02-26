@@ -12,6 +12,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using OpenRA.Primitives;
 using OpenRA.Traits;
 
 namespace OpenRA.Mods.Common.Lint
@@ -34,7 +35,7 @@ namespace OpenRA.Mods.Common.Lint
 					{
 						var isPlayerPalette = false;
 
-						var paletteReference = field.GetCustomAttributes<PaletteReferenceAttribute>(true).FirstOrDefault();
+						var paletteReference = field.GetCustomAttributesExts<PaletteReferenceAttribute>(true).FirstOrDefault();
 						if (paletteReference != null)
 						{
 							if (!string.IsNullOrEmpty(paletteReference.PlayerPaletteReferenceSwitch))
@@ -78,7 +79,7 @@ namespace OpenRA.Mods.Common.Lint
 				{
 					var isPlayerPalette = false;
 
-					var paletteReference = field.GetCustomAttributes<PaletteReferenceAttribute>(true).First();
+					var paletteReference = field.GetCustomAttributesExts<PaletteReferenceAttribute>(true).First();
 					if (paletteReference != null)
 					{
 						if (!string.IsNullOrEmpty(paletteReference.PlayerPaletteReferenceSwitch))
@@ -120,7 +121,7 @@ namespace OpenRA.Mods.Common.Lint
 					var fields = traitInfo.GetType().GetFields();
 					foreach (var field in fields.Where(x => x.HasAttribute<PaletteDefinitionAttribute>()))
 					{
-						var paletteDefinition = field.GetCustomAttributes<PaletteDefinitionAttribute>(true).First();
+						var paletteDefinition = field.GetCustomAttributesExts<PaletteDefinitionAttribute>(true).First();
 						var values = LintExts.GetFieldValues(traitInfo, field, emitError);
 						foreach (var value in values)
 						{

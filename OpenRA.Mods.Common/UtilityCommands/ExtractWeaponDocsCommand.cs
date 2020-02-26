@@ -13,6 +13,7 @@ using System;
 using System.Linq;
 using System.Text;
 using OpenRA.GameRules;
+using OpenRA.Primitives;
 using OpenRA.Traits;
 
 namespace OpenRA.Mods.Common.UtilityCommands
@@ -73,7 +74,7 @@ namespace OpenRA.Mods.Common.UtilityCommands
 				doc.AppendLine();
 				doc.AppendLine("### {0}".F(traitName));
 
-				var traitDescLines = t.GetCustomAttributes<DescAttribute>(false).SelectMany(d => d.Lines);
+				var traitDescLines = t.GetCustomAttributesExts<DescAttribute>(false).SelectMany(d => d.Lines);
 				foreach (var line in traitDescLines)
 					doc.AppendLine(line);
 
@@ -87,7 +88,7 @@ namespace OpenRA.Mods.Common.UtilityCommands
 				var liveTraitInfo = t == typeof(WeaponInfo) ? null : objectCreator.CreateBasic(t);
 				foreach (var info in infos)
 				{
-					var fieldDescLines = info.Field.GetCustomAttributes<DescAttribute>(true).SelectMany(d => d.Lines);
+					var fieldDescLines = info.Field.GetCustomAttributesExts<DescAttribute>(true).SelectMany(d => d.Lines);
 					var fieldType = Util.FriendlyTypeName(info.Field.FieldType);
 					var defaultValue = liveTraitInfo == null ? "" : FieldSaver.SaveField(liveTraitInfo, info.Field.Name).Value.Value;
 					doc.Append("<tr><td>{0}</td><td>{1}</td><td>{2}</td>".F(info.YamlName, defaultValue, fieldType));

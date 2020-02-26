@@ -9,6 +9,8 @@
  */
 #endregion
 
+using OpenRA.Primitives;
+
 namespace OpenRA
 {
 	public struct Hotkey

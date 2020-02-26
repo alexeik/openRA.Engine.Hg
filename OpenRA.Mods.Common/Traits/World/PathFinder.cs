@@ -14,6 +14,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using OpenRA.Mods.Common.Pathfinder;
+using OpenRA.Primitives;
 using OpenRA.Traits;
 
 namespace OpenRA.Mods.Common.Traits
@@ -30,9 +31,9 @@ namespace OpenRA.Mods.Common.Traits
 	public interface IPathFinder
 	{
 		/// <summary>
-		/// Calculates a path for the actor from source to destination
+		/// Calculates a path for the actor from source to destination.
 		/// </summary>
-		/// <returns>A path from start to target</returns>
+		/// <returns>A path from start to target.</returns>
 		List<CPos> FindUnitPath(CPos source, CPos target, Actor self, Actor ignoreActor);
 
 		List<CPos> FindUnitPathToRange(CPos source, SubCell srcSub, WPos target, WDist range, Actor self);

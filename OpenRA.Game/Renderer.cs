@@ -14,6 +14,7 @@ using System.Collections.Generic;
 using System.Linq;
 using ImGuiNET;
 using OpenRA.Graphics;
+using OpenRA.Platforms.Default;
 using OpenRA.Primitives;
 using OpenRA.Support;
 
@@ -34,8 +35,8 @@ namespace OpenRA
 		public IReadOnlyDictionary<string, SpriteFontMSDF> Fonts;
 		public FontMSDF Mfont;
 
-		internal IPlatformWindow Window { get; private set; }
-		internal IGraphicsContext Context { get; private set; }
+		internal PlatformWindow Window { get; private set; }
+		internal GraphicsContext Context { get; private set; }
 
 		internal int SheetSize { get; private set; }
 		internal int TempBufferSize { get; private set; }
@@ -44,7 +45,7 @@ namespace OpenRA
 		readonly Stack<Rectangle> scissorState = new Stack<Rectangle>();
 
 		SheetBuilder fontSheetBuilder;
-		readonly IPlatform platform;
+		readonly DefaultPlatform platform;
 
 		float depthScale;
 		float depthOffset;
@@ -55,12 +56,12 @@ namespace OpenRA
 		ITexture currentPaletteTexture;
 		IBatchRenderer currentBatchRenderer;
 
-		public Renderer(IPlatform platform, GraphicSettings graphicSettings)
+		public Renderer(DefaultPlatform platform, GraphicSettings graphicSettings)
 		{
 			this.platform = platform;
 			var resolution = GetResolution(graphicSettings);
 
-			Window = platform.CreateWindow(new Size(resolution.Width, resolution.Height), graphicSettings.Mode, graphicSettings.BatchSize);
+			Window = platform.CreateWindow(new Size(resolution.Width, resolution.Height), graphicSettings.Mode, graphicSettings.BatchSize, Game.Settings.Graphics.DisableWindowsDPIScaling, Game.Settings.Game.LockMouseWindow, Game.Settings.Graphics.DisableWindowsRenderThread);
 			Context = Window.Context;
 
 			TempBufferSize = graphicSettings.BatchSize;

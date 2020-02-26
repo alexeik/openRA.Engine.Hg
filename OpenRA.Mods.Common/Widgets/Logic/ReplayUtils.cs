@@ -11,6 +11,7 @@
 
 using System;
 using OpenRA.FileFormats;
+using OpenRA.Primitives;
 
 namespace OpenRA.Mods.Common.Widgets.Logic
 {

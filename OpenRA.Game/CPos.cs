@@ -12,6 +12,7 @@
 using System;
 using Eluant;
 using Eluant.ObjectBinding;
+using OpenRA.Primitives;
 using OpenRA.Scripting;
 
 namespace OpenRA

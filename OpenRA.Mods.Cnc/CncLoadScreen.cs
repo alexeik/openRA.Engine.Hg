@@ -74,7 +74,7 @@ namespace OpenRA.Mods.Cnc
 		}
 
 		object rendererFonts;
-		SpriteFont loadingFont, versionFont;
+		SpriteFontMSDF loadingFont, versionFont;
 		string loadingText, versionText;
 		float2 loadingPos, versionPos;
 

@@ -16,7 +16,7 @@ using OpenRA.Primitives;
 
 namespace OpenRA.Platforms.Default
 {
-	class Texture : ITextureInternal
+	public class Texture : ITextureInternal
 	{
 		volatile int managedThreadId;
 

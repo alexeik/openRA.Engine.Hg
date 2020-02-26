@@ -12,6 +12,7 @@
 using System;
 using System.Runtime.InteropServices;
 using System.Text;
+using OpenRA.Primitives;
 using SDL2;
 
 namespace OpenRA.Platforms.Default
@@ -40,7 +41,7 @@ namespace OpenRA.Platforms.Default
 				 | ((raw & (int)SDL.SDL_Keymod.KMOD_SHIFT) != 0 ? Modifiers.Shift : 0);
 		}
 
-		int2 EventPosition(Sdl2PlatformWindow device, int x, int y)
+		int2 EventPosition(PlatformWindow device, int x, int y)
 		{
 			// On Windows and Linux (X11) events are given in surface coordinates
 			// These must be scaled to our effective window coordinates
@@ -50,7 +51,7 @@ namespace OpenRA.Platforms.Default
 			return new int2(x, y);
 		}
 
-		public void PumpInput(Sdl2PlatformWindow device, IInputHandler inputHandler)
+		public void PumpInput(PlatformWindow device, IInputHandler inputHandler)
 		{
 			var mods = MakeModifiers((int)SDL.SDL_GetModState());
 			var scrollDelta = 0;
@@ -63,7 +64,7 @@ namespace OpenRA.Platforms.Default
 				switch (e.type)
 				{
 					case SDL.SDL_EventType.SDL_QUIT:
-						Game.Exit();
+						inputHandler.OnTextInput("SDL_QUIT");
 						break;
 
 					case SDL.SDL_EventType.SDL_WINDOWEVENT:
@@ -71,11 +72,11 @@ namespace OpenRA.Platforms.Default
 							switch (e.window.windowEvent)
 							{
 								case SDL.SDL_WindowEventID.SDL_WINDOWEVENT_FOCUS_LOST:
-									Game.HasInputFocus = false;
+									inputHandler.OnTextInput("SDL_WINDOWEVENT_FOCUS_LOST");
 									break;
 
 								case SDL.SDL_WindowEventID.SDL_WINDOWEVENT_FOCUS_GAINED:
-									Game.HasInputFocus = true;
+									inputHandler.OnTextInput("SDL_WINDOWEVENT_FOCUS_GAINED");
 									break;
 
 								// Triggered when moving between displays with different DPI settings
@@ -177,7 +178,7 @@ namespace OpenRA.Platforms.Default
 							// Special case workaround for windows users
 							if (e.key.keysym.sym == SDL.SDL_Keycode.SDLK_F4 && mods.HasModifier(Modifiers.Alt) &&
 								Platform.CurrentPlatform == PlatformType.Windows)
-								Game.Exit();
+								inputHandler.OnTextInput("SDL_QUIT");
 							else
 								inputHandler.OnKeyInput(keyEvent);
 

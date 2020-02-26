@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using OpenRA.Effects;
 using OpenRA.Graphics;
 using OpenRA.Mods.Cnc.Traits;
+using OpenRA.Primitives;
 
 namespace OpenRA.Mods.Cnc.Effects
 {
@@ -52,7 +53,7 @@ namespace OpenRA.Mods.Cnc.Effects
 		public IEnumerable<IRenderable> Render(WorldRenderer wr)
 		{
 			var palette = info.DoorPaletteIsPlayerPalette ? info.DoorPalette + launcher.Owner.InternalName : info.DoorPalette;
-			return doors.Render(pos, wr.Palette(palette));
+			return doors.Render(launcher, pos, wr.Palette(palette));
 		}
 	}
 }

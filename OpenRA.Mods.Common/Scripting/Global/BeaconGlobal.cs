@@ -12,6 +12,7 @@
 using Eluant;
 using OpenRA.Mods.Common.Effects;
 using OpenRA.Mods.Common.Traits;
+using OpenRA.Primitives;
 using OpenRA.Scripting;
 
 namespace OpenRA.Mods.Common.Scripting

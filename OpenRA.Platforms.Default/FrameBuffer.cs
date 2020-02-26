@@ -16,7 +16,7 @@ using OpenRA.Primitives;
 
 namespace OpenRA.Platforms.Default
 {
-	sealed class FrameBuffer : ThreadAffine, IFrameBuffer
+	public sealed class FrameBuffer : ThreadAffine, IFrameBuffer
 	{
 		readonly ITexture texture;
 		readonly Size size;

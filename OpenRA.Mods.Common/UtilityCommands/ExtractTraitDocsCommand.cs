@@ -12,6 +12,7 @@
 using System;
 using System.Linq;
 using System.Text;
+using OpenRA.Primitives;
 using OpenRA.Traits;
 
 namespace OpenRA.Mods.Common.UtilityCommands
@@ -60,7 +61,7 @@ namespace OpenRA.Mods.Common.UtilityCommands
 
 				var traitName = t.Name.EndsWith("Info") ? t.Name.Substring(0, t.Name.Length - 4) : t.Name;
 				toc.AppendLine("  * [{0}](#{1})".F(traitName, traitName.ToLowerInvariant()));
-				var traitDescLines = t.GetCustomAttributes<DescAttribute>(false).SelectMany(d => d.Lines);
+				var traitDescLines = t.GetCustomAttributesExts<DescAttribute>(false).SelectMany(d => d.Lines);
 				doc.AppendLine();
 				doc.AppendLine("### {0}".F(traitName));
 				foreach (var line in traitDescLines)
@@ -93,9 +94,9 @@ namespace OpenRA.Mods.Common.UtilityCommands
 				var liveTraitInfo = Game.ModData.ObjectCreator.CreateBasic(t);
 				foreach (var info in infos)
 				{
-					var fieldDescLines = info.Field.GetCustomAttributes<DescAttribute>(true).SelectMany(d => d.Lines);
+					var fieldDescLines = info.Field.GetCustomAttributesExts<DescAttribute>(true).SelectMany(d => d.Lines);
 					var fieldType = Util.FriendlyTypeName(info.Field.FieldType);
-					var loadInfo = info.Field.GetCustomAttributes<FieldLoader.SerializeAttribute>(true).FirstOrDefault();
+					var loadInfo = info.Field.GetCustomAttributesExts<FieldLoader.SerializeAttribute>(true).FirstOrDefault();
 					var defaultValue = loadInfo != null && loadInfo.Required ? "<em>(required)</em>" : FieldSaver.SaveField(liveTraitInfo, info.Field.Name).Value.Value;
 					doc.Append("<tr><td>{0}</td><td>{1}</td><td>{2}</td>".F(info.YamlName, defaultValue, fieldType));
 					doc.Append("<td>");

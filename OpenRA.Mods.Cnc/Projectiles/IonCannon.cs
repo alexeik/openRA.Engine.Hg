@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System.Linq;
 using OpenRA.GameRules;
 using OpenRA.Graphics;
+using OpenRA.Primitives;
 using OpenRA.Traits;
 
 namespace OpenRA.Mods.Cnc.Effects
@@ -54,7 +55,7 @@ namespace OpenRA.Mods.Cnc.Effects
 
 		public IEnumerable<IRenderable> Render(WorldRenderer wr)
 		{
-			return anim.Render(target.CenterPosition, wr.Palette(palette));
+			return anim.Render(firedBy.PlayerActor, target.CenterPosition, wr.Palette(palette));
 		}
 
 		void Finish(World world)

@@ -12,6 +12,7 @@
 using OpenRA.Activities;
 using OpenRA.Mods.Cnc.Traits.Render;
 using OpenRA.Mods.Common.Activities;
+using OpenRA.Primitives;
 
 namespace OpenRA.Mods.Cnc.Activities
 {

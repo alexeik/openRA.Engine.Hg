@@ -98,7 +98,7 @@ namespace OpenRA.Mods.Common.Traits
 			return spawnPoint.CenterPosition;
 		}
 
-		Actor GetRandomSpawnPoint(World world, Support.MersenneTwister random)
+		Actor GetRandomSpawnPoint(World world, MersenneTwister random)
 		{
 			var spawnPointActors = world.ActorsWithTrait<ActorSpawner>()
 				.Where(x => !x.Trait.IsTraitDisabled && (info.Types.Overlaps(x.Trait.Types) || !x.Trait.Types.Any()))

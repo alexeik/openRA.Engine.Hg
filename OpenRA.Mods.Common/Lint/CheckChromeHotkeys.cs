@@ -108,7 +108,7 @@ namespace OpenRA.Mods.Common.Lint
 						if (type == null)
 							continue;
 
-						checkArgKeys.AddRange(type.GetCustomAttributes<ChromeLogicArgsHotkeys>(true).SelectMany(x => x.LogicArgKeys));
+						checkArgKeys.AddRange(type.GetCustomAttributesExts<ChromeLogicArgsHotkeys>(true).SelectMany(x => x.LogicArgKeys));
 					}
 
 					Hotkey unused;

@@ -13,11 +13,12 @@ using OpenRA.Primitives;
 
 namespace OpenRA.Platforms.Default
 {
-	public class DefaultPlatform : IPlatform
+	public class DefaultPlatform 
 	{
-		public IPlatformWindow CreateWindow(Size size, WindowMode windowMode, int batchSize)
+		public PlatformWindow CreateWindow(Size size, WindowMode windowMode, int batchSize,bool DisableWindowsDPIScaling, 
+			bool LockMouseWindow, bool DisableWindowsRenderThread)
 		{
-			return new Sdl2PlatformWindow(size, windowMode, batchSize);
+			return new PlatformWindow(size, windowMode, batchSize, DisableWindowsDPIScaling, LockMouseWindow, DisableWindowsRenderThread);
 		}
 
 		public ISoundEngine CreateSound(string device)

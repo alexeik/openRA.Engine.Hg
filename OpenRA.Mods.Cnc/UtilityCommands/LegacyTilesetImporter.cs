@@ -15,6 +15,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using OpenRA.Mods.Common.FileFormats;
+using OpenRA.Primitives;
 
 namespace OpenRA.Mods.Cnc.UtilityCommands
 {

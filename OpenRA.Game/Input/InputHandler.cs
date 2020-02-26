@@ -9,6 +9,7 @@
  */
 #endregion
 
+using OpenRA.Primitives;
 using OpenRA.Widgets;
 
 namespace OpenRA
@@ -42,6 +43,18 @@ namespace OpenRA
 
 		public void OnTextInput(string text)
 		{
+			if (text == "SDL_QUIT")
+			{
+				Game.Exit();
+			}
+			if (text == "SDL_WINDOWEVENT_FOCUS_LOST")
+			{
+				Game.HasInputFocus = false;
+			}
+			if (text == "SDL_WINDOWEVENT_FOCUS_GAINED")
+			{
+				Game.HasInputFocus = true;
+			}
 			Sync.RunUnsynced(Game.Settings.Debug.SyncCheckUnsyncedCode, world, () => Ui.HandleTextInput(text));
 		}
 

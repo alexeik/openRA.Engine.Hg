@@ -11,6 +11,7 @@
 
 using OpenRA.Activities;
 using OpenRA.Graphics;
+using OpenRA.Primitives;
 using OpenRA.Traits;
 
 namespace OpenRA.Mods.Common.Traits.Render

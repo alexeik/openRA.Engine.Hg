@@ -16,6 +16,7 @@ using System.Threading.Tasks;
 using OpenRA.FileSystem;
 using OpenRA.GameRules;
 using OpenRA.Graphics;
+using OpenRA.Primitives;
 using OpenRA.Traits;
 
 namespace OpenRA

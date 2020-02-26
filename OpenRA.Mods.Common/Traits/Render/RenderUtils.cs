@@ -9,6 +9,8 @@
  */
 #endregion
 
+using OpenRA.Primitives;
+
 namespace OpenRA.Mods.Common.Traits.Render
 {
 	public class RenderUtils

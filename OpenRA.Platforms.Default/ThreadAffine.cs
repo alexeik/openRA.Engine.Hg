@@ -14,7 +14,7 @@ using System.Threading;
 
 namespace OpenRA.Platforms.Default
 {
-	abstract class ThreadAffine
+	public abstract class ThreadAffine
 	{
 		volatile int managedThreadId;
 

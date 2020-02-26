@@ -15,6 +15,7 @@ using System.IO;
 using System.Linq;
 using ICSharpCode.SharpZipLib.Zip.Compression;
 using ICSharpCode.SharpZipLib.Zip.Compression.Streams;
+using OpenRA.Primitives;
 
 namespace OpenRA.Mods.Common.FileFormats
 {

@@ -422,7 +422,7 @@ namespace OpenRA.Mods.Common.Projectiles
 
 		bool JammedBy(TraitPair<JamsMissiles> tp)
 		{
-			if ((tp.Actor.CenterPosition - pos).HorizontalLengthSquared > tp.Trait.Range.LengthSquared)
+			if ((tp.Actor.CenterPosition - pos).HorizontalLengthSquared > tp.Trait.GetRange().LengthSquared)
 				return false;
 
 			if (!tp.Trait.DeflectionStances.HasStance(tp.Actor.Owner.Stances[args.SourceActor.Owner]))

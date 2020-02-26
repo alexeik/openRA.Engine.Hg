@@ -14,6 +14,7 @@ using System.Collections.Generic;
 using System.IO;
 using OpenRA.FileSystem;
 using OpenRA.GameRules;
+using OpenRA.Platforms.Default;
 using OpenRA.Primitives;
 
 namespace OpenRA
@@ -46,7 +47,7 @@ namespace OpenRA
 		MusicInfo currentMusic;
 		Dictionary<uint, ISound> currentSounds = new Dictionary<uint, ISound>();
 
-		public Sound(IPlatform platform, SoundSettings soundSettings)
+		public Sound(DefaultPlatform platform, SoundSettings soundSettings)
 		{
 			soundEngine = platform.CreateSound(soundSettings.Device);
 
@@ -117,7 +118,7 @@ namespace OpenRA
 			if (player != null && player != player.World.LocalPlayer)
 				return null;
 
-			return soundEngine.Play2D(sounds[name],
+			return soundEngine.Play2D(Game.LocalTick, sounds[name],
 				loop, headRelative, pos,
 				InternalSoundVolume * volumeModifier, true);
 		}
@@ -162,7 +163,7 @@ namespace OpenRA
 		{
 			StopVideo();
 			videoSource = soundEngine.AddSoundSourceFromMemory(raw, channels, sampleBits, sampleRate);
-			video = soundEngine.Play2D(videoSource, false, true, WPos.Zero, InternalSoundVolume, false);
+			video = soundEngine.Play2D(Game.LocalTick, videoSource, false, true, WPos.Zero, InternalSoundVolume, false);
 		}
 
 		public void PlayVideo()
@@ -223,7 +224,7 @@ namespace OpenRA
 
 			StopMusic();
 
-			Func<ISoundFormat, ISound> stream = soundFormat => soundEngine.Play2DStream(
+			Func<ISoundFormat, ISound> stream = soundFormat => soundEngine.Play2DStream(Game.LocalTick,
 				soundFormat.GetPCMInputStream(), soundFormat.Channels, soundFormat.SampleBits, soundFormat.SampleRate,
 				false, true, WPos.Zero, MusicVolume * m.VolumeModifier);
 			music = LoadSound(m.Filename, stream);
@@ -398,7 +399,7 @@ namespace OpenRA
 
 			if (!string.IsNullOrEmpty(name) && (p == null || p == p.World.LocalPlayer))
 			{
-				var sound = soundEngine.Play2D(sounds[name],
+				var sound = soundEngine.Play2D(Game.LocalTick, sounds[name],
 					false, relative, pos,
 					InternalSoundVolume * volumeModifier * pool.VolumeModifier, attenuateVolume);
 				if (id != 0)

@@ -11,20 +11,19 @@
 
 using System;
 using System.Threading;
-using OpenRA.FileFormats;
 using OpenRA.Graphics;
 using OpenRA.Primitives;
 using SDL2;
 
 namespace OpenRA.Platforms.Default
 {
-	sealed class Sdl2GraphicsContext : ThreadAffine, IGraphicsContext
+	public sealed class GraphicsContext : ThreadAffine, IDisposable
 	{
-		readonly Sdl2PlatformWindow window;
+		readonly PlatformWindow window;
 		bool disposed;
 		IntPtr context;
 
-		public Sdl2GraphicsContext(Sdl2PlatformWindow window)
+		public GraphicsContext(PlatformWindow window)
 		{
 			this.window = window;
 		}
@@ -48,36 +47,36 @@ namespace OpenRA.Platforms.Default
 			OpenGL.CheckGLError();
 		}
 
-		public IVertexBuffer<Vertex> CreateVertexBuffer(int size)
+		public VertexBuffer<Vertex> CreateVertexBuffer(int size)
 		{
 			VerifyThreadAffinity();
 			return new VertexBuffer<Vertex>(size);
 		}
 
-		public ITexture CreateTexture()
+		public Texture CreateTexture()
 		{
 			VerifyThreadAffinity();
 			return new Texture();
 		}
-		public ITexture CreateTexture2DArray()
+		public TextureArray CreateTexture2DArray()
 		{
 			VerifyThreadAffinity();
 			return new TextureArray();
 		}
 
-		public IFrameBuffer CreateFrameBuffer(Size s)
+		public FrameBuffer CreateFrameBuffer(Size s)
 		{
 			VerifyThreadAffinity();
 			return new FrameBuffer(s, new Texture());
 		}
 
-		public IFrameBuffer CreateFrameBuffer(Size s, ITextureInternal texture)
+		public FrameBuffer CreateFrameBuffer(Size s, ITextureInternal texture)
 		{
 			VerifyThreadAffinity();
 			return new FrameBuffer(s, texture);
 		}
 
-		public IShader CreateShader(string name)
+		public Shader CreateShader(string name)
 		{
 			VerifyThreadAffinity();
 			return new Shader(name);
@@ -121,47 +120,47 @@ namespace OpenRA.Platforms.Default
 
 		public void SaveScreenshot(string path)
 		{
-			var s = window.SurfaceSize;
-			var raw = new byte[s.Width * s.Height * 4];
+			//var s = window.SurfaceSize;
+			//var raw = new byte[s.Width * s.Height * 4];
 
-			OpenGL.glPushClientAttrib(OpenGL.GL_CLIENT_PIXEL_STORE_BIT);
+			//OpenGL.glPushClientAttrib(OpenGL.GL_CLIENT_PIXEL_STORE_BIT);
 
-			OpenGL.glPixelStoref(OpenGL.GL_PACK_ROW_LENGTH, s.Width);
-			OpenGL.glPixelStoref(OpenGL.GL_PACK_ALIGNMENT, 1);
+			//OpenGL.glPixelStoref(OpenGL.GL_PACK_ROW_LENGTH, s.Width);
+			//OpenGL.glPixelStoref(OpenGL.GL_PACK_ALIGNMENT, 1);
 
-			unsafe
-			{
-				fixed (byte* pRaw = raw)
-					OpenGL.glReadPixels(0, 0, s.Width, s.Height,
-						OpenGL.GL_BGRA, OpenGL.GL_UNSIGNED_BYTE, (IntPtr)pRaw);
-			}
+			//unsafe
+			//{
+			//	fixed (byte* pRaw = raw)
+			//		OpenGL.glReadPixels(0, 0, s.Width, s.Height,
+			//			OpenGL.GL_BGRA, OpenGL.GL_UNSIGNED_BYTE, (IntPtr)pRaw);
+			//}
 
-			OpenGL.glFinish();
-			OpenGL.glPopClientAttrib();
+			//OpenGL.glFinish();
+			//OpenGL.glPopClientAttrib();
 
-			ThreadPool.QueueUserWorkItem(_ =>
-			{
-				// Convert GL pixel data into format expected by png
-				// - Flip vertically
-				// - BGRA to RGBA
-				// - Force A to 255 (no transparent pixels!)
-				var data = new byte[raw.Length];
-				for (var y = 0; y < s.Height; y++)
-				{
-					for (var x = 0; x < s.Width; x++)
-					{
-						var iData = 4 * (y * s.Width + x);
-						var iRaw = 4 * ((s.Height - y - 1) * s.Width + x);
-						data[iData] = raw[iRaw + 2];
-						data[iData + 1] = raw[iRaw + 1];
-						data[iData + 2] = raw[iRaw + 0];
-						data[iData + 3] = byte.MaxValue;
-					}
-				}
+			//ThreadPool.QueueUserWorkItem(_ =>
+			//{
+			//	// Convert GL pixel data into format expected by png
+			//	// - Flip vertically
+			//	// - BGRA to RGBA
+			//	// - Force A to 255 (no transparent pixels!)
+			//	var data = new byte[raw.Length];
+			//	for (var y = 0; y < s.Height; y++)
+			//	{
+			//		for (var x = 0; x < s.Width; x++)
+			//		{
+			//			var iData = 4 * (y * s.Width + x);
+			//			var iRaw = 4 * ((s.Height - y - 1) * s.Width + x);
+			//			data[iData] = raw[iRaw + 2];
+			//			data[iData + 1] = raw[iRaw + 1];
+			//			data[iData + 2] = raw[iRaw + 0];
+			//			data[iData + 3] = byte.MaxValue;
+			//		}
+			//	}
 
-				var screenshot = new Png(data, window.SurfaceSize.Width, window.SurfaceSize.Height);
-				screenshot.Save(path);
-			});
+			//	var screenshot = new Png(data, window.SurfaceSize.Width, window.SurfaceSize.Height);
+			//	screenshot.Save(path);
+			//});
 		}
 
 		public void Present()

@@ -11,6 +11,7 @@
 
 using System;
 using Eluant;
+using OpenRA.Primitives;
 
 namespace OpenRA.Scripting
 {

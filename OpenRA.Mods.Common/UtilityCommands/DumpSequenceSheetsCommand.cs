@@ -12,6 +12,7 @@
 using System;
 using OpenRA.FileSystem;
 using OpenRA.Graphics;
+using OpenRA.Primitives;
 
 namespace OpenRA.Mods.Common.UtilityCommands
 {

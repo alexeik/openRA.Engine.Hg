@@ -10,6 +10,7 @@
 #endregion
 
 using System.Linq;
+using OpenRA.Primitives;
 using OpenRA.Server;
 using S = OpenRA.Server.Server;
 

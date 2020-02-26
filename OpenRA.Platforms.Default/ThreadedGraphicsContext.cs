@@ -51,7 +51,7 @@ namespace OpenRA.Platforms.Default
 		Action<object> doSetBlendMode;
 		Action<object> doSaveScreenshot;
 
-		public ThreadedGraphicsContext(Sdl2GraphicsContext context, int batchSize)
+		public ThreadedGraphicsContext(GraphicsContext context, int batchSize)
 		{
 			this.batchSize = batchSize;
 			renderThread = new Thread(RenderThread)
@@ -71,7 +71,7 @@ namespace OpenRA.Platforms.Default
 
 		void RenderThread(object contextObject)
 		{
-			using (var context = (Sdl2GraphicsContext)contextObject)
+			using (var context = (GraphicsContext)contextObject)
 			{
 				// This lock allows the constructor to block until initialization completes.
 				lock (syncObject)

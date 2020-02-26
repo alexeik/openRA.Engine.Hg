@@ -13,6 +13,7 @@ using System.Linq;
 using Eluant;
 using OpenRA.Mods.Cnc.Activities;
 using OpenRA.Mods.Cnc.Traits;
+using OpenRA.Primitives;
 using OpenRA.Scripting;
 using OpenRA.Traits;
 

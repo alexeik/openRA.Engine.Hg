@@ -11,6 +11,7 @@
 
 using System.Collections.Generic;
 using OpenRA.Orders;
+using OpenRA.Primitives;
 
 namespace OpenRA.Mods.Common.Orders
 {

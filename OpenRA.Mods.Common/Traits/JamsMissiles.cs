@@ -9,6 +9,7 @@
  */
 #endregion
 
+using OpenRA.Primitives;
 using OpenRA.Traits;
 
 namespace OpenRA.Mods.Common.Traits
@@ -30,7 +31,8 @@ namespace OpenRA.Mods.Common.Traits
 
 	public class JamsMissiles : ConditionalTrait<JamsMissilesInfo>
 	{
-		public WDist Range { get { return IsTraitDisabled ? WDist.Zero : Info.Range; } }
+		public WDist GetRange()
+		{ return IsTraitDisabled ? WDist.Zero : Info.Range; }
 		public Stance DeflectionStances { get { return Info.DeflectionStances; } }
 		public int Chance { get { return Info.Chance; } }
 

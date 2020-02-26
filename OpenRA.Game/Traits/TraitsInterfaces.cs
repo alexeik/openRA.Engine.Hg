@@ -229,7 +229,7 @@ namespace OpenRA.Traits
 		string TooltipText { get; }
 	}
 
-	public interface IDisabledTrait { bool IsTraitDisabled { get; } }
+	
 
 	public interface IDefaultVisibilityInfo : ITraitInfoInterface { }
 	public interface IDefaultVisibility { bool IsVisible(Actor self, Player byPlayer); }

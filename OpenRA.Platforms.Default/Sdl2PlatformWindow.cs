@@ -16,12 +16,12 @@ using SDL2;
 
 namespace OpenRA.Platforms.Default
 {
-	sealed class Sdl2PlatformWindow : ThreadAffine, IPlatformWindow
+	public sealed class PlatformWindow : ThreadAffine
 	{
-		readonly IGraphicsContext context;
+		readonly GraphicsContext context;
 		readonly Sdl2Input input;
 
-		public IGraphicsContext Context { get { return context; } }
+		public GraphicsContext Context { get { return context; } }
 
 		readonly IntPtr window;
 		bool disposed;
@@ -72,8 +72,11 @@ namespace OpenRA.Platforms.Default
 		[DllImport("user32.dll")]
 		static extern bool SetProcessDPIAware();
 
-		public Sdl2PlatformWindow(Size requestWindowSize, WindowMode windowMode, int batchSize)
+		public PlatformWindow(Size requestWindowSize, WindowMode windowMode, int batchSize,bool DisableWindowsDPIScaling, bool lockMouseWindow, bool disableWindowsRenderThread)
 		{
+#if DEBUG
+			windowMode = WindowMode.Windowed;
+#endif
 			Console.WriteLine("Using SDL 2 with OpenGL renderer");
 
 			// Lock the Window/Surface properties until initialization is complete
@@ -82,7 +85,7 @@ namespace OpenRA.Platforms.Default
 				windowSize = requestWindowSize;
 
 				// Disable legacy scaling on Windows
-				if (Platform.CurrentPlatform == PlatformType.Windows && !Game.Settings.Graphics.DisableWindowsDPIScaling)
+				if (Platform.CurrentPlatform == PlatformType.Windows && !DisableWindowsDPIScaling)
 					SetProcessDPIAware();
 
 				SDL.SDL_Init(SDL.SDL_INIT_NOPARACHUTE | SDL.SDL_INIT_VIDEO);
@@ -130,13 +133,13 @@ namespace OpenRA.Platforms.Default
 						{
 							switch (e.window.windowEvent)
 							{
-								case SDL.SDL_WindowEventID.SDL_WINDOWEVENT_FOCUS_LOST:
-									Game.HasInputFocus = false;
-									break;
+								//case SDL.SDL_WindowEventID.SDL_WINDOWEVENT_FOCUS_LOST:
+								//	Game.HasInputFocus = false;
+								//	break;
 
-								case SDL.SDL_WindowEventID.SDL_WINDOWEVENT_FOCUS_GAINED:
-									Game.HasInputFocus = true;
-									break;
+								//case SDL.SDL_WindowEventID.SDL_WINDOWEVENT_FOCUS_GAINED:
+								//	Game.HasInputFocus = true;
+								//	break;
 							}
 						}
 					}
@@ -159,7 +162,7 @@ namespace OpenRA.Platforms.Default
 				else if (Platform.CurrentPlatform == PlatformType.Windows)
 				{
 					float ddpi, hdpi, vdpi;
-					if (!Game.Settings.Graphics.DisableWindowsDPIScaling && SDL.SDL_GetDisplayDPI(0, out ddpi, out hdpi, out vdpi) == 0)
+					if (!DisableWindowsDPIScaling && SDL.SDL_GetDisplayDPI(0, out ddpi, out hdpi, out vdpi) == 0)
 					{
 						windowScale = ddpi / 96;
 						windowSize = new Size((int)(surfaceSize.Width / windowScale), (int)(surfaceSize.Height / windowScale));
@@ -178,7 +181,7 @@ namespace OpenRA.Platforms.Default
 
 				Console.WriteLine("Using window scale {0:F2}", windowScale);
 
-				if (Game.Settings.Game.LockMouseWindow)
+				if (lockMouseWindow)
 					GrabWindowMouseFocus();
 				else
 					ReleaseWindowMouseFocus();
@@ -217,15 +220,15 @@ namespace OpenRA.Platforms.Default
 			// The calling thread will then have more time to process other tasks, since rendering happens in parallel.
 			// If the calling thread is the main game thread, this means it can run more logic and render ticks.
 			// This is disabled on Windows because it breaks the ability to minimize/restore the window from the taskbar for reasons that we dont understand.
-			var threadedRenderer = Platform.CurrentPlatform != PlatformType.Windows || !Game.Settings.Graphics.DisableWindowsRenderThread;
+			var threadedRenderer = Platform.CurrentPlatform != PlatformType.Windows || !disableWindowsRenderThread;
 			if (!threadedRenderer)
 			{
-				var ctx = new Sdl2GraphicsContext(this);
+				var ctx = new GraphicsContext(this);
 				ctx.InitializeOpenGL();
 				context = ctx;
 			}
 			else
-				context = new ThreadedGraphicsContext(new Sdl2GraphicsContext(this), batchSize);
+				//context = new ThreadedGraphicsContext(new GraphicsContext(this), batchSize);
 
 			SDL.SDL_SetModState(SDL.SDL_Keymod.KMOD_NONE);
 			input = new Sdl2Input();

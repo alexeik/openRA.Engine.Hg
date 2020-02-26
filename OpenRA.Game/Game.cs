@@ -21,6 +21,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using OpenRA.Graphics;
 using OpenRA.Network;
+using OpenRA.Platforms.Default;
 using OpenRA.Primitives;
 using OpenRA.Support;
 using OpenRA.Widgets;
@@ -308,11 +309,11 @@ namespace OpenRA
 					var rendererPath = Platform.ResolvePath(Path.Combine(".", "OpenRA.Platforms." + p + ".dll"));
 					var assembly = Assembly.LoadFile(rendererPath);
 
-					var platformType = assembly.GetTypes().SingleOrDefault(t => typeof(IPlatform).IsAssignableFrom(t));
+					var platformType = assembly.GetTypes().SingleOrDefault(t => typeof(DefaultPlatform).IsAssignableFrom(t));
 					if (platformType == null)
 						throw new InvalidOperationException("Platform dll must include exactly one IPlatform implementation.");
 
-					var platform = (IPlatform)platformType.GetConstructor(Type.EmptyTypes).Invoke(null);
+					var platform = (DefaultPlatform)platformType.GetConstructor(Type.EmptyTypes).Invoke(null);
 					Renderer = new Renderer(platform, Settings.Graphics);
 					Sound = new Sound(platform, Settings.Sound);
 

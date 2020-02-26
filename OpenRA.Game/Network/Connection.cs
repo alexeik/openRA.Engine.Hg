@@ -14,6 +14,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net.Sockets;
 using System.Threading;
+using OpenRA.Primitives;
 using OpenRA.Server;
 
 namespace OpenRA.Network

@@ -9,6 +9,7 @@
  */
 #endregion
 
+using OpenRA.Primitives;
 using System.Collections.Generic;
 
 namespace OpenRA.Support

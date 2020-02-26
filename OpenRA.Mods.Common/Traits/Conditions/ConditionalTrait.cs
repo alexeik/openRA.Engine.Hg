@@ -10,6 +10,7 @@
 #endregion
 
 using System.Collections.Generic;
+using OpenRA.Primitives;
 using OpenRA.Support;
 using OpenRA.Traits;
 

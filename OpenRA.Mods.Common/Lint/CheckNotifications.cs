@@ -12,6 +12,7 @@
 using System;
 using System.Linq;
 using OpenRA.GameRules;
+using OpenRA.Primitives;
 using OpenRA.Traits;
 
 namespace OpenRA.Mods.Common.Lint
@@ -28,7 +29,7 @@ namespace OpenRA.Mods.Common.Lint
 					foreach (var field in fields.Where(x => x.HasAttribute<NotificationReferenceAttribute>()))
 					{
 						string type = null;
-						var notificationReference = field.GetCustomAttributes<NotificationReferenceAttribute>(true).First();
+						var notificationReference = field.GetCustomAttributesExts<NotificationReferenceAttribute>(true).First();
 						if (!string.IsNullOrEmpty(notificationReference.NotificationTypeFieldName))
 						{
 							var fieldInfo = fields.First(f => f.Name == notificationReference.NotificationTypeFieldName);

@@ -10,6 +10,7 @@
 #endregion
 
 using System.IO;
+using OpenRA.Primitives;
 
 namespace OpenRA.Mods.Cnc.FileFormats
 {

@@ -9,6 +9,8 @@
  */
 #endregion
 
+using OpenRA.Primitives;
+
 namespace OpenRA.Mods.Common.Traits
 {
 	[Desc("The actor stays invisible under fog of war.")]

@@ -37,13 +37,13 @@
   <ItemGroup>
     <AdditionalFiles Include="../stylecop.json" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\OpenRA.BaseTypes\OpenRA.BaseTypes.csproj" />
+  </ItemGroup>
   <Target Name="DisableAnalyzers" BeforeTargets="CoreCompile" Condition="'$(Configuration)'=='Release'">
     <!-- Disable code style analysis on Release builds to improve compile-time performance -->
     <ItemGroup Condition="'$(Configuration)'=='Release'">
       <Analyzer Remove="@(Analyzer)" />
     </ItemGroup>
   </Target>
-  <ItemGroup>
-    <ProjectReference Include="..\OpenRA.Game\OpenRA.Game.csproj" />
-  </ItemGroup>
 </Project>

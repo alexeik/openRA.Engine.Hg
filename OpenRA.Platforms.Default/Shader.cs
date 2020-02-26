@@ -9,6 +9,7 @@
  */
 #endregion
 
+using OpenRA.Primitives;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -16,7 +17,7 @@ using System.Text;
 
 namespace OpenRA.Platforms.Default
 {
-	class Shader : ThreadAffine, IShader
+	public class Shader : ThreadAffine, IShader
 	{
 		public const int VertexPosAttributeIndex = 0;
 		public const int TexCoordAttributeIndex = 1;

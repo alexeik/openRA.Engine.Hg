@@ -15,6 +15,7 @@
  */
 #endregion
 
+using OpenRA.Primitives;
 using System;
 using System.IO;
 

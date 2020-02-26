@@ -13,6 +13,7 @@ using System;
 using System.Linq;
 using Eluant;
 using OpenRA.Effects;
+using OpenRA.Primitives;
 using OpenRA.Scripting;
 
 namespace OpenRA.Mods.Common.Scripting

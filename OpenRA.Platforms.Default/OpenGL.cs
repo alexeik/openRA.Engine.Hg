@@ -14,6 +14,7 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using System.Text;
+using OpenRA.Primitives;
 using SDL2;
 
 namespace OpenRA.Platforms.Default

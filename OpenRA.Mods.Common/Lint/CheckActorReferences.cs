@@ -13,6 +13,7 @@ using System;
 using System.Linq;
 using System.Reflection;
 using OpenRA.GameRules;
+using OpenRA.Primitives;
 using OpenRA.Traits;
 
 namespace OpenRA.Mods.Common.Lint
@@ -37,15 +38,15 @@ namespace OpenRA.Mods.Common.Lint
 			{
 				if (field.HasAttribute<ActorReferenceAttribute>())
 					CheckActorReference(actorInfo, traitInfo, field, rules.Actors,
-						field.GetCustomAttributes<ActorReferenceAttribute>(true)[0]);
+						field.GetCustomAttributesExts<ActorReferenceAttribute>(true)[0]);
 
 				if (field.HasAttribute<WeaponReferenceAttribute>())
 					CheckWeaponReference(actorInfo, traitInfo, field, rules.Weapons,
-						field.GetCustomAttributes<WeaponReferenceAttribute>(true)[0]);
+						field.GetCustomAttributesExts<WeaponReferenceAttribute>(true)[0]);
 
 				if (field.HasAttribute<VoiceSetReferenceAttribute>())
 					CheckVoiceReference(actorInfo, traitInfo, field, rules.Voices,
-						field.GetCustomAttributes<VoiceSetReferenceAttribute>(true)[0]);
+						field.GetCustomAttributesExts<VoiceSetReferenceAttribute>(true)[0]);
 			}
 		}
 

@@ -9,6 +9,7 @@
  */
 #endregion
 
+using OpenRA.Primitives;
 using System;
 using System.Linq;
 
@@ -56,7 +57,7 @@ namespace OpenRA.Mods.Common.UtilityCommands
 					else
 						Console.WriteLine();
 
-					var lines = field.GetCustomAttributes<DescAttribute>(false).SelectMany(d => d.Lines);
+					var lines = field.GetCustomAttributesExts<DescAttribute>(false).SelectMany(d => d.Lines);
 					foreach (var line in lines)
 						Console.WriteLine(line);
 				}

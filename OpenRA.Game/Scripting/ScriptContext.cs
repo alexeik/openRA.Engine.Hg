@@ -24,7 +24,6 @@ using OpenRA.Traits;
 namespace OpenRA.Scripting
 {
 	// Tag interfaces specifying the type of bindings to create
-	public interface IScriptBindable { }
 
 	// For objects that need the context to create their bindings
 	public interface IScriptNotifyBind
@@ -90,7 +89,7 @@ namespace OpenRA.Scripting
 		{
 			// GetType resolves the actual (subclass) type
 			var type = GetType();
-			var names = type.GetCustomAttributes<ScriptGlobalAttribute>(true);
+			var names = type.GetCustomAttributesExts<ScriptGlobalAttribute>(true);
 			if (names.Length != 1)
 				throw new InvalidOperationException("[ScriptGlobal] attribute not found for global table '{0}'".F(type));
 

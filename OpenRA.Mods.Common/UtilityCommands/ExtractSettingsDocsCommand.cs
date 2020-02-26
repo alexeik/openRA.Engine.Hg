@@ -9,6 +9,7 @@
  */
 #endregion
 
+using OpenRA.Primitives;
 using System;
 using System.Linq;
 
@@ -53,7 +54,7 @@ namespace OpenRA.Mods.Common.UtilityCommands
 			foreach (var section in sections.OrderBy(s => s.Key))
 			{
 				var fields = section.Value.GetType().GetFields();
-				if (fields.Length > 0 && fields.Where(field => field.GetCustomAttributes<DescAttribute>(false).Length > 0).Count() > 0)
+				if (fields.Length > 0 && fields.Where(field => field.GetCustomAttributesExts<DescAttribute>(false).Length > 0).Count() > 0)
 					Console.WriteLine("## {0}", section.Key);
 				else
 					Console.WriteLine();
@@ -64,7 +65,7 @@ namespace OpenRA.Mods.Common.UtilityCommands
 						continue;
 
 					Console.WriteLine("### {0}", field.Name);
-					var lines = field.GetCustomAttributes<DescAttribute>(false).SelectMany(d => d.Lines);
+					var lines = field.GetCustomAttributesExts<DescAttribute>(false).SelectMany(d => d.Lines);
 					foreach (var line in lines)
 					{
 						Console.WriteLine("{0}", line);

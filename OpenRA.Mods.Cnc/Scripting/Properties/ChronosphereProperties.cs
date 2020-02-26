@@ -11,6 +11,7 @@
 
 using Eluant;
 using OpenRA.Mods.Cnc.Traits;
+using OpenRA.Primitives;
 using OpenRA.Scripting;
 using OpenRA.Traits;
 

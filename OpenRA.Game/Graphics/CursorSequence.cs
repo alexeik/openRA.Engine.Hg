@@ -9,6 +9,7 @@
  */
 #endregion
 
+using OpenRA.Primitives;
 using System.Linq;
 
 namespace OpenRA.Graphics

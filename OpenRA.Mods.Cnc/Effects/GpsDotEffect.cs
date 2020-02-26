@@ -106,7 +106,7 @@ namespace OpenRA.Mods.Cnc.Effects
 				actor.EffectiveOwner.Owner : actor.Owner;
 
 			var palette = wr.Palette(info.IndicatorPalettePrefix + effectiveOwner.InternalName);
-			return anim.Render(actor.CenterPosition, palette);
+			return anim.Render(actor, actor.CenterPosition, palette);
 		}
 	}
 }

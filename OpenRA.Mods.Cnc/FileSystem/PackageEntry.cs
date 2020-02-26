@@ -14,6 +14,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using OpenRA.Mods.Cnc.FileFormats;
+using OpenRA.Primitives;
 
 namespace OpenRA.Mods.Cnc.FileSystem
 {

@@ -14,6 +14,7 @@ using System.Collections.Generic;
 using System.Linq;
 using AI.Fuzzy.Library;
 using OpenRA.Mods.Common.Warheads;
+using OpenRA.Primitives;
 using OpenRA.Traits;
 
 namespace OpenRA.Mods.Common.Traits.BotModules.Squads

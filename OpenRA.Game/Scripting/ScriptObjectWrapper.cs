@@ -12,6 +12,7 @@
 using System.Collections.Generic;
 using Eluant;
 using Eluant.ObjectBinding;
+using OpenRA.Primitives;
 
 namespace OpenRA.Scripting
 {

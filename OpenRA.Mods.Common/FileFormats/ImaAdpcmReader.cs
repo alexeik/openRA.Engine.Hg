@@ -9,6 +9,7 @@
  */
 #endregion
 
+using OpenRA.Primitives;
 using System.IO;
 
 namespace OpenRA.Mods.Common.FileFormats

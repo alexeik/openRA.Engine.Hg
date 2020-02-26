@@ -11,6 +11,7 @@
 
 using System;
 using System.Linq;
+using OpenRA.Primitives;
 using OpenRA.Scripting;
 using OpenRA.Traits;
 
@@ -62,13 +63,13 @@ namespace OpenRA.Mods.Common.UtilityCommands
 
 			foreach (var t in tables)
 			{
-				var name = t.GetCustomAttributes<ScriptGlobalAttribute>(true).First().Name;
+				var name = t.GetCustomAttributesExts<ScriptGlobalAttribute>(true).First().Name;
 				var members = ScriptMemberWrapper.WrappableMembers(t);
 
 				Console.WriteLine("<table align=\"center\" width=\"1024\"><tr><th colspan=\"2\" width=\"1024\">{0}</th></tr>", name);
 				foreach (var m in members.OrderBy(m => m.Name))
 				{
-					var desc = m.HasAttribute<DescAttribute>() ? m.GetCustomAttributes<DescAttribute>(true).First().Lines.JoinWith("\n") : "";
+					var desc = m.HasAttribute<DescAttribute>() ? m.GetCustomAttributesExts<DescAttribute>(true).First().Lines.JoinWith("\n") : "";
 					Console.WriteLine("<tr><td align=\"right\" width=\"50%\"><strong>{0}</strong></td><td>{1}</td></tr>".F(m.LuaDocString(), desc));
 				}
 
@@ -79,7 +80,7 @@ namespace OpenRA.Mods.Common.UtilityCommands
 
 			var actorCategories = utility.ModData.ObjectCreator.GetTypesImplementing<ScriptActorProperties>().SelectMany(cg =>
 			{
-				var catAttr = cg.GetCustomAttributes<ScriptPropertyGroupAttribute>(false).FirstOrDefault();
+				var catAttr = cg.GetCustomAttributesExts<ScriptPropertyGroupAttribute>(false).FirstOrDefault();
 				var category = catAttr != null ? catAttr.Category : "Unsorted";
 
 				var required = RequiredTraitNames(cg);
@@ -106,7 +107,7 @@ namespace OpenRA.Mods.Common.UtilityCommands
 					Console.WriteLine("</td><td>");
 
 					if (hasDesc)
-						Console.WriteLine(mi.GetCustomAttributes<DescAttribute>(false).First().Lines.JoinWith("\n"));
+						Console.WriteLine(mi.GetCustomAttributesExts<DescAttribute>(false).First().Lines.JoinWith("\n"));
 
 					if (hasDesc && hasRequires)
 						Console.WriteLine("<br />");
@@ -124,7 +125,7 @@ namespace OpenRA.Mods.Common.UtilityCommands
 
 			var playerCategories = utility.ModData.ObjectCreator.GetTypesImplementing<ScriptPlayerProperties>().SelectMany(cg =>
 			{
-				var catAttr = cg.GetCustomAttributes<ScriptPropertyGroupAttribute>(false).FirstOrDefault();
+				var catAttr = cg.GetCustomAttributesExts<ScriptPropertyGroupAttribute>(false).FirstOrDefault();
 				var category = catAttr != null ? catAttr.Category : "Unsorted";
 
 				var required = RequiredTraitNames(cg);
@@ -151,7 +152,7 @@ namespace OpenRA.Mods.Common.UtilityCommands
 					Console.WriteLine("</td><td>");
 
 					if (hasDesc)
-						Console.WriteLine(mi.GetCustomAttributes<DescAttribute>(false).First().Lines.JoinWith("\n"));
+						Console.WriteLine(mi.GetCustomAttributesExts<DescAttribute>(false).First().Lines.JoinWith("\n"));
 
 					if (hasDesc && hasRequires)
 						Console.WriteLine("<br />");

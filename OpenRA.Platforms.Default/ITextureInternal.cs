@@ -11,7 +11,7 @@
 
 namespace OpenRA.Platforms.Default
 {
-	interface ITextureInternal : ITexture
+	public interface ITextureInternal : ITexture
 	{
 		uint ID { get; }
 		void SetEmpty(int width, int height);

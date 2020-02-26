@@ -77,7 +77,7 @@ namespace OpenRA.Mods.Cnc.Activities
 			// Run this even if the target became invalid to avoid visual glitches
 			if (ChildActivity != null)
 			{
-				ChildActivity = ActivityUtils.RunActivity(self, ChildActivity);
+				ChildActivity = ActivityUtils.RunActivityTick(self, ChildActivity);
 				return this;
 			}
 

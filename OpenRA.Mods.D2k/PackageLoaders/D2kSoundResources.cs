@@ -13,6 +13,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using OpenRA.FileSystem;
+using OpenRA.Primitives;
 
 namespace OpenRA.Mods.D2k.PackageLoaders
 {

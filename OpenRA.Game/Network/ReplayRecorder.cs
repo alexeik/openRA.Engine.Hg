@@ -13,6 +13,7 @@ using System;
 using System.IO;
 using System.Linq;
 using OpenRA.FileFormats;
+using OpenRA.Primitives;
 
 namespace OpenRA.Network
 {

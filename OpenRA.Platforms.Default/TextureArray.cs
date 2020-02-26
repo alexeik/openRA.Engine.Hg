@@ -15,7 +15,7 @@ using OpenRA.Primitives;
 
 namespace OpenRA.Platforms.Default
 {
-	class TextureArray : Texture, ITextureInternal
+	public class TextureArray : Texture, ITextureInternal
 	{
 		public override void PrepareTexture()
 		{

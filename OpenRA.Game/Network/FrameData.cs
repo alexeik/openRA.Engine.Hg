@@ -9,6 +9,7 @@
  */
 #endregion
 
+using OpenRA.Primitives;
 using System.Collections.Generic;
 using System.Linq;
 
