@@ -126,7 +126,7 @@ namespace OpenRA.Activities
 			if (ChildActivity != null)
 				ChildActivity.Queue(self, activity);
 			else
-				ChildActivity = pretick ? ActivityUtils.RunActivity(self, activity) : activity;
+				ChildActivity = pretick ? ActivityUtils.RunActivityTick(self, activity) : activity;
 		}
 
 		/// <summary>

@@ -132,7 +132,7 @@ namespace OpenRA.Mods.Common.Activities
 			}
 
 			// Ticks the inner move activity to actually move the actor.
-			ChildActivity = ActivityUtils.RunActivity(self, ChildActivity);
+			ChildActivity = ActivityUtils.RunActivityTick(self, ChildActivity);
 
 			return this;
 		}

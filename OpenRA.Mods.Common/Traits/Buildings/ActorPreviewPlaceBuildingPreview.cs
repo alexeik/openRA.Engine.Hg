@@ -56,11 +56,13 @@ namespace OpenRA.Mods.Common.Traits
 		readonly ActorPreviewPlaceBuildingPreviewInfo info;
 		readonly PaletteReference palette;
 		readonly IActorPreview[] preview;
+		public readonly Actor Actor;
 
 		public ActorPreviewPlaceBuildingPreviewPreview(WorldRenderer wr, Actor actor, ActorInfo ai, ActorPreviewPlaceBuildingPreviewInfo info, TypeDictionary init)
 			: base(wr, actor, ai, info, init)
 		{
 			this.info = info;
+			this.Actor = actor;
 			var previewInit = new ActorPreviewInitializer(actorInfo, wr, init);
 			preview = actorInfo.TraitInfos<IRenderActorPreviewInfo>()
 				.SelectMany(rpi => rpi.RenderPreview(previewInit))

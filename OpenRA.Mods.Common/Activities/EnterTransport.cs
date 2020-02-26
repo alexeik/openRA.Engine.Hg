@@ -99,7 +99,7 @@ namespace OpenRA.Mods.Common.Activities
 		{
 			if (ChildActivity != null)
 			{
-				ChildActivity = ActivityUtils.RunActivity(self, ChildActivity);
+				ChildActivity = ActivityUtils.RunActivityTick(self, ChildActivity);
 				if (ChildActivity != null)
 					return this;
 			}
@@ -126,7 +126,7 @@ namespace OpenRA.Mods.Common.Activities
 
 			if (transport != null)
 			{
-				QueueChild(self, ActivityUtils.RunActivity(self, new EnterTransport(self, Target.FromActor(transport))), true);
+				QueueChild(self, ActivityUtils.RunActivityTick(self, new EnterTransport(self, Target.FromActor(transport))), true);
 				return this;
 			}
 

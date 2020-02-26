@@ -233,7 +233,7 @@ namespace OpenRA.Mods.Common.Traits
 			{
 				if (ChildActivity != null)
 				{
-					ChildActivity = ActivityUtils.RunActivity(self, ChildActivity);
+					ChildActivity = ActivityUtils.RunActivityTick(self, ChildActivity);
 					if (ChildActivity != null)
 						return this;
 				}

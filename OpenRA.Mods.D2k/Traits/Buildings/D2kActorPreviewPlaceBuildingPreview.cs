@@ -24,9 +24,9 @@ namespace OpenRA.Mods.Common.Traits
 		[Desc("Terrain types that should show the 'unsafe' footprint tile.")]
 		public readonly HashSet<string> UnsafeTerrainTypes = new HashSet<string> { "Rock" };
 
-		protected override IPlaceBuildingPreview CreatePreview(WorldRenderer wr, ActorInfo ai, TypeDictionary init)
+		protected override IPlaceBuildingPreview CreatePreview(WorldRenderer wr, Actor actor, ActorInfo ai, TypeDictionary init)
 		{
-			return new D2kActorPreviewPlaceBuildingPreviewPreview(wr, ai, this, init);
+			return new D2kActorPreviewPlaceBuildingPreviewPreview(wr, actor, ai, this, init);
 		}
 
 		public override object Create(ActorInitializer init)
@@ -45,8 +45,8 @@ namespace OpenRA.Mods.Common.Traits
 		readonly Sprite buildBlocked;
 		readonly CachedTransform<CPos, List<CPos>> unpathableCells;
 
-		public D2kActorPreviewPlaceBuildingPreviewPreview(WorldRenderer wr, ActorInfo ai, D2kActorPreviewPlaceBuildingPreviewInfo info, TypeDictionary init)
-			: base(wr, ai, info, init)
+		public D2kActorPreviewPlaceBuildingPreviewPreview(WorldRenderer wr, Actor actor, ActorInfo ai, D2kActorPreviewPlaceBuildingPreviewInfo info, TypeDictionary init)
+			: base(wr, actor, ai, info, init)
 		{
 			this.info = info;
 
@@ -81,7 +81,7 @@ namespace OpenRA.Mods.Common.Traits
 				var pal = HasFlag(c.Value, PlaceBuildingCellType.LineBuild) ? linePalette : cellPalette;
 				var pos = wr.World.Map.CenterOfCell(c.Key);
 				var offset = new WVec(0, 0, topLeftPos.Z - pos.Z);
-				yield return new SpriteRenderable(tile, pos, offset, -511, pal, 1f, true);
+				yield return new SpriteRenderable(Actor, tile, pos, offset, -511, pal, 1f, true);
 			}
 		}
 	}

@@ -9,7 +9,6 @@
  */
 #endregion
 
-using System.Diagnostics;
 using System.Linq;
 using OpenRA.Activities;
 using OpenRA.Support;
@@ -18,7 +17,7 @@ namespace OpenRA.Traits
 {
 	public static class ActivityUtils
 	{
-		public static Activity RunActivity(Actor self, Activity act)
+		public static Activity RunActivityTick(Actor self, Activity act)
 		{
 			// PERF: If there are no activities we can bail straight away and save ourselves a call to
 			// Stopwatch.GetTimestamp.
@@ -30,16 +29,16 @@ namespace OpenRA.Traits
 			// once per iteration in the normal case.
 			// See also: DoTimed
 			var longTickThresholdInStopwatchTicks = PerfTimer.LongTickThresholdInStopwatchTicks;
-			var start = Stopwatch.GetTimestamp();
+			var start = System.Diagnostics.Stopwatch.GetTimestamp();
 			while (act != null)
 			{
 				var prev = act;
 				act = act.TickOuter(self);
-				var current = Stopwatch.GetTimestamp();
+				var current = System.Diagnostics.Stopwatch.GetTimestamp();
 				if (current - start > longTickThresholdInStopwatchTicks)
 				{
 					PerfTimer.LogLongTick(start, current, "Activity", prev);
-					start = Stopwatch.GetTimestamp();
+					start = System.Diagnostics.Stopwatch.GetTimestamp();
 				}
 				else
 					start = current;

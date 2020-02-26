@@ -141,7 +141,7 @@ namespace OpenRA
 		public void Tick()
 		{
 			var wasIdle = IsIdle;
-			CurrentActivity = ActivityUtils.RunActivity(this, CurrentActivity);
+			CurrentActivity = ActivityUtils.RunActivityTick(this, CurrentActivity);
 
 			if (!wasIdle && IsIdle)
 			{
@@ -151,7 +151,7 @@ namespace OpenRA
 				// If IsIdle is true, it means the last CurrentActivity.Tick returned null.
 				// If a next activity has been queued via OnBecomingIdle, we need to start running it now,
 				// to avoid an 'empty' null tick where the actor will (visibly, if moving) do nothing.
-				CurrentActivity = ActivityUtils.RunActivity(this, CurrentActivity);
+				CurrentActivity = ActivityUtils.RunActivityTick(this, CurrentActivity);
 			}
 			else if (wasIdle)
 				foreach (var tickIdle in tickIdles)
@@ -180,8 +180,8 @@ namespace OpenRA
 			// `yield`) will avoid the need to allocate a large collection.
 			// For small amounts of renderables, allocating a small collection can often be faster and require less
 			// memory than creating the objects needed to represent a sequence.
-			foreach (IRender render in renders)
-				foreach (IRenderable renderable in render.Render(this, wr))
+			foreach (IRender renderSprites in renders)
+				foreach (IRenderable renderable in renderSprites.Render(this, wr))
 					yield return renderable;
 		}
 

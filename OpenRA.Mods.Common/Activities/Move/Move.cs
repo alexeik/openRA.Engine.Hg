@@ -11,7 +11,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using OpenRA.Activities;
 using OpenRA.Mods.Common.Pathfinder;
@@ -149,7 +148,7 @@ namespace OpenRA.Mods.Common.Activities
 			// Let the child be run so that units will not end up in an odd place.
 			if (ChildActivity != null)
 			{
-				ChildActivity = ActivityUtils.RunActivity(self, ChildActivity);
+				ChildActivity = ActivityUtils.RunActivityTick(self, ChildActivity);
 
 				// Child activities such as Turn might have finished.
 				// If we "return this" in this situation, the unit loses one tick and pauses movement briefly.

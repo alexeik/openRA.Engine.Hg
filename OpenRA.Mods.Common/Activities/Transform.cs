@@ -49,7 +49,7 @@ namespace OpenRA.Mods.Common.Activities
 
 			if (ChildActivity != null)
 			{
-				ActivityUtils.RunActivity(self, ChildActivity);
+				ActivityUtils.RunActivityTick(self, ChildActivity);
 				return this;
 			}
 

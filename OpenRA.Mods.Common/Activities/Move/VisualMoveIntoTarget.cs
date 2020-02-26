@@ -39,7 +39,7 @@ namespace OpenRA.Mods.Common.Activities
 		{
 			if (ChildActivity != null)
 			{
-				ChildActivity = ActivityUtils.RunActivity(self, ChildActivity);
+				ChildActivity = ActivityUtils.RunActivityTick(self, ChildActivity);
 				if (ChildActivity != null)
 					return this;
 			}
@@ -62,7 +62,7 @@ namespace OpenRA.Mods.Common.Activities
 			var facing = delta.HorizontalLengthSquared != 0 ? delta.Yaw.Facing : mobile.Facing;
 			if (facing != mobile.Facing)
 			{
-				var turn = ActivityUtils.RunActivity(self, new Turn(self, facing));
+				var turn = ActivityUtils.RunActivityTick(self, new Turn(self, facing));
 				if (turn != null)
 					QueueChild(self, turn);
 

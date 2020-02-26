@@ -38,7 +38,7 @@ namespace OpenRA.Mods.Common.Activities
 			// Do turn first, if needed.
 			if (ChildActivity != null)
 			{
-				ChildActivity = ActivityUtils.RunActivity(self, ChildActivity);
+				ChildActivity = ActivityUtils.RunActivityTick(self, ChildActivity);
 				return this;
 			}
 

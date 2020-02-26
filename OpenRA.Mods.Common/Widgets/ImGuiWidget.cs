@@ -103,7 +103,6 @@ namespace OpenRA.Mods.Common.Widgets
 		public bool Depressed;
 		public virtual void Setup()
 		{
-
 		}
 		public override bool HandleMouseInput(MouseInput mi)
 		{
@@ -197,16 +196,16 @@ namespace OpenRA.Mods.Common.Widgets
 							PaletteReference pr = sre.Palette;
 
 							// берем XY в мире, и превращаем в координаты . Потом отнимаем смещение окна Imgui
-							//float3 worldtoIGposl = sre.ScreenPosition(Game.worldRenderer);
+							// float3 worldtoIGposl = sre.ScreenPosition(Game.worldRenderer);
 
 							// потом в шейдере отнимется смещение от ViewPort
-							//worldtoIGposl = worldtoIGposl - new float3(Game.worldRenderer.Viewport.TopLeft.X, Game.worldRenderer.Viewport.TopLeft.Y, 0);
-							//worldtoIGposl = worldtoIGposl - new float3(worldtoIGposl.X, worldtoIGposl.Y,0);
-							//worldtoIGposl = worldtoIGposl + new float3(this.Bounds.X+100, this.Bounds.Y+100, 0) ;
-							//var xy = wr.ScreenPxPosition(pos) + wr.ScreenPxOffset(offset) - (0.5f * scale * sprite.Size.XY).ToInt2();
-							//Console.WriteLine("x: " + xy.X + " y: " + xy.Y + " | offX:" + sre.sprite.Offset.X + " offY:" + sre.sprite.Offset.Y +" |SpriteRenderable " + this.Actor.Info.Name + " owner:" + this.Actor.Owner);
+							// worldtoIGposl = worldtoIGposl - new float3(Game.worldRenderer.Viewport.TopLeft.X, Game.worldRenderer.Viewport.TopLeft.Y, 0);
+							// worldtoIGposl = worldtoIGposl - new float3(worldtoIGposl.X, worldtoIGposl.Y,0);
+							// worldtoIGposl = worldtoIGposl + new float3(this.Bounds.X+100, this.Bounds.Y+100, 0) ;
+							// var xy = wr.ScreenPxPosition(pos) + wr.ScreenPxOffset(offset) - (0.5f * scale * sprite.Size.XY).ToInt2();
+							// Console.WriteLine("x: " + xy.X + " y: " + xy.Y + " | offX:" + sre.sprite.Offset.X + " offY:" + sre.sprite.Offset.Y +" |SpriteRenderable " + this.Actor.Info.Name + " owner:" + this.Actor.Owner);
 
-							//OpenRA.Graphics.Util.FastCreateQuadImGui(tempve, new float3(this.Bounds.X+ 16 * sre.Offset.X / 1024  + sre.sprite.Offset.X, this.Bounds.Y + 16 * sre.Offset.Y  / 1024  + sre.sprite.Offset.Y, 0) + sre.sprite.FractionalOffset * sre.sprite.Size, sre.sprite, new int2(4, 0), pr.TextureIndex, nv, sre.sprite.Size);
+							// OpenRA.Graphics.Util.FastCreateQuadImGui(tempve, new float3(this.Bounds.X+ 16 * sre.Offset.X / 1024  + sre.sprite.Offset.X, this.Bounds.Y + 16 * sre.Offset.Y  / 1024  + sre.sprite.Offset.Y, 0) + sre.sprite.FractionalOffset * sre.sprite.Size, sre.sprite, new int2(4, 0), pr.TextureIndex, nv, sre.sprite.Size);
 							OpenRA.Graphics.Util.FastCreateQuadImGui(tempve, new float3(16 + vertbuf[y].pos.X + 16 * sre.Offset.X / 1024 + sre.sprite.Offset.X, 16 + vertbuf[y].pos.Y + 16 * sre.Offset.Y / 1024 + sre.sprite.Offset.Y, 0), sre.sprite, new int2(4, 0), pr.TextureIndex, nv, sre.sprite.Size);
 							nv += 6;
 						}

@@ -167,7 +167,7 @@ namespace OpenRA
 				string value = null;
 				string comment = null;
 				var location = new MiniYamlNode.SourceLocation { Filename = filename, Line = lineNo };
-
+				//один пробег по строчке, и создание трех строк ключ,значение, комментарий и создание объекта MiniYamlNode внутри листа в листе из MiniYamlNode
 				if (line.Length > 0)
 				{
 					var currChar = line[keyStart];

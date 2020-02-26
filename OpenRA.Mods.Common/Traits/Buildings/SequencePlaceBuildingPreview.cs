@@ -56,13 +56,13 @@ namespace OpenRA.Mods.Common.Traits
 		readonly SequencePlaceBuildingPreviewInfo info;
 		readonly Animation preview;
 		readonly PaletteReference palette;
-		readonly Actor _actor;
+		readonly Actor actor;
 
 		public SequencePlaceBuildingPreviewPreview(WorldRenderer wr, Actor actor, ActorInfo ai, SequencePlaceBuildingPreviewInfo info, TypeDictionary init)
 			: base(wr, actor, ai, info, init)
 		{
 			this.info = info;
-			_actor = actor;
+			this.actor = actor;
 			var owner = init.Get<OwnerInit>().Value(wr.World);
 			var faction = init.Get<FactionInit>().Value(wr.World);
 
@@ -92,7 +92,7 @@ namespace OpenRA.Mods.Common.Traits
 					yield return r;
 
 			var centerPosition = wr.World.Map.CenterOfCell(topLeft) + centerOffset;
-			foreach (var r in preview.Render(_actor, centerPosition, WVec.Zero, 0, palette, 1.0f))
+			foreach (var r in preview.Render(actor, centerPosition, WVec.Zero, 0, palette, 1.0f))
 				yield return r;
 
 			if (info.FootprintOverPreview != PlaceBuildingCellType.None)

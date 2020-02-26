@@ -82,7 +82,7 @@ namespace OpenRA.Mods.Common.Activities
 			// the next state or next activity
 			if (ChildActivity != null)
 			{
-				ChildActivity = ActivityUtils.RunActivity(self, ChildActivity);
+				ChildActivity = ActivityUtils.RunActivityTick(self, ChildActivity);
 				if (ChildActivity != null)
 					return this;
 			}
