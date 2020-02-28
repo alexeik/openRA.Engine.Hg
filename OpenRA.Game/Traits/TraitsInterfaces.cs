@@ -397,7 +397,10 @@ namespace OpenRA.Traits
 	public interface IRenderShroud { void RenderShroud(Shroud shroud, WorldRenderer wr); }
 
 	[RequireExplicitImplementation]
-	public interface IRenderTerrain { void RenderTerrain(WorldRenderer wr, Viewport viewport); }
+	public interface IRenderTerrain { 
+		void RenderTerrain(WorldRenderer wr, Viewport viewport);
+		Dictionary<string, TerrainSpriteLayer> GetTerrainSpriteLayerRenderer();
+	}
 
 	public interface IRenderAboveShroud
 	{

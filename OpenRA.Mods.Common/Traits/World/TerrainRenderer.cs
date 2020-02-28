@@ -9,6 +9,7 @@
  */
 #endregion
 
+using System;
 using System.Collections.Generic;
 using OpenRA.Graphics;
 using OpenRA.Primitives;
@@ -25,14 +26,17 @@ namespace OpenRA.Mods.Common.Traits
 	{
 		readonly Map map;
 		readonly Dictionary<string, TerrainSpriteLayer> spriteLayers = new Dictionary<string, TerrainSpriteLayer>();
-		Theater theater;
+		public Theater theater;
 		bool disposed;
 
 		public TerrainRenderer(World world)
 		{
 			map = world.Map;
 		}
-
+		public Dictionary<string, TerrainSpriteLayer> GetTerrainSpriteLayerRenderer()
+		{
+			return spriteLayers;
+		}
 		void IWorldLoaded.WorldLoaded(World world, WorldRenderer wr)
 		{
 			theater = wr.Theater;
@@ -63,13 +67,29 @@ namespace OpenRA.Mods.Common.Traits
 				kv.Value.Update(cell, palette == kv.Key ? sprite : null);
 		}
 
+		int ff = 0;
+		int cc = 0;
+
 		void IRenderTerrain.RenderTerrain(WorldRenderer wr, Viewport viewport)
 		{
+			cc = 0;
+			Console.WriteLine("ff" + ff);
+			ff++;
+
+			// TODO: по идее, рисуется карта, а потом на ней рисуются разные слои от IRenderOverlay , но вышло не так. Каждый IRenderOverlay
+			// рисует карту заново со своими добавками :) IRenderOverlay= D2TerrainLayer,BuildableTerrainLayer,SmudgeLayer,D2ResourceLayer.
+			// надо бы, чтобы IRenderOverlay рисовали на TerrainSpriteLayer, которй внутри переменной spriteLayers.
 			foreach (var kv in spriteLayers.Values)
 				kv.Draw(wr.Viewport);
 
 			foreach (var r in wr.World.WorldActor.TraitsImplementing<IRenderOverlay>())
+			{
+				Console.WriteLine("cc" + cc + " obj" + r.GetType().Name);
+
 				r.Render(wr);
+				cc++;
+			}
+
 		}
 
 		void INotifyActorDisposing.Disposing(Actor self)
