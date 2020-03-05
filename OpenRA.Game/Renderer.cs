@@ -41,7 +41,7 @@ namespace OpenRA
 		internal int SheetSize { get; private set; }
 		internal int TempBufferSize { get; private set; }
 
-		readonly IVertexBuffer<Vertex> tempBuffer;
+		readonly VertexBuffer<Vertex> tempBuffer;
 		readonly Stack<Rectangle> scissorState = new Stack<Rectangle>();
 
 		SheetBuilder fontSheetBuilder;
@@ -186,17 +186,33 @@ namespace OpenRA
 			Context.Present();
 		}
 
+		/// <summary>
+		/// Метод используется, для перевалки данных из других spriterenderer в этот
+		/// </summary>
+		/// <param name="vertices">Вертексы</param>
+		/// <param name="numVertices">длина</param>
+		/// <param name="type">тип</param>
 		public void DrawBatch(Vertex[] vertices, int numVertices, PrimitiveType type)
 		{
 			tempBuffer.SetData(vertices, numVertices);
-			DrawBatch(tempBuffer, 0, numVertices, type);
+			Context.DrawPrimitives(type, 0, numVertices);
+			PerfHistory.Increment("batches", 1);
+
 		}
 
-		public void DrawBatch<T>(IVertexBuffer<T> vertices,
-			int firstVertex, int numVertices, PrimitiveType type)
-			where T : struct
+		/// <summary>
+		/// Этот метод имеет прямой вызов, без tempBuffer.SetData(без внутреннего верт.буфера класса Renderer,
+		/// поэтому тут используется еще один vertices.Bind(),чтобы привязать верт.буфер от внешнего класса.
+		/// Например TerrainSpriteLayer.
+		/// </summary>
+		/// <typeparam name="T">в основном это Vertex</typeparam>
+		/// <param name="vertices">Внешний массив вертексов </param>
+		/// <param name="firstVertex">от</param>
+		/// <param name="numVertices">длина</param>
+		/// <param name="type">тип треугольники и т.д.</param>
+		public void DrawBatchWithBind<T>(VertexBuffer<T> vertices, int firstVertex, int numVertices, PrimitiveType type) where T : struct
 		{
-			vertices.Bind();
+			vertices.Bind(); //doubles Bind() call
 			Context.DrawPrimitives(type, firstVertex, numVertices);
 			PerfHistory.Increment("batches", 1);
 		}
@@ -228,7 +244,7 @@ namespace OpenRA
 			}
 		}
 
-		public IVertexBuffer<Vertex> CreateVertexBuffer(int length)
+		public VertexBuffer<Vertex> CreateVertexBuffer(int length)
 		{
 			return Context.CreateVertexBuffer(length);
 		}

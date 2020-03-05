@@ -51,7 +51,6 @@ namespace OpenRA.Graphics
 					shader.SetTexture("Texture{0}".F(i), sheets[i].GetTexture());
 					sheets[i] = null;
 				}
-
 				renderer.Context.SetBlendMode(currentBlend);
 				shader.PrepareRender();
 				renderer.DrawBatch(vertices, nv, PrimitiveType.TriangleList);
@@ -63,7 +62,7 @@ namespace OpenRA.Graphics
 		}
 
 		/// <summary>
-		/// Этот метод, косвенно запускает opengl DrawBatch если текущий Renderer(наследник Renderer.IBatchRenderer) отличается от новогого.
+		/// Этот метод, косвенно запускает opengl DrawBatchWithBind если текущий Renderer(наследник Renderer.IBatchRenderer) отличается от новогого.
 		/// </summary>
 		/// <param name="s">Спрайт, который записывается в VBO.</param>
 		/// <returns>Возвращает индекс Sheet куда попал спрайт.</returns>
@@ -145,13 +144,21 @@ namespace OpenRA.Graphics
 			Util.FastCreateQuad(vertices, a, b, c, d, s, samplers, 0, nv);
 			nv += 6;
 		}
-
-		public void DrawVertexBuffer(IVertexBuffer<Vertex> buffer, int start, int length, PrimitiveType type, Sheet sheet, BlendMode blendMode)
+		/// <summary>
+		/// Используется для отрисовки вертексного буфера внешнего класса, например TerrainSpriteLayer
+		/// </summary>
+		/// <param name="buffer">.</param>
+		/// <param name="start">.</param>
+		/// <param name="length">.</param>
+		/// <param name="type">.</param>
+		/// <param name="sheet">.</param>
+		/// <param name="blendMode">.</param>
+		public void DrawVertexBuffer(VertexBuffer<Vertex> buffer, int start, int length, PrimitiveType type, Sheet sheet, BlendMode blendMode)
 		{
 			shader.SetTexture("Texture0", sheet.GetTexture());
 			renderer.Context.SetBlendMode(blendMode);
 			shader.PrepareRender();
-			renderer.DrawBatch(buffer, start, length, type);
+			renderer.DrawBatchWithBind(buffer, start, length, type);
 			renderer.Context.SetBlendMode(BlendMode.None);
 		}
 
