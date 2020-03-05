@@ -56,6 +56,7 @@
     <Compile Include="Graphics\CursorProvider.cs" />
     <Compile Include="Graphics\CursorSequence.cs" />
     <Compile Include="Graphics\FontMSDF.cs" />
+    <Compile Include="Graphics\FrameCache.cs" />
     <Compile Include="Graphics\HardwareCursor.cs" />
     <Compile Include="Graphics\HardwarePalette.cs" />
     <Compile Include="Graphics\MappedImage.cs" />
@@ -73,6 +74,7 @@
     <Compile Include="Graphics\SheetBuilder.cs" />
     <Compile Include="Graphics\SoftwareCursor.cs" />
     <Compile Include="Graphics\Sprite.cs" />
+    <Compile Include="Graphics\SpriteCache.cs" />
     <Compile Include="Graphics\SpriteFont.cs" />
     <Compile Include="Graphics\SpriteFontMSDF.cs" />
     <Compile Include="Graphics\SpriteLoader.cs" />
