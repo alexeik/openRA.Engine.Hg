@@ -17,7 +17,7 @@ using System.Text;
 
 namespace OpenRA.Platforms.Default
 {
-	public class Shader : ThreadAffine, IShader
+	public class Shader : ShaderBase
 	{
 		public const int VertexPosAttributeIndex = 0;
 		public const int TexCoordAttributeIndex = 1;
@@ -146,7 +146,7 @@ namespace OpenRA.Platforms.Default
 			}
 		}
 
-		public void PrepareRender()
+		public override void PrepareRender()
 		{
 			VerifyThreadAffinity();
 			OpenGL.glUseProgram(program);
@@ -174,7 +174,7 @@ namespace OpenRA.Platforms.Default
 		/// </summary>
 		/// <param name="name">имя текстуры.</param>
 		/// <param name="t">ссылка на текстуру.</param>
-		public void SetTexture(string name, ITexture t)
+		public override void SetTexture(string name, ITexture t)
 		{
 			VerifyThreadAffinity();
 			if (t == null)
@@ -185,7 +185,7 @@ namespace OpenRA.Platforms.Default
 				textures[texUnit] = t;
 		}
 
-		public void SetBool(string name, bool value)
+		public override void SetBool(string name, bool value)
 		{
 			VerifyThreadAffinity();
 			OpenGL.glUseProgram(program);
@@ -196,7 +196,7 @@ namespace OpenRA.Platforms.Default
 			OpenGL.CheckGLError();
 		}
 
-		public void SetVec(string name, float x)
+		public override void SetVec(string name, float x)
 		{
 			VerifyThreadAffinity();
 			OpenGL.glUseProgram(program);
@@ -207,7 +207,7 @@ namespace OpenRA.Platforms.Default
 			OpenGL.CheckGLError();
 		}
 
-		public void SetVec(string name, float x, float y)
+		public override void SetVec(string name, float x, float y)
 		{
 			VerifyThreadAffinity();
 			OpenGL.glUseProgram(program);
@@ -218,7 +218,7 @@ namespace OpenRA.Platforms.Default
 			OpenGL.CheckGLError();
 		}
 
-		public void SetVec(string name, float x, float y, float z)
+		public override void SetVec(string name, float x, float y, float z)
 		{
 			VerifyThreadAffinity();
 			OpenGL.glUseProgram(program);
@@ -229,7 +229,7 @@ namespace OpenRA.Platforms.Default
 			OpenGL.CheckGLError();
 		}
 
-		public void SetVec(string name, float[] vec, int length)
+		public override void SetVec(string name, float[] vec, int length)
 		{
 			VerifyThreadAffinity();
 			var param = OpenGL.glGetUniformLocation(program, name);
@@ -253,7 +253,7 @@ namespace OpenRA.Platforms.Default
 			OpenGL.CheckGLError();
 		}
 
-		public void SetMatrix(string name, float[] mtx)
+		public override void SetMatrix(string name, float[] mtx)
 		{
 			VerifyThreadAffinity();
 			if (mtx.Length != 16)

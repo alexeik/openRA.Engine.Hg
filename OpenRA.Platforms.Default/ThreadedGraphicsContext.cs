@@ -646,7 +646,7 @@ namespace OpenRA.Platforms.Default
 		readonly Action<object> setVec3;
 		readonly Action<object> setVec4;
 
-		public ThreadedShader(ThreadedGraphicsContext device, IShader shader)
+		public ThreadedShader(ThreadedGraphicsContext device, Shader shader)
 		{
 			this.device = device;
 			prepareRender = shader.PrepareRender;

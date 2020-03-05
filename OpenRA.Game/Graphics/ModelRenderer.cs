@@ -12,6 +12,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using OpenRA.Platforms.Default;
 using OpenRA.Primitives;
 
 namespace OpenRA.Graphics
@@ -44,7 +45,7 @@ namespace OpenRA.Graphics
 		static readonly float[] ShadowScaleFlipMtx = Util.ScaleMatrix(2, -2, 2);
 
 		readonly Renderer renderer;
-		readonly IShader shader;
+		readonly Shader shader;
 
 		readonly Dictionary<Sheet, IFrameBuffer> mappedBuffers = new Dictionary<Sheet, IFrameBuffer>();
 		readonly Stack<KeyValuePair<Sheet, IFrameBuffer>> unmappedBuffers = new Stack<KeyValuePair<Sheet, IFrameBuffer>>();
@@ -53,7 +54,7 @@ namespace OpenRA.Graphics
 		SheetBuilder sheetBuilderForFrame;
 		bool isInFrame;
 
-		public ModelRenderer(Renderer renderer, IShader shader)
+		public ModelRenderer(Renderer renderer, Shader shader)
 		{
 			this.renderer = renderer;
 			this.shader = shader;

@@ -10,6 +10,7 @@
 #endregion
 
 using System;
+using OpenRA.Platforms.Default;
 using OpenRA.Primitives;
 
 namespace OpenRA.Graphics
@@ -17,7 +18,7 @@ namespace OpenRA.Graphics
 	public class SpriteRenderer : Renderer.IBatchRenderer
 	{
 		readonly Renderer renderer;
-		readonly IShader shader;
+		readonly Shader shader;
 
 		readonly Vertex[] vertices;
 		public readonly Sheet[] sheets = new Sheet[7];
@@ -26,7 +27,7 @@ namespace OpenRA.Graphics
 		int nv = 0;
 		int ns = 0;
 		readonly string rendererID;
-		public SpriteRenderer(string rendereID, Renderer renderer, IShader shader)
+		public SpriteRenderer(string rendereID, Renderer renderer, Shader shader)
 		{
 			this.rendererID = rendereID;
 			this.renderer = renderer;
