@@ -12,6 +12,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using OpenRA.Platforms.Default;
 using OpenRA.Primitives;
 
 namespace OpenRA.Graphics
@@ -23,7 +24,7 @@ namespace OpenRA.Graphics
 
 		readonly Sprite emptySprite;
 
-		readonly IVertexBuffer<Vertex> vertexBuffer;
+		readonly VertexBuffer<Vertex> vertexBuffer;
 		readonly Vertex[] vertices;
 		readonly HashSet<int> dirtyRows = new HashSet<int>();
 		readonly int rowStride;
