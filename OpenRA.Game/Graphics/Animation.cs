@@ -150,13 +150,18 @@ namespace OpenRA.Graphics
 			backwards = true;
 		}
 
+		/// <summary>
+		/// Меняет номер кадра анимации на тот, который получает при запуске анонимной функции func.
+		/// </summary>
+		/// <param name="sequenceName">Название анимации</param>
+		/// <param name="func">Анонимная функция для расчета номера кадра</param>
 		public void PlayFetchIndex(string sequenceName, Func<int> func)
 		{
 			backwards = false;
 			tickAlways = true;
 			PlaySequence(sequenceName);
 
-			frame = func();
+			frame = func(); // номер спрайта , который уйдет потом в Image свойство, через свойство CurrentFrame.
 			tickFunc = () => frame = func();
 		}
 

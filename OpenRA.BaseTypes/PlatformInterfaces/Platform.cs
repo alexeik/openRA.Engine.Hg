@@ -200,7 +200,7 @@ namespace OpenRA
 
 			if (path.StartsWith("./", StringComparison.Ordinal) || path.StartsWith(".\\", StringComparison.Ordinal))
 				path = GameDir + path.Substring(2);
-
+			Console.WriteLine("Settings","Settings loaded from : " + path);
 			return path;
 		}
 

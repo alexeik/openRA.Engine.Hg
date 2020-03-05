@@ -327,6 +327,7 @@ namespace OpenRA.Mods.Common.Graphics
 				if (boundSprites.Any())
 				{
 					Bounds = boundSprites.First();
+					Console.WriteLine("bound size of the sprite is : " + Bounds.Width + " : " + Bounds.Height);
 					foreach (var b in boundSprites.Skip(1))
 						Bounds = Rectangle.Union(Bounds, b);
 				}

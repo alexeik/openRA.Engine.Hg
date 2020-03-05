@@ -202,7 +202,14 @@ namespace OpenRA.FileSystem
 		{
 			var package = fileIndex[filename]
 				.LastOrDefault(x => x.Contains(filename));
-
+			if (package == null)
+			{
+                Console.WriteLine(filename + " loaded from : " + " not found! really not found");
+			}
+			else
+			{
+				Console.WriteLine(filename + " loaded from : " + package.Name);
+			}
 			if (package != null)
 				return package.GetStream(filename);
 

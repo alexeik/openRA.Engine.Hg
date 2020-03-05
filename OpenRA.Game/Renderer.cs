@@ -67,14 +67,14 @@ namespace OpenRA
 			TempBufferSize = graphicSettings.BatchSize;
 			SheetSize = graphicSettings.SheetSize;
 
-			WorldSpriteRenderer = new SpriteRenderer("WorldSpriteRenderer", this, Context.CreateShader("combined")); // каждый имеет свой VBO
+			WorldSpriteRenderer = new SpriteRenderer("WorldSpriteRenderer", this, Context.CreateShader("combined")); // каждый имеет vertex массив, VAO это tempbuffer.
 			WorldRgbaSpriteRenderer = new RgbaSpriteRenderer(WorldSpriteRenderer);
 			WorldRgbaColorRenderer = new RgbaColorRenderer(WorldSpriteRenderer);
-			WorldModelRenderer = new ModelRenderer(this, Context.CreateShader("model")); // каждый имеет свой VBO
-			SpriteRenderer = new SpriteRenderer("SpriteRenderer", this, Context.CreateShader("combined")); // каждый имеет свой VBO
+			WorldModelRenderer = new ModelRenderer(this, Context.CreateShader("model")); // каждый имеет vertex массив, VAO это tempbuffer 
+			SpriteRenderer = new SpriteRenderer("SpriteRenderer", this, Context.CreateShader("combined")); // каждый имеет vertex массив, VAO это tempbuffer.
 			RgbaSpriteRenderer = new RgbaSpriteRenderer(SpriteRenderer); // эти пишут в родительский VBO
 			RgbaColorRenderer = new RgbaColorRenderer(SpriteRenderer); // эти пишут в родительский VBO
-			FontSpriteRenderer = new SpriteRenderer("FontSpriteRenderer", this, Context.CreateShader("text")); // каждый имеет свой VBO
+			FontSpriteRenderer = new SpriteRenderer("FontSpriteRenderer", this, Context.CreateShader("text")); // каждый имеет свой vertex массив, VAO это tempbuffer.
 			ImguiSpriteRenderer = new SpriteRenderer("ImguiSpriteRenderer", this, Context.CreateShader("combined"));// для ImGui
 
 			IntPtr context = ImGui.CreateContext();
