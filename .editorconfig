@@ -12,6 +12,16 @@ indent_style = tab
 indent_size = 4
 
 ; 4-column tab indentation
+
+# SA1307: Accessible fields should begin with upper-case letter
+dotnet_diagnostic.SA1307.severity = none
+
+# SA1629: Documentation text should end with a period
+dotnet_diagnostic.SA1629.severity = none
+
+# SA1625: Element documentation should not be copied and pasted
+dotnet_diagnostic.SA1625.severity = none
+
 [*.yaml]
 indent_style = tab
 indent_size = 4
