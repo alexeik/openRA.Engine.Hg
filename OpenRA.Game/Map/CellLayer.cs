@@ -24,7 +24,7 @@ namespace OpenRA
 		public readonly MapGridType GridType;
 		public event Action<CPos> CellEntryChanged = null;
 
-		readonly T[] entries;
+		public readonly T[] entries;
 
 		public CellLayer(Map map)
 			: this(map.Grid.Type, new Size(map.MapSize.X, map.MapSize.Y)) { }
@@ -64,7 +64,7 @@ namespace OpenRA
 		}
 
 		// Resolve an array index from cell coordinates
-		int Index(CPos cell)
+		public int Index(CPos cell)
 		{
 			return Index(cell.ToMPos(GridType));
 		}

@@ -31,7 +31,7 @@ namespace OpenRA.Mods.Common.Traits
 
 		readonly World world;
 		readonly BuildingInfluence buildingInfluence;
-		readonly HashSet<CPos> dirty = new HashSet<CPos>();
+		readonly HashSet<CPos> ChangedResourceCellList = new HashSet<CPos>();
 		readonly Dictionary<PaletteReference, TerrainSpriteLayer> spriteLayers = new Dictionary<PaletteReference, TerrainSpriteLayer>();
 
 		protected readonly CellLayer<CellContents> Content;
@@ -54,69 +54,83 @@ namespace OpenRA.Mods.Common.Traits
 			Content = new CellLayer<CellContents>(world.Map);
 			RenderContent = new CellLayer<CellContents>(world.Map);
 
-            RenderContent.CellEntryChanged += UpdateSpriteLayers; //этот метод обновл€ет TerrainSpriteLayer, через данное событие.
+			// этот метод обновл€ет TerrainSpriteLayer, через данное событие.
+			//RenderContent.CellEntryChanged += SubmitCellToVertexBuffer; 
 		}
 
-		void UpdateSpriteLayers(CPos cell) // вызываетс€ на каждое RenderContent[cell]=...
+		void SubmitCellToVertexBuffer(CPos cell2) // вызываетс€ на каждое RenderContent[cell]=...
 		{
-			//Console.WriteLine("d2resource update call to vert buffer" + i2);
-			i2++;
-
-			// по статистике, около 50 вызовов за один €чейку , где собирает один харвестер.
-			var resource = RenderContent[cell];
-
-			//ushort sdf;
-			//int index = Game.CosmeticRandom.Next(63);
-			//int ffd = (176 + Convert.ToInt32(index));
-			//sdf = Convert.ToUInt16(ffd);
-			//var t = new TerrainTile(sdf, 0);
-			//Sprite sprite = _wr.Theater.TileSprite(t, 0);
-			//resource.Sprite = sprite;
-			//if (RenderContent[cell].Sprite == null)
-			//{
-			//				return;
-			//}
-			//render.Update(cell, RenderContent[cell].Sprite);
-
-
+			TerrainSpriteLayer tsl;
 			foreach (var kv in spriteLayers)
 			{
 				// resource.Type is meaningless (and may be null) if resource.Sprite is null
-				if (resource.Sprite != null && resource.Type.Palette == kv.Key)
-					kv.Value.Update(cell, resource.Sprite);// Update are submit new Quad to vertex buffer of kv(TerrainSpriteLayer)
+				tsl = kv.Value;
+
+				if (ChangedResourceCellList.Count > 0)
+				{
+					foreach (var c in ChangedResourceCellList)
+					{
+						if (RenderContent[c].Sprite != null && RenderContent[c].Type.Palette == kv.Key)
+							tsl.Update(c, RenderContent[c].Sprite);// Update are submit new Quad to vertex buffer of kv(TerrainSpriteLayer)
+						else
+							tsl.Update(c, null);
+					}
+					foreach (var r in remove)
+						ChangedResourceCellList.Remove(r);
+					remove.Clear();
+				}
 				else
-					kv.Value.Update(cell, null);
+				{
+					foreach (var cell in world.Map.AllCells)
+					{
+						var type = Content[cell].Type;
+						if (type != null)
+						{
+
+							if (RenderContent[cell].Sprite != null && RenderContent[cell].Type.Palette == kv.Key)
+								tsl.Update(cell, RenderContent[cell].Sprite);// Update are submit new Quad to vertex buffer of kv(TerrainSpriteLayer)
+							else
+								tsl.Update(cell, null);
+						}
+					}
+				}
 			}
 		}
 
 		int i2 = 0;
+		List<CPos> remove = new List<CPos>();
+
 		void ITickRender.TickRender(WorldRenderer wr, Actor self)
 		{
-			var remove = new List<CPos>();
-			foreach (var c in dirty) // dirty коллекци€ измен€етс€ методами Harvest & Destroy & addresource, ниже идет анализ, убрать ее с карты рендера и логической 
-				// или изменить спрайт в зависимости от запаса ресурса на карте.
+			
+
+			// ChangedResourceCellList коллекци€ измен€етс€ методами Harvest & Destroy & addresource, ниже идет анализ, убрать ее с карты рендера и логической
+			// или изменить спрайт в зависимости от запаса ресурса на карте.
+			// теперь обновим спрайты в RenderCount согласно их координатам в ChangedResourceCellList, через метод UpdateRenderedSprite в наследуемом классе
+			foreach (var c in ChangedResourceCellList)
 			{
 				if (!self.World.FogObscures(c))
 				{
 					// происходит перекладывание из Content в RenderContent коллекцию. 
 					// ¬се вли€ющие на ресурых объекты, измен€ют Content например метод Harvest или Destroy
-					RenderContent[c] = Content[c]; // это штука, вызовет в коллекции RenderContent типа CellLayer событие изменение €чейки
-												   // это событие вызовет обновление TerraiSpriteLayer
-												   // RenderContent.CellEntryChanged += UpdateSpriteLayers;
+					 RenderContent[c] = Content[c]; // это штука, вызовет в коллекции RenderContent типа CellLayer событие изменение €чейки
+					// TODO: в методе ниже идет анализ RenderContent поэтому, нужно сохранить присвоение из логики(COntent) в рендер(RenderContent)
 					UpdateRenderedSprite(c); // forward call to virtual method that descendant has.
 					// тут, UpdateRenderedSprite мен€ет иконку ресурса в зависимости от его логического запаса(харвест собирает или убиваетс€ оружием)
 					remove.Add(c);
 				}
 			}
 
-			foreach (var r in remove)
-				dirty.Remove(r);
+			
 		}
 
 		void IRenderOverlay.Render(WorldRenderer wr)
 		{
+			SubmitCellToVertexBuffer(new CPos());
 			foreach (var kv in spriteLayers.Values)
+			{
 				kv.Draw(wr.Viewport);
+			}
 			//render.Draw(wr.Viewport);
 			i2 = 0;
 		}
@@ -134,7 +148,7 @@ namespace OpenRA.Mods.Common.Traits
 				t.Sprite = null;
 
 			RenderContent[cell] = t; // тут еще раз вызов идет в TerraiSpriteLayer 
-									 // RenderContent.CellEntryChanged += UpdateSpriteLayers;
+									 // RenderContent.CellEntryChanged += SubmitCellToVertexBuffer;
 		}
 
 		int GetAdjacentCellsWith(ResourceType t, CPos cell)
@@ -203,9 +217,6 @@ namespace OpenRA.Mods.Common.Traits
 				Content[cell] = CreateResourceCell(t, cell);
 			}
 
-			//тут бежим по всем тайлам карты и фильтруем их по коллекции Content, а можно наоборот
-
-
 
 			foreach (var cell in w.Map.AllCells) // это заставл€ет вызыватьс€ TerrainSpriteLayer столько раз, сколько €чеек с типом не null, дл€ дюны выходит 3500 раз:) 
 			{
@@ -224,10 +235,11 @@ namespace OpenRA.Mods.Common.Traits
 					// Initialize the RenderContent with the initial map state
 					// because the shroud may not be enabled.
 					Content[cell] = temp;
-					RenderContent[cell] = Content[cell]; //тут вместо того, чтобы присвоить в RenderContent[cell] свойство SPrite, это уводитс€ в 
-
+					RenderContent[cell] = Content[cell];
+					// тут вместо того, чтобы присвоить в RenderContent[cell] свойство SPrite, это уводитс€ в 
 					// вирт. метод UpdateRenderedSprite(), а уж вирт.метод на основе ResourceType решает, какой спрайт положить в RenderContent[cell]
-					// ++ также вызоветс€ это - RenderContent.CellEntryChanged += UpdateSpriteLayers();
+					// ++ также вызоветс€ это - RenderContent.CellEntryChanged += SubmitCellToVertexBuffer();
+
 					UpdateRenderedSprite(cell);
 
 					//render.Update(cell, RenderContent[cell].Sprite); //запускаем submit тут, так как после UpdateRenderedSprite(cell); спрайт будет обновлен по
@@ -311,7 +323,7 @@ namespace OpenRA.Mods.Common.Traits
 			cell.Density = Math.Min(cell.Type.Info.MaxDensity, cell.Density + n);
 			Content[p] = cell;
 
-			dirty.Add(p);
+			ChangedResourceCellList.Add(p);
 		}
 
 		public bool IsFull(CPos cell)
@@ -336,7 +348,7 @@ namespace OpenRA.Mods.Common.Traits
 			else
 				Content[cell] = c;
 
-			dirty.Add(cell);
+			ChangedResourceCellList.Add(cell);
 
 			return c.Type;
 		}
@@ -353,7 +365,7 @@ namespace OpenRA.Mods.Common.Traits
 			Content[cell] = EmptyCell;
 			world.Map.CustomTerrain[cell] = byte.MaxValue;
 
-			dirty.Add(cell);
+			ChangedResourceCellList.Add(cell);
 		}
 
 		public ResourceType GetResource(CPos cell) { return Content[cell].Type; }
@@ -375,7 +387,7 @@ namespace OpenRA.Mods.Common.Traits
 			foreach (var kv in spriteLayers.Values)
 				kv.Dispose();
 
-			RenderContent.CellEntryChanged -= UpdateSpriteLayers;
+			RenderContent.CellEntryChanged -= SubmitCellToVertexBuffer;
 
 			disposed = true;
 		}
@@ -386,7 +398,7 @@ namespace OpenRA.Mods.Common.Traits
 			public ResourceType Type;
 			public int Density;
 			public string Variant;
-			public Sprite Sprite;
+			public Sprite Sprite { get; set; }
 		}
 	}
 }
