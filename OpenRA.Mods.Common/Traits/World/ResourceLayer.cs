@@ -42,6 +42,10 @@ namespace OpenRA.Mods.Common.Traits
 		bool disposed;
 		int resCells;
 
+		// TerrainSpriteLayer render;
+		Dictionary<string, TerrainSpriteLayer> terrainRenderer;
+		public readonly string Palette = TileSet.TerrainPaletteInternalName;
+
 		public ResourceLayer(Actor self)
 		{
 			world = self.World;
@@ -50,26 +54,87 @@ namespace OpenRA.Mods.Common.Traits
 			Content = new CellLayer<CellContents>(world.Map);
 			RenderContent = new CellLayer<CellContents>(world.Map);
 
-			RenderContent.CellEntryChanged += UpdateSpriteLayers;
+            RenderContent.CellEntryChanged += UpdateSpriteLayers; //этот метод обновл€ет TerrainSpriteLayer, через данное событие.
 		}
 
-		void UpdateSpriteLayers(CPos cell)
+		void UpdateSpriteLayers(CPos cell) // вызываетс€ на каждое RenderContent[cell]=...
 		{
+			//Console.WriteLine("d2resource update call to vert buffer" + i2);
+			i2++;
+
+			// по статистике, около 50 вызовов за один €чейку , где собирает один харвестер.
 			var resource = RenderContent[cell];
+
+			//ushort sdf;
+			//int index = Game.CosmeticRandom.Next(63);
+			//int ffd = (176 + Convert.ToInt32(index));
+			//sdf = Convert.ToUInt16(ffd);
+			//var t = new TerrainTile(sdf, 0);
+			//Sprite sprite = _wr.Theater.TileSprite(t, 0);
+			//resource.Sprite = sprite;
+			//if (RenderContent[cell].Sprite == null)
+			//{
+			//				return;
+			//}
+			//render.Update(cell, RenderContent[cell].Sprite);
+
+
 			foreach (var kv in spriteLayers)
 			{
 				// resource.Type is meaningless (and may be null) if resource.Sprite is null
 				if (resource.Sprite != null && resource.Type.Palette == kv.Key)
-					kv.Value.Update(cell, resource.Sprite);
+					kv.Value.Update(cell, resource.Sprite);// Update are submit new Quad to vertex buffer of kv(TerrainSpriteLayer)
 				else
 					kv.Value.Update(cell, null);
 			}
+		}
+
+		int i2 = 0;
+		void ITickRender.TickRender(WorldRenderer wr, Actor self)
+		{
+			var remove = new List<CPos>();
+			foreach (var c in dirty) // dirty коллекци€ измен€етс€ методами Harvest & Destroy & addresource, ниже идет анализ, убрать ее с карты рендера и логической 
+				// или изменить спрайт в зависимости от запаса ресурса на карте.
+			{
+				if (!self.World.FogObscures(c))
+				{
+					// происходит перекладывание из Content в RenderContent коллекцию. 
+					// ¬се вли€ющие на ресурых объекты, измен€ют Content например метод Harvest или Destroy
+					RenderContent[c] = Content[c]; // это штука, вызовет в коллекции RenderContent типа CellLayer событие изменение €чейки
+												   // это событие вызовет обновление TerraiSpriteLayer
+												   // RenderContent.CellEntryChanged += UpdateSpriteLayers;
+					UpdateRenderedSprite(c); // forward call to virtual method that descendant has.
+					// тут, UpdateRenderedSprite мен€ет иконку ресурса в зависимости от его логического запаса(харвест собирает или убиваетс€ оружием)
+					remove.Add(c);
+				}
+			}
+
+			foreach (var r in remove)
+				dirty.Remove(r);
 		}
 
 		void IRenderOverlay.Render(WorldRenderer wr)
 		{
 			foreach (var kv in spriteLayers.Values)
 				kv.Draw(wr.Viewport);
+			//render.Draw(wr.Viewport);
+			i2 = 0;
+		}
+
+		protected virtual void UpdateRenderedSprite(CPos cell)
+		{
+			var t = RenderContent[cell];
+			if (t.Density > 0)
+			{
+				var sprites = t.Type.Variants[t.Variant];
+				var frame = int2.Lerp(0, sprites.Length - 1, t.Density, t.Type.Info.MaxDensity);
+				t.Sprite = sprites[frame];
+			}
+			else
+				t.Sprite = null;
+
+			RenderContent[cell] = t; // тут еще раз вызов идет в TerraiSpriteLayer 
+									 // RenderContent.CellEntryChanged += UpdateSpriteLayers;
 		}
 
 		int GetAdjacentCellsWith(ResourceType t, CPos cell)
@@ -88,10 +153,12 @@ namespace OpenRA.Mods.Common.Traits
 			return sum;
 		}
 
+		WorldRenderer _wr;
 		public void WorldLoaded(World w, WorldRenderer wr)
 		{
-			var resources = w.WorldActor.TraitsImplementing<ResourceType>()
+			var resources = w.WorldActor.TraitsImplementing<ResourceType>() //обращение к ResourceTYpe, который содержит в себе world.yaml.ResourceType таблицу
 				.ToDictionary(r => r.Info.ResourceType, r => r);
+			_wr = wr;
 
 			// Build the sprite layer dictionary for rendering resources
 			// All resources that have the same palette must also share a sheet and blend mode
@@ -114,19 +181,33 @@ namespace OpenRA.Mods.Common.Traits
 						+ "Try using different palettes for resource types that use different blend modes.");
 			}
 
+			//var terrainRenderer = w.WorldActor.TraitOrDefault<IRenderTerrain>(); //to get TerrainRenderer.cs class 
+			//this.terrainRenderer = terrainRenderer.GetTerrainSpriteLayerRenderer(); //get all Sprites that it has from tileset\*.yaml file
+			//render = this.terrainRenderer[Palette];
+
+
 			foreach (var cell in w.Map.AllCells)
 			{
 				ResourceType t;
+
+			// w.Map.Resources тут содержатьс€ таблицы ResourceType . ѕри импорте карт д2, туда были записаны 1 и 2
+			// поэтому в resources к ключу =1 прив€зана таблица ResourceType. ѕо сути проверка ниже с TryGetValue ни о чем. “ак как там, всегда будет 1 благодар€
+			// импорту.
 				if (!resources.TryGetValue(w.Map.Resources[cell].Type, out t))
 					continue;
 
 				if (!AllowResourceAt(t, cell))
 					continue;
-
+				// тут составл€етс€ внутренн€ коллекци€ ресурсных тайлов Content из всех тайлов Map.AllCells
+				// вс€ таблица ResourceType уходит в t параметр и хранитс€ внутри каждой €чейки ресурса = Content[cell].
 				Content[cell] = CreateResourceCell(t, cell);
 			}
 
-			foreach (var cell in w.Map.AllCells)
+			//тут бежим по всем тайлам карты и фильтруем их по коллекции Content, а можно наоборот
+
+
+
+			foreach (var cell in w.Map.AllCells) // это заставл€ет вызыватьс€ TerrainSpriteLayer столько раз, сколько €чеек с типом не null, дл€ дюны выходит 3500 раз:) 
 			{
 				var type = Content[cell].Type;
 				if (type != null)
@@ -138,51 +219,35 @@ namespace OpenRA.Mods.Common.Traits
 					var temp = Content[cell];
 					temp.Density = Math.Max(density, 1);
 
+					//temp.Sprite = GetResourceSprite(0);
+
 					// Initialize the RenderContent with the initial map state
 					// because the shroud may not be enabled.
-					RenderContent[cell] = Content[cell] = temp;
+					Content[cell] = temp;
+					RenderContent[cell] = Content[cell]; //тут вместо того, чтобы присвоить в RenderContent[cell] свойство SPrite, это уводитс€ в 
+
+					// вирт. метод UpdateRenderedSprite(), а уж вирт.метод на основе ResourceType решает, какой спрайт положить в RenderContent[cell]
+					// ++ также вызоветс€ это - RenderContent.CellEntryChanged += UpdateSpriteLayers();
 					UpdateRenderedSprite(cell);
+
+					//render.Update(cell, RenderContent[cell].Sprite); //запускаем submit тут, так как после UpdateRenderedSprite(cell); спрайт будет обновлен по
+																	 // алгоритму из D2ResourceLayer
 				}
 			}
-		}
+			
 
-		protected virtual void UpdateRenderedSprite(CPos cell)
+			
+		}
+		public Sprite GetResourceSprite(int templateid, int? offset, int variantrandom)
 		{
-			var t = RenderContent[cell];
-			if (t.Density > 0)
-			{
-				var sprites = t.Type.Variants[t.Variant];
-				var frame = int2.Lerp(0, sprites.Length - 1, t.Density, t.Type.Info.MaxDensity);
-				t.Sprite = sprites[frame];
-			}
-			else
-				t.Sprite = null;
-
-			RenderContent[cell] = t;
+			ushort sdf;
+			//int index = Game.CosmeticRandom.Next(63);
+			//int ffd = templateid + Convert.ToInt32(offset);
+			sdf = Convert.ToUInt16(templateid); //тут всегда одна цифра. играемс€ через variantrandom
+			var t = new TerrainTile(sdf, 0);
+			Sprite sprite = _wr.Theater.TileSprite(t, offset);
+			return sprite;
 		}
-
-		protected virtual string ChooseRandomVariant(ResourceType t)
-		{
-			return t.Variants.Keys.Random(Game.CosmeticRandom);
-		}
-
-		void ITickRender.TickRender(WorldRenderer wr, Actor self)
-		{
-			var remove = new List<CPos>();
-			foreach (var c in dirty)
-			{
-				if (!self.World.FogObscures(c))
-				{
-					RenderContent[c] = Content[c];
-					UpdateRenderedSprite(c);
-					remove.Add(c);
-				}
-			}
-
-			foreach (var r in remove)
-				dirty.Remove(r);
-		}
-
 		public bool AllowResourceAt(ResourceType rt, CPos cell)
 		{
 			if (!world.Map.Contains(cell))
@@ -229,6 +294,10 @@ namespace OpenRA.Mods.Common.Traits
 				Variant = ChooseRandomVariant(t),
 			};
 		}
+		protected virtual string ChooseRandomVariant(ResourceType t)
+		{
+			return t.Variants.Keys.Random(Game.CosmeticRandom);
+		}
 
 		public void AddResource(ResourceType t, CPos p, int n)
 		{
@@ -256,10 +325,12 @@ namespace OpenRA.Mods.Common.Traits
 			if (c.Type == null)
 				return null;
 
-			if (--c.Density < 0)
+			--c.Density; // here --c.Denstiry decreases for 1 step of density.
+
+			if (c.Density < 0)
 			{
 				Content[cell] = EmptyCell;
-				world.Map.CustomTerrain[cell] = byte.MaxValue;
+				world.Map.CustomTerrain[cell] =  byte.MaxValue;
 				--resCells;
 			}
 			else
