@@ -204,7 +204,7 @@ namespace OpenRA.Mods.Common.Traits
 			{
 				ResourceType t;
 
-			// w.Map.Resources тут содержаться таблицы ResourceType . При импорте карт д2, туда были записаны 1 и 2
+			// w.Map.Resources тут содержаться таблица ResourceType . При импорте карт д2, туда были записаны 1 и 2
 			// поэтому в resources к ключу =1 привязана таблица ResourceType. По сути проверка ниже с TryGetValue ни о чем. Так как там, всегда будет 1 благодаря
 			// импорту.
 				if (!resources.TryGetValue(w.Map.Resources[cell].Type, out t))
