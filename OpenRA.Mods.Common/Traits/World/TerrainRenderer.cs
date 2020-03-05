@@ -49,13 +49,13 @@ namespace OpenRA.Mods.Common.Traits
 			}
 
 			foreach (var cell in map.AllCells)
-				UpdateCell(cell);
+				SubmitCell(cell);
 
-			map.Tiles.CellEntryChanged += UpdateCell;
-			map.Height.CellEntryChanged += UpdateCell;
+			map.Tiles.CellEntryChanged += SubmitCell;
+			map.Height.CellEntryChanged += SubmitCell;
 		}
 
-		public void UpdateCell(CPos cell)
+		public void SubmitCell(CPos cell)
 		{
 			var tile = map.Tiles[cell];
 			var palette = TileSet.TerrainPaletteInternalName;
@@ -73,18 +73,18 @@ namespace OpenRA.Mods.Common.Traits
 		void IRenderTerrain.RenderTerrain(WorldRenderer wr, Viewport viewport)
 		{
 			cc = 0;
-			Console.WriteLine("ff" + ff);
+			//Console.WriteLine("ff" + ff);
 			ff++;
 
 			// TODO: по идее, рисуется карта, а потом на ней рисуются разные слои от IRenderOverlay , но вышло не так. Каждый IRenderOverlay
 			// рисует карту заново со своими добавками :) IRenderOverlay= D2TerrainLayer,BuildableTerrainLayer,SmudgeLayer,D2ResourceLayer.
-			// надо бы, чтобы IRenderOverlay рисовали на TerrainSpriteLayer, которй внутри переменной spriteLayers.
+			
 			foreach (var kv in spriteLayers.Values)
 				kv.Draw(wr.Viewport);
 
 			foreach (var r in wr.World.WorldActor.TraitsImplementing<IRenderOverlay>())
 			{
-				Console.WriteLine("cc" + cc + " obj" + r.GetType().Name);
+				//Console.WriteLine("cc" + cc + " obj" + r.GetType().Name);
 
 				r.Render(wr);
 				cc++;
@@ -97,8 +97,8 @@ namespace OpenRA.Mods.Common.Traits
 			if (disposed)
 				return;
 
-			map.Tiles.CellEntryChanged -= UpdateCell;
-			map.Height.CellEntryChanged -= UpdateCell;
+			map.Tiles.CellEntryChanged -= SubmitCell;
+			map.Height.CellEntryChanged -= SubmitCell;
 
 			foreach (var kv in spriteLayers.Values)
 				kv.Dispose();

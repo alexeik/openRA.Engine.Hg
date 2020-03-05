@@ -105,7 +105,10 @@ namespace OpenRA.Mods.D2k.Traits
 
 		void IRenderOverlay.Render(WorldRenderer wr)
 		{
-			render.Draw(wr.Viewport);
+			if (dirty.Count > 0)
+			{
+				render.Draw(wr.Viewport);
+			}
 		}
 
 		void INotifyActorDisposing.Disposing(Actor self)
