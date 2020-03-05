@@ -497,7 +497,7 @@ namespace OpenRA.Platforms.Default
 		readonly Func<object, object> setData2;
 		readonly Action dispose;
 
-		public ThreadedVertexBuffer(ThreadedGraphicsContext device, IVertexBuffer<Vertex> vertexBuffer)
+		public ThreadedVertexBuffer(ThreadedGraphicsContext device, VertexBuffer<Vertex> vertexBuffer)
 		{
 			this.device = device;
 			bind = vertexBuffer.Bind;
