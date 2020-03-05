@@ -11,6 +11,7 @@
 
 using System;
 using OpenRA.FileSystem;
+using OpenRA.Platforms.Default;
 using OpenRA.Primitives;
 
 namespace OpenRA.Graphics
@@ -47,7 +48,7 @@ namespace OpenRA.Graphics
 	{
 		IModel GetModelSequence(string model, string sequence);
 		bool HasModelSequence(string model, string sequence);
-		IVertexBuffer<Vertex> VertexBuffer { get; }
+		VertexBuffer<Vertex> VertexBuffer { get; }
 	}
 
 	public interface IModelSequenceLoader
@@ -62,7 +63,7 @@ namespace OpenRA.Graphics
 
 		class PlaceholderModelCache : IModelCache
 		{
-			public IVertexBuffer<Vertex> VertexBuffer { get { throw new NotImplementedException(); } }
+			public VertexBuffer<Vertex> VertexBuffer { get { throw new NotImplementedException(); } }
 
 			public void Dispose() { }
 

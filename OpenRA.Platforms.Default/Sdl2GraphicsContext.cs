@@ -184,6 +184,7 @@ namespace OpenRA.Platforms.Default
 		public void DrawPrimitives(PrimitiveType pt, int firstVertex, int numVertices)
 		{
 			VerifyThreadAffinity();
+			//Console.WriteLine("DrawArrays");
 			OpenGL.glDrawArrays(ModeFromPrimitiveType(pt), firstVertex, numVertices);
 			OpenGL.CheckGLError();
 		}
