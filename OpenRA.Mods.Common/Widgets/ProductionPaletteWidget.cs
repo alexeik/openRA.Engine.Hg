@@ -375,7 +375,7 @@ namespace OpenRA.Mods.Common.Widgets
 			return toBuild != null ? HandleEvent(toBuild, MouseButton.Left, batchModifiers) : false;
 		}
 
-		public void RefreshIcons()
+		public void RefreshIcons() // on Tick , CurrentQueue.set methods
 		{
 			icons = new Dictionary<Rectangle, ProductionIcon>();
 			var producer = CurrentQueue != null ? CurrentQueue.MostLikelyProducer() : default(TraitPair<Production>);
@@ -467,8 +467,7 @@ namespace OpenRA.Mods.Common.Widgets
 				{
 					var first = icon.Queued[0];
 					clock.PlayFetchIndex(ClockSequence,
-						() => (first.TotalTime - first.RemainingTime)
-							* (clock.CurrentSequence.Length - 1) / first.TotalTime);
+						() => (first.TotalTime - first.RemainingTime) * (clock.CurrentSequence.Length - 1) / first.TotalTime);
 					clock.Tick();
 
 					WidgetUtils.DrawSHPCentered(clock.Image, icon.Pos + iconOffset, icon.IconClockPalette);
