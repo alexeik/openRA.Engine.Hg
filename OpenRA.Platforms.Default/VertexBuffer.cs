@@ -14,7 +14,7 @@ using System.Runtime.InteropServices;
 
 namespace OpenRA.Platforms.Default
 {
-	public sealed class VertexBuffer<T> : ThreadAffine, IVertexBuffer<T>
+	public sealed class VertexBuffer<T> : VertexBufferUserBase<T>
 			where T : struct
 	{
 		static readonly int VertexSize = Marshal.SizeOf(typeof(T));
@@ -55,13 +55,14 @@ namespace OpenRA.Platforms.Default
 			}
 		}
 
-		public void SetData(T[] data, int length)
+		public override void SetData(T[] data, int length)
 		{
 			SetData(data, 0, length);
 		}
 
-		public void SetData(T[] data, int start, int length)
+		public override void SetData(T[] data, int start, int length)
 		{
+			//Console.WriteLine("buffer SetData() in buffer number : " + buffer);
 			Bind();
 
 			var ptr = GCHandle.Alloc(data, GCHandleType.Pinned);
@@ -80,8 +81,9 @@ namespace OpenRA.Platforms.Default
 			OpenGL.CheckGLError();
 		}
 
-		public void SetData(IntPtr data, int start, int length)
+		public override void SetData(IntPtr data, int start, int length)
 		{
+			//Console.WriteLine("buffer SetData2()" + buffer);
 			Bind();
 			OpenGL.glBufferSubData(OpenGL.GL_ARRAY_BUFFER,
 				new IntPtr(VertexSize * start),
@@ -89,10 +91,12 @@ namespace OpenRA.Platforms.Default
 				data);
 			OpenGL.CheckGLError();
 		}
+		bool VAPsAttached = false;
 
-		public void Bind()
+		public override void Bind()
 		{
 			VerifyThreadAffinity();
+			//Console.WriteLine("buffer Bind()" + buffer);
 			OpenGL.glBindBuffer(OpenGL.GL_ARRAY_BUFFER, buffer);
 			OpenGL.CheckGLError();
 			OpenGL.glVertexAttribPointer(Shader.VertexPosAttributeIndex, 3, OpenGL.GL_FLOAT, false, VertexSize, IntPtr.Zero);
@@ -104,10 +108,25 @@ namespace OpenRA.Platforms.Default
 			OpenGL.glVertexAttribPointer(Shader.VertexColorInfo, 4, OpenGL.GL_FLOAT, false, VertexSize, new IntPtr(36));  // последний аргумнет, это смещение измеряющиеся в байтах , которые указывают на начало столбика данных
 			OpenGL.CheckGLError();
 
-			// нужно добавить строчку для OpenGL.glBindAttribLocation(program, VertexColorInfo, "aVertexColorInfo");
+			//if (VAPsAttached)
+			//{
+			
+			//}
+			//else
+			//{
+			//	AttachVAPs();
+			//	VAPsAttached = true;
+			//}
+			
 		}
+		public void AttachVAPs()
+		{
+			
 
-		public void Dispose()
+			// нужно добавить строчку для OpenGL.glBindAttribLocation(program, VertexColorInfo, "aVertexColorInfo");
+
+		}
+		public override void Dispose()
 		{
 			Dispose(true);
 			GC.SuppressFinalize(this);
