@@ -52,6 +52,7 @@ namespace OpenRA
 		public readonly bool PickAny;
 		public readonly string[] Categories;
 		public readonly string Palette;
+		public readonly string Variants;
 
 		readonly TerrainTileInfo[] tileInfo;
 

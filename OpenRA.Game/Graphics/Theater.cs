@@ -98,7 +98,14 @@ namespace OpenRA.Graphics
 				if (tileset.IgnoreTileSpriteOffsets)
 					allSprites = allSprites.Select(s => new Sprite(s.Sheet, s.Bounds, s.ZRamp, new float3(float2.Zero, s.Offset.Z), s.Channel, s.BlendMode));
 
-				templates.Add(t.Value.Id, new TheaterTemplate(allSprites.ToArray(), variants.First().Count(), t.Value.Images.Length));
+				if (t.Value.Variants == "Calc")
+				{
+                    templates.Add(t.Value.Id, new TheaterTemplate(allSprites.ToArray(), 1, variants.First().Count()));
+				}
+				else
+				{
+					templates.Add(t.Value.Id, new TheaterTemplate(allSprites.ToArray(), variants.First().Count(), t.Value.Images.Length));
+				}
 			}
 
 			// 1x1px transparent tile
@@ -115,8 +122,8 @@ namespace OpenRA.Graphics
 
 			if (r.Index >= template.Stride)
 				return missingTile;
-
-			var start = template.Variants > 1 ? variant.HasValue ? variant.Value : random.Next(template.Variants) : 0;
+			// if variant == null then random.Next calls
+			var start = template.Variants > 1 ? (variant.HasValue ? variant.Value : random.Next(template.Variants)) : 0;
 			return template.Sprites[start * template.Stride + r.Index];
 		}
 
