@@ -34,22 +34,22 @@ namespace OpenRA.Graphics
 		readonly Map map;
 
 		readonly PaletteReference palette;
-
-		public TerrainSpriteLayer(World world, WorldRenderer wr, Sheet sheet, BlendMode blendMode, PaletteReference palette, bool restrictToBounds)
+		public string ownername;
+		public TerrainSpriteLayer(World world, WorldRenderer wr, Sheet sheet, BlendMode blendMode, PaletteReference palette, bool restrictToBounds, string ownername)
 		{
 			worldRenderer = wr;
 			this.restrictToBounds = restrictToBounds;
 			Sheet = sheet;
 			BlendMode = blendMode;
 			this.palette = palette;
-
+			this.ownername = ownername;
 			map = world.Map;
 			rowStride = 6 * map.MapSize.X;
 
 			vertices = new Vertex[rowStride * map.MapSize.Y];
-			vertexBuffer = Game.Renderer.Context.CreateVertexBuffer(vertices.Length);
+			vertexBuffer = Game.Renderer.Context.CreateVertexBuffer(vertices.Length, "TerrainSpriteLayer");
 			emptySprite = new Sprite(sheet, Rectangle.Empty, TextureChannel.Alpha);
-
+			vertexBuffer.ownername += "->" + ownername;
 			wr.PaletteInvalidated += UpdatePaletteIndices;
 		}
 
@@ -108,6 +108,7 @@ namespace OpenRA.Graphics
 
 			Game.Renderer.Flush();
 
+			vertexBuffer.ActivateVertextBuffer();
 			// Flush any visible changes to the GPU
 			for (var row = firstRow; row <= lastRow; row++)
 			{
@@ -121,15 +122,18 @@ namespace OpenRA.Graphics
 					// The compiler / language spec won't let us calculate a pointer to
 					// an offset inside a generic array T[], and so we are forced to
 					// calculate the start-of-row pointer here to pass in to SetData.
+
 					fixed (Vertex* vPtr = &vertices[0])
+					{
 						vertexBuffer.SetData((IntPtr)(vPtr + rowOffset), rowOffset, rowStride);
+					}
 				}
 			}
-
+	
 			Game.Renderer.WorldSpriteRenderer.DrawVertexBuffer(
 				vertexBuffer, rowStride * firstRow, rowStride * (lastRow - firstRow),
 				PrimitiveType.TriangleList, Sheet, BlendMode);
-
+			
 			Game.Renderer.Flush();
 		}
 

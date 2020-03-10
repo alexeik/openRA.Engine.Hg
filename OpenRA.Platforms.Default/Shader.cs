@@ -27,6 +27,7 @@ namespace OpenRA.Platforms.Default
 		readonly Dictionary<string, int> samplers = new Dictionary<string, int>();
 		readonly Dictionary<int, ITexture> textures = new Dictionary<int, ITexture>();
 		readonly uint program;
+		public string sharerfilename;
 
 		protected uint CompileShaderObject(int type, string name)
 		{
@@ -65,6 +66,7 @@ namespace OpenRA.Platforms.Default
 
 		public Shader(string name)
 		{
+			sharerfilename = name;
 			var vertexShader = CompileShaderObject(OpenGL.GL_VERTEX_SHADER, name);
 			var fragmentShader = CompileShaderObject(OpenGL.GL_FRAGMENT_SHADER, name);
 
@@ -150,22 +152,33 @@ namespace OpenRA.Platforms.Default
 		{
 			VerifyThreadAffinity();
 			OpenGL.glUseProgram(program);
+			OpenGL.CheckGLError();
 
 			// bind the textures
 			foreach (var kv in textures)
 			{
+				if ((kv.Value as Texture).disposed)
+				{
+					continue; // on world restart some Textures can be Disposed. But assigned to Shader.
+					// TODO: On Dispose Texture from Sheets need to add Clear textures on Shaders
+				}
 				OpenGL.glActiveTexture(OpenGL.GL_TEXTURE0 + kv.Key);
+				OpenGL.CheckGLError();
+
 				if ((kv.Value as Texture).TextureType == OpenGL.GL_TEXTURE_2D_ARRAY)
 				{
 					OpenGL.glBindTexture(OpenGL.GL_TEXTURE_2D_ARRAY, ((ITextureInternal)kv.Value).ID);
+					OpenGL.CheckGLError();
 				}
 				else
 				{
 					OpenGL.glBindTexture(OpenGL.GL_TEXTURE_2D, ((ITextureInternal)kv.Value).ID);
+					OpenGL.CheckGLError();
 				}
 			}
 
 			OpenGL.CheckGLError();
+			
 		}
 
 		/// <summary>
@@ -182,7 +195,14 @@ namespace OpenRA.Platforms.Default
 
 			int texUnit;
 			if (samplers.TryGetValue(name, out texUnit))
+			{
 				textures[texUnit] = t;
+			}
+		}
+
+		public void ClearTextures()
+		{
+			textures.Clear();
 		}
 
 		public override void SetBool(string name, bool value)

@@ -37,7 +37,7 @@ namespace OpenRA.Platforms.Default
 		public uint ID { get { return texture; } }
 		public Size Size { get; set; }
 
-		bool disposed;
+		public bool disposed;
 
 		public TextureScaleFilter ScaleFilter
 		{
@@ -105,6 +105,7 @@ namespace OpenRA.Platforms.Default
 					OpenGL.CheckGLError();
 				}
 			}
+			OpenGL.glBindTexture(OpenGL.GL_TEXTURE_2D_ARRAY, 0);
 		}
 
 		// An array of RGBA
@@ -129,6 +130,7 @@ namespace OpenRA.Platforms.Default
 					OpenGL.CheckGLError();
 				}
 			}
+			OpenGL.glBindTexture(OpenGL.GL_TEXTURE_2D_ARRAY, 0);
 		}
 
 		public virtual byte[] GetData()
@@ -163,6 +165,7 @@ namespace OpenRA.Platforms.Default
 			OpenGL.glTexImage2D(OpenGL.GL_TEXTURE_2D, 0, OpenGL.GL_RGBA8, width, height,
 				0, OpenGL.GL_BGRA, OpenGL.GL_UNSIGNED_BYTE, IntPtr.Zero);
 			OpenGL.CheckGLError();
+			OpenGL.glBindTexture(OpenGL.GL_TEXTURE_2D_ARRAY, 0);
 		}
 
 		public void Dispose()

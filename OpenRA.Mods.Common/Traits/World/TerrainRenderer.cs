@@ -45,7 +45,7 @@ namespace OpenRA.Mods.Common.Traits
 			{
 				var palette = template.Value.Palette ?? TileSet.TerrainPaletteInternalName;
 				spriteLayers.GetOrAdd(palette, pal =>
-					new TerrainSpriteLayer(world, wr, theater.Sheet, BlendMode.Alpha, wr.Palette(palette), world.Type != WorldType.Editor));
+					new TerrainSpriteLayer(world, wr, theater.Sheet, BlendMode.Alpha, wr.Palette(palette), world.Type != WorldType.Editor,"TerrainRenderer"));
 			}
 
 			foreach (var cell in map.AllCells)

@@ -167,12 +167,12 @@ namespace OpenRA.Mods.Common.Traits
 			return sum;
 		}
 
-		WorldRenderer _wr;
+		
 		public void WorldLoaded(World w, WorldRenderer wr)
 		{
 			var resources = w.WorldActor.TraitsImplementing<ResourceType>() //обращение к ResourceTYpe, который содержит в себе world.yaml.ResourceType таблицу
 				.ToDictionary(r => r.Info.ResourceType, r => r);
-			_wr = wr;
+			
 
 			// Build the sprite layer dictionary for rendering resources
 			// All resources that have the same palette must also share a sheet and blend mode
@@ -181,7 +181,7 @@ namespace OpenRA.Mods.Common.Traits
 				var layer = spriteLayers.GetOrAdd(r.Value.Palette, pal =>
 				{
 					var first = r.Value.Variants.First().Value.First();
-					return new TerrainSpriteLayer(w, wr, first.Sheet, first.BlendMode, pal, wr.World.Type != WorldType.Editor);
+					return new TerrainSpriteLayer(w, wr, first.Sheet, first.BlendMode, pal, wr.World.Type != WorldType.Editor, "ResourceLayer");
 				});
 
 				// Validate that sprites are compatible with this layer
@@ -213,7 +213,7 @@ namespace OpenRA.Mods.Common.Traits
 				if (!AllowResourceAt(t, cell))
 					continue;
 				// тут составл€етс€ внутренн€ коллекци€ ресурсных тайлов Content из всех тайлов Map.AllCells
-				// вс€ таблица ResourceType уходит в t параметр и хранитс€ внутри каждой €чейки ресурса = Content[cell].
+				// вс€ таблица ResourceType уходит в t параметр и хранитс€ внутри каждой €чейки ресурса Content[cell].
 				Content[cell] = CreateResourceCell(t, cell);
 			}
 
@@ -246,20 +246,19 @@ namespace OpenRA.Mods.Common.Traits
 																	 // алгоритму из D2ResourceLayer
 				}
 			}
-			
+		}
 
-			
-		}
-		public Sprite GetResourceSprite(int templateid, int? offset, int variantrandom)
-		{
-			ushort sdf;
-			//int index = Game.CosmeticRandom.Next(63);
-			//int ffd = templateid + Convert.ToInt32(offset);
-			sdf = Convert.ToUInt16(templateid); //тут всегда одна цифра. играемс€ через variantrandom
-			var t = new TerrainTile(sdf, 0);
-			Sprite sprite = _wr.Theater.TileSprite(t, offset);
-			return sprite;
-		}
+		//public Sprite GetResourceSprite(int templateid, int? offset, int variantrandom)
+		//{
+		//	ushort sdf;
+		//	//int index = Game.CosmeticRandom.Next(63);
+		//	//int ffd = templateid + Convert.ToInt32(offset);
+		//	sdf = Convert.ToUInt16(templateid); //тут всегда одна цифра. играемс€ через variantrandom
+		//	var t = new TerrainTile(sdf, 0);
+		//	Sprite sprite = _wr.Theater.TileSprite(t, offset);
+		//	return sprite;
+		//}
+
 		public bool AllowResourceAt(ResourceType rt, CPos cell)
 		{
 			if (!world.Map.Contains(cell))

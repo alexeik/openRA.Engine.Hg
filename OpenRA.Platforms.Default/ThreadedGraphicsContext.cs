@@ -88,7 +88,7 @@ namespace OpenRA.Platforms.Default
 					getCreateTexture = () => new ThreadedTexture(this, (ITextureInternal)context.CreateTexture());
 					getCreateFrameBuffer = s => new ThreadedFrameBuffer(this, context.CreateFrameBuffer((Size)s, (ITextureInternal)CreateTexture()));
 					getCreateShader = name => new ThreadedShader(this, context.CreateShader((string)name));
-					getCreateVertexBuffer = length => new ThreadedVertexBuffer(this, context.CreateVertexBuffer((int)length));
+					getCreateVertexBuffer = length => new ThreadedVertexBuffer(this, context.CreateVertexBuffer((int)length, "ThreadedGraphicsContext"));
 					doDrawPrimitives =
 						 tuple =>
 						 {
@@ -500,7 +500,7 @@ namespace OpenRA.Platforms.Default
 		public ThreadedVertexBuffer(ThreadedGraphicsContext device, VertexBuffer<Vertex> vertexBuffer)
 		{
 			this.device = device;
-			bind = vertexBuffer.Bind;
+			bind = vertexBuffer.BindOnceOpen;
 			setData1 = tuple => { var t = (Tuple<Vertex[], int>)tuple; vertexBuffer.SetData(t.Item1, t.Item2); device.ReturnVertices(t.Item1); };
 			setData2 = tuple => { var t = (Tuple<IntPtr, int, int>)tuple; vertexBuffer.SetData(t.Item1, t.Item2, t.Item3); return null; };
 			dispose = vertexBuffer.Dispose;

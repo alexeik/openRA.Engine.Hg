@@ -51,7 +51,7 @@ namespace OpenRA.Mods.D2k.Traits
 		{
 			theater = wr.Theater;
 			bi = w.WorldActor.Trait<BuildingInfluence>();
-			render = new TerrainSpriteLayer(w, wr, theater.Sheet, BlendMode.Alpha, wr.Palette(info.Palette), wr.World.Type != WorldType.Editor);
+			render = new TerrainSpriteLayer(w, wr, theater.Sheet, BlendMode.Alpha, wr.Palette(info.Palette), wr.World.Type != WorldType.Editor, "BuildableTerrainLayer");
 		}
 
 		public void AddTile(CPos cell, TerrainTile tile)

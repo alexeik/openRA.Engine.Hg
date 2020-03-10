@@ -41,7 +41,7 @@ namespace OpenRA
 		internal int SheetSize { get; private set; }
 		internal int TempBufferSize { get; private set; }
 
-		readonly VertexBuffer<Vertex> tempBuffer;
+		readonly VertexBuffer<Vertex> RendererVertexBuffer;
 		readonly Stack<Rectangle> scissorState = new Stack<Rectangle>();
 
 		SheetBuilder fontSheetBuilder;
@@ -80,7 +80,7 @@ namespace OpenRA
 			IntPtr context = ImGui.CreateContext();
 			ImGui.SetCurrentContext(context);
 
-			tempBuffer = Context.CreateVertexBuffer(TempBufferSize);
+			RendererVertexBuffer = Context.CreateVertexBuffer(TempBufferSize,"Renderer");
 		}
 
 		static Size GetResolution(GraphicSettings graphicsSettings)
@@ -192,12 +192,27 @@ namespace OpenRA
 		/// <param name="vertices">Вертексы</param>
 		/// <param name="numVertices">длина</param>
 		/// <param name="type">тип</param>
-		public void DrawBatch(Vertex[] vertices, int numVertices, PrimitiveType type)
+		public void DrawBatchForVertexesSpriteRendererClasses(Vertex[] vertices, int numVertices, PrimitiveType type)
 		{
-			tempBuffer.SetData(vertices, numVertices);
+			RendererVertexBuffer.ActivateVertextBuffer();
+			RendererVertexBuffer.SetData(vertices, numVertices);
+			//RendererOpenVAO();
 			Context.DrawPrimitives(type, 0, numVertices);
+			//RendererCloseVAO();
+#if DEBUG_VERTEX
+			Console.WriteLine("DrawBatchForVertexesSprite SpriteRenderer");
+#endif
 			PerfHistory.Increment("batches", 1);
+		}
 
+		public void RendererOpenVAO()
+		{
+			RendererVertexBuffer.ActivateVAO();
+		}
+
+		public void RendererCloseVAO()
+		{
+			RendererVertexBuffer.CloseVAO();
 		}
 
 		/// <summary>
@@ -206,13 +221,15 @@ namespace OpenRA
 		/// Например TerrainSpriteLayer.
 		/// </summary>
 		/// <typeparam name="T">в основном это Vertex</typeparam>
-		/// <param name="vertices">Внешний массив вертексов </param>
+		/// <param name="VertBuffer">Внешний буфер вертексов </param>
 		/// <param name="firstVertex">от</param>
 		/// <param name="numVertices">длина</param>
 		/// <param name="type">тип треугольники и т.д.</param>
-		public void DrawBatchWithBind<T>(VertexBuffer<T> vertices, int firstVertex, int numVertices, PrimitiveType type) where T : struct
+		public void DrawBatcForOpenGLVertexBuffer<T>(VertexBuffer<T> VertBuffer, int firstVertex, int numVertices, PrimitiveType type) where T : struct
 		{
-			vertices.Bind(); //doubles Bind() call
+#if DEBUG_VERTEX
+			Console.WriteLine("DrawBatcForOpenGL " + VertBuffer.ownername);
+#endif
 			Context.DrawPrimitives(type, firstVertex, numVertices);
 			PerfHistory.Increment("batches", 1);
 		}
@@ -242,11 +259,6 @@ namespace OpenRA
 					currentBatchRenderer.Flush();
 				currentBatchRenderer = value;
 			}
-		}
-
-		public VertexBuffer<Vertex> CreateVertexBuffer(int length)
-		{
-			return Context.CreateVertexBuffer(length);
 		}
 
 		public void EnableScissor(Rectangle rect)
@@ -306,7 +318,7 @@ namespace OpenRA
 		public void Dispose()
 		{
 			WorldModelRenderer.Dispose();
-			tempBuffer.Dispose();
+			RendererVertexBuffer.Dispose();
 			if (fontSheetBuilder != null)
 				fontSheetBuilder.Dispose();
 			if (Fonts != null)

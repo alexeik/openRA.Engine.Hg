@@ -9,11 +9,12 @@ namespace OpenRA.Platforms.Default
 {
 	public abstract class VertexBufferUserBase<T> : IDisposable
 	{
-		public abstract void Bind();
+		public abstract void BindOnceOpen();
 		public abstract void SetData(T[] vertices, int length);
 		public abstract void SetData(T[] vertices, int start, int length);
 		public abstract void SetData(IntPtr data, int start, int length);
 		public abstract void Dispose();
+		public abstract void ActivateVAO();
 		volatile int managedThreadId;
 
 		protected VertexBufferUserBase()

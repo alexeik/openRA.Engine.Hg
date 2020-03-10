@@ -72,7 +72,7 @@ namespace OpenRA.Platforms.Default
 		[DllImport("user32.dll")]
 		static extern bool SetProcessDPIAware();
 
-		public PlatformWindow(Size requestWindowSize, WindowMode windowMode, int batchSize,bool DisableWindowsDPIScaling, bool lockMouseWindow, bool disableWindowsRenderThread)
+		public PlatformWindow(Size requestWindowSize, WindowMode windowMode, int batchSize, bool DisableWindowsDPIScaling, bool lockMouseWindow, bool disableWindowsRenderThread)
 		{
 #if DEBUG
 			windowMode = WindowMode.Windowed;
@@ -94,11 +94,17 @@ namespace OpenRA.Platforms.Default
 				SDL.SDL_GL_SetAttribute(SDL.SDL_GLattr.SDL_GL_GREEN_SIZE, 8);
 				SDL.SDL_GL_SetAttribute(SDL.SDL_GLattr.SDL_GL_BLUE_SIZE, 8);
 				SDL.SDL_GL_SetAttribute(SDL.SDL_GLattr.SDL_GL_ALPHA_SIZE, 0);
-				
-				// SDL.SDL_GL_SetAttribute(SDL.SDL_GLattr.SDL_GL_CONTEXT_MAJOR_VERSION, 3); // OpenGL 3+
 
-				// SDL.SDL_GL_SetAttribute(SDL.SDL_GLattr.SDL_GL_CONTEXT_MINOR_VERSION, 2);
-				SDL.SDL_GL_SetAttribute(SDL.SDL_GLattr.SDL_GL_CONTEXT_PROFILE_MASK, 1); // нужно для RenderDoc
+				SDL.SDL_GL_SetAttribute(SDL.SDL_GLattr.SDL_GL_CONTEXT_MAJOR_VERSION, 4); // OpenGL 3+
+
+				SDL.SDL_GL_SetAttribute(SDL.SDL_GLattr.SDL_GL_CONTEXT_MINOR_VERSION, 4);
+				SDL.SDL_GL_SetAttribute(SDL.SDL_GLattr.SDL_GL_CONTEXT_PROFILE_MASK, Convert.ToInt32(SDL.SDL_GLprofile.SDL_GL_CONTEXT_PROFILE_CORE)); // нужно для RenderDoc
+				
+
+				SDL.SDL_GL_SetAttribute(SDL.SDL_GLattr.SDL_GL_CONTEXT_FLAGS, Convert.ToInt32(SDL.SDL_GLcontext.SDL_GL_CONTEXT_DEBUG_FLAG)) ;
+
+				
+
 				SDL.SDL_DisplayMode display;
 				SDL.SDL_GetCurrentDisplayMode(0, out display);
 
@@ -230,7 +236,7 @@ namespace OpenRA.Platforms.Default
 			else
 				//context = new ThreadedGraphicsContext(new GraphicsContext(this), batchSize);
 
-			SDL.SDL_SetModState(SDL.SDL_Keymod.KMOD_NONE);
+				SDL.SDL_SetModState(SDL.SDL_Keymod.KMOD_NONE);
 			input = new Sdl2Input();
 		}
 

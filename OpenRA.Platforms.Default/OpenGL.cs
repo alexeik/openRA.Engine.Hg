@@ -38,6 +38,8 @@ namespace OpenRA.Platforms.Default
 
 		public const int GL_FALSE = 0;
 
+		public const int GL_DEBUG_OUTPUT = 0x92E0;
+		public const int GL_DEBUG_OUTPUT_SYNCHRONOUS = 0x8242;
 		// ClearBufferMask
 		public const int GL_COLOR_BUFFER_BIT = 0x4000;
 		public const int GL_DEPTH_BUFFER_BIT = 0x0100;
@@ -144,6 +146,7 @@ namespace OpenRA.Platforms.Default
 		public const int DEPTH_ATTACHMENT_EXT = 0x8D00;
 		public const int FRAMEBUFFER_COMPLETE_EXT = 0x8CD5;
 
+		#region OpenGLDelegates
 		public delegate void Flush();
 		public static Flush glFlush { get; private set; }
 
@@ -372,10 +375,104 @@ namespace OpenRA.Platforms.Default
 		public delegate int CheckFramebufferStatus(int target);
 		public static CheckFramebufferStatus glCheckFramebufferStatus { get; private set; }
 
+		public delegate int glBindVertexArrayDelegate(int array);
+		public static glBindVertexArrayDelegate glBindVertexArray { get; private set; }
+
+		public delegate int glGenVertexArraysDeleagte(int n, int[] arrays);
+		public static glGenVertexArraysDeleagte glGenVertexArrays { get; private set; }
+
+		//public delegate int glDebugMessageCallback
+		public delegate void DebugProc(
+				DebugSource source, DebugType type, int id,
+				DebugSeverity severity, int length, IntPtr message,
+				IntPtr userParam);
+
+		public delegate void glDebugMessageControlDelegate(DebugSourceControl source, DebugTypeControl type, DebugSeverityControl severity, int count, uint[] ids, bool enabled);
+		public static glDebugMessageControlDelegate glDebugMessageControl { get; private set; }
+
+		public delegate void glDebugMessageCallbackDelegate(DebugProc callback, IntPtr userParam);
+		public static glDebugMessageCallbackDelegate glDebugMessageCallback { get; private set; }
+
+		public enum DebugSource
+		{
+			GL_DEBUG_SOURCE_API = 0x8246,
+			GL_DEBUG_SOURCE_APPLICATION = 0x824A,
+			GL_DEBUG_SOURCE_OTHER = 0x824B,
+			GL_DEBUG_SOURCE_SHADER_COMPILER = 0x8248,
+			GL_DEBUG_SOURCE_THIRD_PARTY = 0x8249,
+			GL_DEBUG_SOURCE_WINDOW_SYSTEM = 0x8247,
+			GL_DONT_CARE = 0x1100
+		}
+		public enum DebugType
+		{
+			GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR = 0x824D,
+			GL_DEBUG_TYPE_ERROR = 0x824C,
+			GL_DEBUG_TYPE_MARKER = 0x8268,
+			GL_DEBUG_TYPE_OTHER = 0x8251,
+			GL_DEBUG_TYPE_PERFORMANCE = 0x8250,
+			GL_DEBUG_TYPE_POP_GROUP = 0x826A,
+			GL_DEBUG_TYPE_PORTABILITY = 0x824F,
+			GL_DEBUG_TYPE_PUSH_GROUP = 0x8269,
+			GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR = 0x824E,
+			GL_DONT_CARE = 0x1100
+		}
+		public enum DebugSeverity
+		{
+			GL_DEBUG_SEVERITY_HIGH = 0x9146,
+			GL_DEBUG_SEVERITY_LOW = 0x9148,
+			GL_DEBUG_SEVERITY_MEDIUM = 0x9147,
+			GL_DEBUG_SEVERITY_NOTIFICATION = 0x826B,
+			GL_DONT_CARE = 0x1100
+		}
+		public enum DebugSourceControl
+		{
+			GL_DEBUG_SOURCE_API = 0x8246,
+			GL_DEBUG_SOURCE_APPLICATION = 0x824A,
+			GL_DEBUG_SOURCE_OTHER = 0x824B,
+			GL_DEBUG_SOURCE_SHADER_COMPILER = 0x8248,
+			GL_DEBUG_SOURCE_THIRD_PARTY = 0x8249,
+			GL_DEBUG_SOURCE_WINDOW_SYSTEM = 0x8247,
+			GL_DONT_CARE = 0x1100
+		}
+		public enum DebugTypeControl
+		{
+			GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR = 0x824D,
+			GL_DEBUG_TYPE_ERROR = 0x824C,
+			GL_DEBUG_TYPE_MARKER = 0x8268,
+			GL_DEBUG_TYPE_OTHER = 0x8251,
+			GL_DEBUG_TYPE_PERFORMANCE = 0x8250,
+			GL_DEBUG_TYPE_POP_GROUP = 0x826A,
+			GL_DEBUG_TYPE_PORTABILITY = 0x824F,
+			GL_DEBUG_TYPE_PUSH_GROUP = 0x8269,
+			GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR = 0x824E,
+			GL_DONT_CARE = 0x1100
+		}
+		public enum DebugSeverityControl
+		{
+			GL_DEBUG_SEVERITY_HIGH = 0x9146,
+			GL_DEBUG_SEVERITY_LOW = 0x9148,
+			GL_DEBUG_SEVERITY_MEDIUM = 0x9147,
+			GL_DEBUG_SEVERITY_NOTIFICATION = 0x826B,
+			GL_DONT_CARE = 0x1100
+		}
+		#endregion
+		private static void OpenGLDebugCallback(DebugSource source, DebugType type, int id, DebugSeverity severity, int length, IntPtr message, IntPtr param)
+		{
+			if (severity == DebugSeverity.GL_DEBUG_SEVERITY_LOW)
+				return;
+			if (severity == DebugSeverity.GL_DEBUG_SEVERITY_NOTIFICATION)
+				return;
+			//if (severity == DebugSeverity.GL_DEBUG_SEVERITY_MEDIUM)
+			//	return;
+			string messageStr = Marshal.PtrToStringAnsi(message, length);
+			Console.WriteLine("[OpenGL]: message={0}, source={1}, type={2}, id={3}, severity={4}", messageStr, source, type,id,severity);
+		}
+		private static DebugProc openGLDebugDelegate;
 		public static void Initialize()
 		{
 			// glGetError and glGetString are used in our error handlers
 			// so we want these to be available early.
+			openGLDebugDelegate = OpenGLDebugCallback;
 			try
 			{
 				glGetError = Bind<GetError>("glGetError");
@@ -385,6 +482,7 @@ namespace OpenRA.Platforms.Default
 			{
 				throw new InvalidProgramException("Failed to initialize low-level OpenGL bindings. GPU information is not available");
 			}
+
 
 			DetectGLFeatures();
 			if (!Features.HasFlag(GLFeatures.GL2OrGreater) || !Features.HasFlag(GLFeatures.FramebufferExt))
@@ -397,6 +495,13 @@ namespace OpenRA.Platforms.Default
 
 			try
 			{
+				glDebugMessageControl = Bind<glDebugMessageControlDelegate>("glDebugMessageControl");
+				glDebugMessageCallback = Bind<glDebugMessageCallbackDelegate>("glDebugMessageCallback");
+				glDebugMessageCallback(openGLDebugDelegate, IntPtr.Zero);
+				glDebugMessageControl(DebugSourceControl.GL_DONT_CARE, DebugTypeControl.GL_DONT_CARE, DebugSeverityControl.GL_DEBUG_SEVERITY_LOW, 0, new uint[0], true);
+
+				glGenVertexArrays = Bind<glGenVertexArraysDeleagte>("glGenVertexArrays");
+				glBindVertexArray = Bind<glBindVertexArrayDelegate>("glBindVertexArray");
 				glFlush = Bind<Flush>("glFlush");
 				glViewport = Bind<Viewport>("glViewport");
 				glClear = Bind<Clear>("glClear");
@@ -471,6 +576,12 @@ namespace OpenRA.Platforms.Default
 				WriteGraphicsLog("Failed to initialize OpenGL bindings.\nInner exception was: {0}".F(e));
 				throw new InvalidProgramException("Failed to initialize OpenGL. See graphics.log for details.");
 			}
+
+			glEnable(GL_DEBUG_OUTPUT);
+			glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+
+
+
 		}
 
 		static T Bind<T>(string name)
@@ -505,6 +616,7 @@ namespace OpenRA.Platforms.Default
 
 		public static void CheckGLError()
 		{
+			return;
 			var n = glGetError();
 			if (n != GL_NO_ERROR)
 			{
@@ -512,10 +624,10 @@ namespace OpenRA.Platforms.Default
 				var error = "GL Error: {0}\n{1}".F(errorText, new StackTrace());
 				WriteGraphicsLog(error);
 				const string ExceptionMessage = "OpenGL Error: See graphics.log for details.";
-				if (n == GL_OUT_OF_MEMORY)
-					throw new OutOfMemoryException(ExceptionMessage);
-				else
-					throw new InvalidOperationException(ExceptionMessage);
+				//if (n == GL_OUT_OF_MEMORY)
+				//	throw new OutOfMemoryException(ExceptionMessage);
+				//else
+				//	throw new InvalidOperationException(ExceptionMessage);
 			}
 		}
 
@@ -538,7 +650,7 @@ namespace OpenRA.Platforms.Default
 			Log.Write("graphics", "GL Version: {0}", glGetString(GL_VERSION));
 			Log.Write("graphics", "Shader Version: {0}", glGetString(GL_SHADING_LANGUAGE_VERSION));
 			Log.Write("graphics", "Available extensions:");
-			Log.Write("graphics", glGetString(GL_EXTENSIONS));
+			//Log.Write("graphics", glGetString(GL_EXTENSIONS)); not valid in core profile
 		}
 	}
 }

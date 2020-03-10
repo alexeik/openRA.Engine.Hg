@@ -34,6 +34,7 @@ namespace OpenRA.Platforms.Default
 			OpenGL.CheckGLError();
 			OpenGL.glTexParameterf(OpenGL.GL_TEXTURE_2D_ARRAY, OpenGL.GL_TEXTURE_WRAP_T, OpenGL.GL_CLAMP_TO_EDGE);
 			OpenGL.CheckGLError();
+
 		}
 
 		/// <summary>
@@ -47,6 +48,7 @@ namespace OpenRA.Platforms.Default
 		{
 			VerifyThreadAffinity();
 			Size = new Size(width, height);
+			PrepareTexture();
 			unsafe
 			{
 				fixed (byte* ptr = &colors[0])
@@ -56,6 +58,7 @@ namespace OpenRA.Platforms.Default
 					OpenGL.CheckGLError();
 				}
 			}
+			OpenGL.glBindTexture(OpenGL.GL_TEXTURE_2D_ARRAY, 0);
 		}
 
 		// An array of RGBA
@@ -78,8 +81,10 @@ namespace OpenRA.Platforms.Default
 					OpenGL.glTexImage3D(OpenGL.GL_TEXTURE_2D, 0, OpenGL.GL_RGBA32F, width, height, depth,
 						0, OpenGL.GL_RGBA, OpenGL.GL_UNSIGNED_BYTE, intPtr);
 					OpenGL.CheckGLError();
+
 				}
 			}
+			OpenGL.glBindTexture(OpenGL.GL_TEXTURE_2D_ARRAY, 0);
 		}
 
 		public override byte[] GetData()
@@ -117,6 +122,7 @@ namespace OpenRA.Platforms.Default
 			OpenGL.glTexImage3D(OpenGL.GL_TEXTURE_2D_ARRAY, 0, OpenGL.GL_RGBA, width, height, depth,
 						0, OpenGL.GL_BGRA, OpenGL.GL_UNSIGNED_BYTE, IntPtr.Zero);
 			OpenGL.CheckGLError();
+			OpenGL.glBindTexture(OpenGL.GL_TEXTURE_2D_ARRAY, 0);
 		}
 	}
 }

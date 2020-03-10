@@ -1,4 +1,4 @@
-#version 130
+#version 430
 
 out vec4 fragColor;
 
@@ -58,14 +58,14 @@ void main()
 	
 	vec3 flipped_texCoords = vec3(vTexCoord.s,1.0-vTexCoord.t,vTexMetadata.s); 	//vec3 flipped_texCoords = vec3(0.0,0.0,84);
 	
-	vec3 sample = texture(TextureFontMSDF, flipped_texCoords).rgb;
+	vec3 samplemsdf = texture(TextureFontMSDF, flipped_texCoords).rgb;
 	
 	vec2 pos = flipped_texCoords.xy;
     
 	float pxRange=12; //так было при генерации png в msdfgen.
 
 	vec2 msdfUnit = pxRange/vec2(textureSize(TextureFontMSDF, 0));
-    float sigDist = median(sample.r, sample.g, sample.b) - 0.5;
+    float sigDist = median(samplemsdf.r, samplemsdf.g, samplemsdf.b) - 0.5;
     sigDist *= dot(msdfUnit, 0.5/fwidth(pos));
     float opacity = clamp(sigDist + 0.5, 0.0, 1.0);
 

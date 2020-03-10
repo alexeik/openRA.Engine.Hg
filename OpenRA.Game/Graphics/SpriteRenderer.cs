@@ -38,6 +38,12 @@ namespace OpenRA.Graphics
 		{
 			ns += 1;
 		}
+
+		public void ClearTexturesShader()
+		{
+			shader.ClearTextures();
+		}
+
 		public void Flush()
 		{
 			if (rendererID == "WorldSpriteRenderer")
@@ -53,9 +59,10 @@ namespace OpenRA.Graphics
 				}
 				renderer.Context.SetBlendMode(currentBlend);
 				shader.PrepareRender();
-				renderer.DrawBatch(vertices, nv, PrimitiveType.TriangleList);
+				renderer.RendererOpenVAO();
+				renderer.DrawBatchForVertexesSpriteRendererClasses(vertices, nv, PrimitiveType.TriangleList);
+				renderer.RendererCloseVAO();
 				renderer.Context.SetBlendMode(BlendMode.None);
-
 				nv = 0;
 				ns = 0;
 			}
@@ -158,7 +165,9 @@ namespace OpenRA.Graphics
 			shader.SetTexture("Texture0", sheet.GetTexture());
 			renderer.Context.SetBlendMode(blendMode);
 			shader.PrepareRender();
-			renderer.DrawBatchWithBind(buffer, start, length, type);
+			buffer.ActivateVAO();
+			renderer.DrawBatcForOpenGLVertexBuffer(buffer, start, length, type);
+			buffer.CloseVAO();
 			renderer.Context.SetBlendMode(BlendMode.None);
 		}
 

@@ -37,20 +37,16 @@ namespace OpenRA.Platforms.Default
 				throw new InvalidOperationException("Can not create OpenGL context. (Error: {0})".F(SDL.SDL_GetError()));
 
 			OpenGL.Initialize();
-			OpenGL.glEnableVertexAttribArray(Shader.VertexPosAttributeIndex);
-			OpenGL.CheckGLError();
-			OpenGL.glEnableVertexAttribArray(Shader.TexCoordAttributeIndex);
-			OpenGL.CheckGLError();
-			OpenGL.glEnableVertexAttribArray(Shader.TexMetadataAttributeIndex);
-			OpenGL.CheckGLError();
-			OpenGL.glEnableVertexAttribArray(Shader.VertexColorInfo);
-			OpenGL.CheckGLError();
+
+
+			//пока через резервы сделаны VAO объекты, потому можно и через добавить/удалить
+			VertexBuffer<Vertex>.ReserveVAOList();
 		}
 
-		public VertexBuffer<Vertex> CreateVertexBuffer(int size)
+		public VertexBuffer<Vertex> CreateVertexBuffer(int size, string ownername)
 		{
 			VerifyThreadAffinity();
-			return new VertexBuffer<Vertex>(size);
+			return new VertexBuffer<Vertex>(size,ownername);
 		}
 
 		public Texture CreateTexture()

@@ -20,12 +20,19 @@ namespace OpenRA.Platforms.Default
 		static readonly int VertexSize = Marshal.SizeOf(typeof(T));
 		uint buffer;
 		bool disposed;
-
-		public VertexBuffer(int size)
+		int LocalVertexArrayIndex;
+		public string ownername;
+		public VertexBuffer(int size, string ownername)
 		{
-			OpenGL.glGenBuffers(1, out buffer);
-			OpenGL.CheckGLError();
-			Bind();
+			#if DEBUG_VERTEX
+			Console.WriteLine("VB created owner: " + ownername);
+#endif
+			this.ownername = ownername;
+			VAOReserveStack += 1; //помечаем, что резерв уменьшился.
+			LocalVertexArrayIndex = VAOReserveStack;
+			
+
+			BindOnceOpen();
 
 			// Generates a buffer with uninitialized memory.
 			OpenGL.glBufferData(OpenGL.GL_ARRAY_BUFFER,
@@ -53,6 +60,7 @@ namespace OpenRA.Platforms.Default
 			{
 				ptr.Free();
 			}
+			BindOnceClose();
 		}
 
 		public override void SetData(T[] data, int length)
@@ -63,7 +71,6 @@ namespace OpenRA.Platforms.Default
 		public override void SetData(T[] data, int start, int length)
 		{
 			//Console.WriteLine("buffer SetData() in buffer number : " + buffer);
-			Bind();
 
 			var ptr = GCHandle.Alloc(data, GCHandleType.Pinned);
 			try
@@ -79,52 +86,102 @@ namespace OpenRA.Platforms.Default
 			}
 
 			OpenGL.CheckGLError();
+
+	
 		}
 
 		public override void SetData(IntPtr data, int start, int length)
 		{
 			//Console.WriteLine("buffer SetData2()" + buffer);
-			Bind();
+			//ActivateVAOBeforeGLDraw();
+			//ActivateVertextBuffer();
+			//BindOnce();
 			OpenGL.glBufferSubData(OpenGL.GL_ARRAY_BUFFER,
 				new IntPtr(VertexSize * start),
 				new IntPtr(VertexSize * length),
 				data);
 			OpenGL.CheckGLError();
 		}
-		bool VAPsAttached = false;
 
-		public override void Bind()
+#region Vertex Array Managmenet
+
+		public static int[] VAOList;
+		public static int VAOReserveStack;
+
+		public static void ReserveVAOList()
+		{
+			VAOList = new int[30];
+			OpenGL.glGenVertexArrays(30, VAOList);
+			OpenGL.CheckGLError();
+		}
+#endregion
+		public override void ActivateVAO()
+		{
+			if (LocalVertexArrayIndex == 0)
+			{
+				Console.WriteLine("ERROR IN VAO Activate index==0!");
+			}
+			OpenGL.glBindVertexArray(VAOList[LocalVertexArrayIndex]);
+#if DEBUG_VERTEX
+			Console.WriteLine("glBindVertexArray: " + VAOList[LocalVertexArrayIndex] + "owner : " +ownername);
+#endif
+			OpenGL.CheckGLError();
+		}
+
+		public void CloseVAO()
+		{
+#if DEBUG_VERTEX
+			Console.WriteLine("glBindVertexArray: closed" + "owner : " + ownername );
+#endif
+			OpenGL.glBindVertexArray(0);
+			OpenGL.CheckGLError();
+		}
+
+		public void ActivateVertextBuffer()
+		{
+			OpenGL.glBindBuffer(OpenGL.GL_ARRAY_BUFFER, buffer);
+			OpenGL.CheckGLError();
+
+		}
+
+		public override void BindOnceOpen()
 		{
 			VerifyThreadAffinity();
-			//Console.WriteLine("buffer Bind()" + buffer);
+#if DEBUG_VERTEX
+			Console.WriteLine("BindOnceOpen: " + VAOList[LocalVertexArrayIndex].ToString());
+#endif
+			OpenGL.glBindVertexArray(VAOList[LocalVertexArrayIndex]);
+			OpenGL.CheckGLError();
+			OpenGL.glGenBuffers(1, out buffer);
+			OpenGL.CheckGLError();
 			OpenGL.glBindBuffer(OpenGL.GL_ARRAY_BUFFER, buffer);
 			OpenGL.CheckGLError();
 			OpenGL.glVertexAttribPointer(Shader.VertexPosAttributeIndex, 3, OpenGL.GL_FLOAT, false, VertexSize, IntPtr.Zero);
 			OpenGL.CheckGLError();
+			OpenGL.glEnableVertexAttribArray(Shader.VertexPosAttributeIndex);
+			OpenGL.CheckGLError();
 			OpenGL.glVertexAttribPointer(Shader.TexCoordAttributeIndex, 4, OpenGL.GL_FLOAT, false, VertexSize, new IntPtr(12));
+			OpenGL.CheckGLError();
+			OpenGL.glEnableVertexAttribArray(Shader.TexCoordAttributeIndex);
 			OpenGL.CheckGLError();
 			OpenGL.glVertexAttribPointer(Shader.TexMetadataAttributeIndex, 2, OpenGL.GL_FLOAT, false, VertexSize, new IntPtr(28));  // последний аргумнет, это смещение измеряющиеся в байтах , которые указывают на начало столбика данных
 			OpenGL.CheckGLError();
+			OpenGL.glEnableVertexAttribArray(Shader.TexMetadataAttributeIndex);
+			OpenGL.CheckGLError();
 			OpenGL.glVertexAttribPointer(Shader.VertexColorInfo, 4, OpenGL.GL_FLOAT, false, VertexSize, new IntPtr(36));  // последний аргумнет, это смещение измеряющиеся в байтах , которые указывают на начало столбика данных
 			OpenGL.CheckGLError();
+			OpenGL.glEnableVertexAttribArray(Shader.VertexColorInfo);
+			OpenGL.CheckGLError();
 
-			//if (VAPsAttached)
-			//{
-			
-			//}
-			//else
-			//{
-			//	AttachVAPs();
-			//	VAPsAttached = true;
-			//}
-			
+
 		}
-		public void AttachVAPs()
+		public void BindOnceClose()
 		{
-			
-
-			// нужно добавить строчку для OpenGL.glBindAttribLocation(program, VertexColorInfo, "aVertexColorInfo");
-
+#if DEBUG_VERTEX
+			Console.WriteLine("BindOnceClose: " + VAOList[LocalVertexArrayIndex].ToString());
+#endif
+			OpenGL.glBindVertexArray(0);
+			OpenGL.CheckGLError();
 		}
 		public override void Dispose()
 		{
@@ -140,5 +197,6 @@ namespace OpenRA.Platforms.Default
 			OpenGL.glDeleteBuffers(1, ref buffer);
 			OpenGL.CheckGLError();
 		}
+
 	}
 }
