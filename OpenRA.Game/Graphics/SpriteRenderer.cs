@@ -59,9 +59,7 @@ namespace OpenRA.Graphics
 				}
 				renderer.Context.SetBlendMode(currentBlend);
 				shader.PrepareRender();
-				renderer.RendererOpenVAO();
 				renderer.DrawBatchForVertexesSpriteRendererClasses(vertices, nv, PrimitiveType.TriangleList);
-				renderer.RendererCloseVAO();
 				renderer.Context.SetBlendMode(BlendMode.None);
 				nv = 0;
 				ns = 0;

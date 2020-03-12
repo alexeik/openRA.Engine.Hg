@@ -196,9 +196,9 @@ namespace OpenRA
 		{
 			RendererVertexBuffer.ActivateVertextBuffer();
 			RendererVertexBuffer.SetData(vertices, numVertices);
-			//RendererOpenVAO();
+			RendererOpenVAO();
 			Context.DrawPrimitives(type, 0, numVertices);
-			//RendererCloseVAO();
+			RendererCloseVAO();
 #if DEBUG_VERTEX
 			Console.WriteLine("DrawBatchForVertexesSprite SpriteRenderer");
 #endif
