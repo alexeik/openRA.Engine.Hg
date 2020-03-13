@@ -3,13 +3,13 @@
 uniform vec3 Scroll;
 uniform vec3 r1, r2;
 
-in vec4 aVertexPosition;
+in vec3 aVertexPosition;
 in vec4 aVertexTexCoord;
-in vec2 aVertexTexMetadata;
+in vec4 aVertexTexMetadata;
 in vec4 aVertexColorInfo;
 
 out vec4 vTexCoord;
-out vec2 vTexMetadata;
+out vec4 vTexMetadata;
 out vec4 vChannelMask;
 out vec4 vDepthMask;
 out vec2 vTexSampler;
@@ -60,21 +60,6 @@ vec4 UnpackChannelAttributes(float x)
 	return vec4(primaryChannel, secondaryChannel, primarySampler, secondarySampler);
 }
 
-vec4 SelectChannelMask(float x)
-{
-	if (x >= 7.0)
-		return vec4(0,0,0,1);
-	if (x >= 5.0)
-		return vec4(0,0,1,0);
-	if (x >= 3.0)
-		return vec4(0,1,0,0);
-	if (x >= 2.0)
-		return vec4(1,1,1,1);
-	if (x >= 1.0)
-		return vec4(1,0,0,0);
-
-	return vec4(0, 0, 0, 0);
-}
 
 vec4 SelectColorFraction(float x)
 {
@@ -92,6 +77,25 @@ vec4 SelectRGBAFraction(float x)
 	return vec4(0, 0, 0, 0);
 }
 
+
+ */
+ 
+ 
+vec4 SelectChannelMask(float x)
+{
+	if (x >= 7.0)
+		return vec4(0,0,0,1);
+	if (x >= 5.0)
+		return vec4(0,0,1,0);
+	if (x >= 3.0)
+		return vec4(0,1,0,0);
+	if (x >= 2.0)
+		return vec4(1,1,1,1);
+	if (x >= 1.0)
+		return vec4(1,0,0,0);
+
+	return vec4(0, 0, 0, 0);
+}
 vec4 SelectPalettedFraction(float x)
 {
 	if (x == 0.0 || x == 2.0)
@@ -99,7 +103,6 @@ vec4 SelectPalettedFraction(float x)
 
 	return vec4(1, 1, 1, 1);
 }
- */
 void main()
 {
  // if aVertexTexMetadata.t=X=65 , primarySampler=1,x=1,primaryChannel=1 =>attrib.s=1=primaryChannel
@@ -117,11 +120,13 @@ void main()
 	//vChannelMask = SelectChannelMask(attrib.s);
 	//vColorFraction = SelectColorFraction(attrib.s);
 	//vRGBAFraction = SelectRGBAFraction(attrib.s);
-	//vPalettedFraction = SelectPalettedFraction(attrib.s);
+	//vPalettedFraction = SelectPalettedFraction(attrib.s); primaryChannel=маска канала первая
 	//vDepthMask = SelectChannelMask(attrib.t);
 	
-	vChannelMask = vec4(aVertexColorInfo.s,0,0,0); 
+	//vChannelMask = vec4(aVertexColorInfo.s,0,0,0); 
+	vPalettedFraction = SelectPalettedFraction(aVertexColorInfo.s);
+	vChannelMask = SelectChannelMask(aVertexColorInfo.s); //динамическое определение маски RGBA
 	//тут нужно из целого числа, сделать вектор, чтобы потом умножить и оставить токо ту часть, которая содержит Х коориданату в палитре
 	
-	vTexSampler = vec2(aVertexColorInfo.t,0);
+	vTexSampler = vec2(0,aVertexColorInfo.t);
 } 

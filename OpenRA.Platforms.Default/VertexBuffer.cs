@@ -164,11 +164,11 @@ namespace OpenRA.Platforms.Default
 			OpenGL.CheckGLError();
 			OpenGL.glEnableVertexAttribArray(Shader.TexCoordAttributeIndex);
 			OpenGL.CheckGLError();
-			OpenGL.glVertexAttribPointer(Shader.TexMetadataAttributeIndex, 2, OpenGL.GL_FLOAT, false, VertexSize, new IntPtr(28));  // последний аргумнет, это смещение измеряющиеся в байтах , которые указывают на начало столбика данных
+			OpenGL.glVertexAttribPointer(Shader.TexMetadataAttributeIndex, 4, OpenGL.GL_FLOAT, false, VertexSize, new IntPtr(28));  // последний аргумнет, это смещение измеряющиеся в байтах , которые указывают на начало столбика данных
 			OpenGL.CheckGLError();
 			OpenGL.glEnableVertexAttribArray(Shader.TexMetadataAttributeIndex);
 			OpenGL.CheckGLError();
-			OpenGL.glVertexAttribPointer(Shader.VertexColorInfo, 4, OpenGL.GL_FLOAT, false, VertexSize, new IntPtr(36));  // последний аргумнет, это смещение измеряющиеся в байтах , которые указывают на начало столбика данных
+			OpenGL.glVertexAttribPointer(Shader.VertexColorInfo, 4, OpenGL.GL_FLOAT, false, VertexSize, new IntPtr(44));  // последний аргумнет, это смещение измеряющиеся в байтах , которые указывают на начало столбика данных
 			OpenGL.CheckGLError();
 			OpenGL.glEnableVertexAttribArray(Shader.VertexColorInfo);
 			OpenGL.CheckGLError();

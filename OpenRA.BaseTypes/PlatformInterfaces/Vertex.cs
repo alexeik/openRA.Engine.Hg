@@ -17,18 +17,21 @@ namespace OpenRA.Graphics
 	[StructLayout(LayoutKind.Sequential)]
 	public struct Vertex
 	{
-		public readonly float X, Y, Z, S, T, U, V, P, Drawmode, ColorTypeValue1, ColorTypeValue2, ColorTypeValue3, ColorTypeValue4;
+		public readonly float X, Y, Z, S, T, U, V, P, C, Drawmode, Option, ColorTypeValue1, ColorTypeValue2, ColorTypeValue3, ColorTypeValue4;
 
-		public Vertex(float3 xyz, float s, float t, float u, float v, float p, float drawMode, float colorTypeValue1, float colorTypeValue2, float colorTypeValue3, float colorTypeValue4)
-			: this(xyz.X, xyz.Y, xyz.Z, s, t, u, v, p, drawMode, colorTypeValue1, colorTypeValue2,  colorTypeValue3,  colorTypeValue4) { }
+		public Vertex(float3 xyz, float s, float t, float u, float v, float p, float c, float drawMode, float Option, float colorTypeValue1, float colorTypeValue2, float colorTypeValue3, float colorTypeValue4)
+			: this(xyz.X, xyz.Y, xyz.Z, s, t, u, v, p, c, drawMode, Option, colorTypeValue1, colorTypeValue2,  colorTypeValue3,  colorTypeValue4) { }
 
-		public Vertex(float x, float y, float z, float s, float t, float u, float v, float p, float drawMode, float colorTypeValue1, float colorTypeValue2, float colorTypeValue3, float colorTypeValue4)
+		public Vertex(float x, float y, float z, float s, float t, float u, float v, float p, float c, float drawMode,float option, float colorTypeValue1, float colorTypeValue2, float colorTypeValue3, float colorTypeValue4)
 		{
-			X = x; Y = y; Z = z;
-			S = s; T = t;
-			U = u; V = v;
-			P = p; Drawmode = drawMode;
-			ColorTypeValue1 = colorTypeValue1;ColorTypeValue2 = colorTypeValue2; ColorTypeValue3 = colorTypeValue3;ColorTypeValue4 = colorTypeValue4;
+			//!!! при расширении в вертексе через  glVertexAttribPointer, нужно его обязательно создать прям тут, чтобы сходилось число позиции через glVertexAttribPointer и public readonly float
+			X = x; Y = y; Z = z; // shader input in vec3 aVertexPosition;
+			S = s; T = t; //aVertexTexCoord
+			U = u; V = v; //aVertexTexCoord
+			P = p; C = c; //aVertexTexMetadata
+			Drawmode = drawMode; //aVertexTexMetadata +1 free
+			Option = option;
+			ColorTypeValue1 = colorTypeValue1;ColorTypeValue2 = colorTypeValue2; ColorTypeValue3 = colorTypeValue3;ColorTypeValue4 = colorTypeValue4; //aVertexColorInfo
 		}
 	}
 }

@@ -16,7 +16,7 @@ uniform bool EnableDepthPreview;
 uniform float DepthTextureScale;
 
 in vec4 vTexCoord;
-in vec2 vTexMetadata;
+in vec4 vTexMetadata;
 in vec4 vChannelMask;
 in vec4 vDepthMask;
 in vec2 vTexSampler;
@@ -61,44 +61,45 @@ vec4 Sample(float samplerIndex, vec2 pos)
 
 	return texture2D(Texture6, pos);
 }
-
+/*vTexMetadata.t convert to vTexMetadata.p because vTexMetadata = 4 pcs of float*/
 void main()
 {
 	vec4 c ;
 		//c= texture(TextureFontMSDF, vec3(0,0,1)); 
-	if (vTexMetadata.t==0.0)
+	if (vTexMetadata.p==0.0) // рисует пиксели из текстуры
 	{
-	vec4 x = Sample(vTexSampler.s, vTexCoord.st); //возвращает структуру (R,G,B,A) из текстуры
+	vec4 x = Sample(vTexSampler.t, vTexCoord.st); //возвращает структуру (R,G,B,A) из текстуры
 	//vec4 c = vRGBAFraction * x ;
 	 c =  x ; // vRGBAFraction всегда 1,1,1,1
 
 	}
-	if (vTexMetadata.t==1.0)
+	if (vTexMetadata.p==1.0) // рисует пиксели из палитры
 	{
-		vec4 x = Sample(vTexSampler.s, vTexCoord.st);
+		vec4 x = Sample(vTexSampler.t, vTexCoord.st);
 		//vTexMetadata.s вертикальный индекс палитры содержит. 
 		
-		//vec2 p = vec2(dot(x, vChannelMask), vTexMetadata.s);
-		vec2 p = vec2(dot(x, vec4(1,0,0,0)), vTexMetadata.s);
-		 c = vec4(1,1,1,1) * texture2D(Palette, p) ;
-	
+		vec2 p = vec2(dot(x, vChannelMask), vTexMetadata.s);
+		//vec2 p = vec2(dot(x, vec4(1,0,0,0)), vTexMetadata.s); //статичное определение маски, всегда в R канале
+		// c = vec4(1,1,1,1) * texture2D(Palette, p) ;
+		c = vPalettedFraction * texture2D(Palette, p) ;
 	}
-	if (vTexMetadata.t==2.0)
+	if (vTexMetadata.p==2.0)
 	{
 		//vec4 c = vColorFraction * vTexCoord;
 		 c =  vTexCoord; // vColorFraction всегда 1,1,1,1
 
 	}
 	// 3.0 зарезервировано под MSDF в text.frag
-	if (vTexMetadata.t==4.0)
+	if (vTexMetadata.p==4.0)
 	{
 		//IMGUI внутренняя ветка.
 		//vec4 c = vColorFraction * vTexCoord; 
-		 c =  vec4(vColorInfo)* texture2D(Texture0,vTexCoord.st); // vColorFraction всегда 1,1,1,1
+		//Texture0 текстура шрифта от ImGui , из нее берет цвета для себя.
+		 c =  vec4(vColorInfo) * texture2D(Texture0,vTexCoord.st); // vColorFraction всегда 1,1,1,1
 	}
-	if (vTexMetadata.t==5.0)
+	if (vTexMetadata.p==5.0)
 	{
-		//IMGUI для спрайтов из игры ветка.
+		//IMGUI для спрайтов из игры - ветка.
 		//vec4 c = vColorFraction * vTexCoord; 
 		 vec4 x = texture2D(Texture1,vTexCoord.st); // vColorFraction всегда 1,1,1,1
 		 vec2 p = vec2(dot(x, vec4(1,0,0,0)), vTexMetadata.s);

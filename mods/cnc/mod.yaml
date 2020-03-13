@@ -9,6 +9,7 @@ PackageFormats: Mix
 Packages:
 	~^Content/cnc
 	~^Content/cnc/movies
+    ~^Content/cnc/Font
 	.
 	$cnc: cnc
 	./mods/common: common
@@ -165,30 +166,43 @@ ChromeMetrics:
 	cnc|metrics.yaml
 
 Fonts:
-	Tiny:
-		Font: common|FreeSans.ttf
-		Size: 10
-	TinyBold:
-		Font: common|FreeSansBold.ttf
-		Size: 10
-	Small:
-		Font: common|FreeSans.ttf
-		Size: 12
+	Original:
+		#Font: cnc|dune2.otf
+        Font: common|FreeSans.ttf
+		Size:50
 	Regular:
+		#Font: d2|dune2.otf
 		Font: common|FreeSans.ttf
-		Size: 14
+		Size:15
 	Bold:
-		Font: common|FreeSansBold.ttf
-		Size: 14
-	MediumBold:
-		Font: common|FreeSansBold.ttf
-		Size: 18
-	BigBold:
-		Font: common|FreeSansBold.ttf
-		Size: 24
+		#Font: d2|dune2.otf
+		Font: common|FreeSans.ttf
+		Size:15
 	Title:
-		Font: common|FreeSansBold.ttf
-		Size: 32
+        Font: common|FreeSans.ttf
+		#Font: d2|dune2.otf
+		Size:32
+	MediumBold:
+        #Font: d2|dune2.otf
+		Font: common|FreeSans.ttf
+		Size:18
+	BigBold:
+        #Font: d2|dune2.otf
+		Font: common|FreeSans.ttf
+		Size:24
+	Small:
+        #Font: d2|dune2.otf
+		Font: common|FreeSans.ttf
+		Size:12
+	Tiny:
+        #Font: d2|dune2.otf
+		Font: common|FreeSans.ttf
+		Size:14
+	TinyBold:
+        #Font: d2|dune2.otf
+		Font: common|FreeSans.ttf
+		Size:14
+
 
 Missions:
 	./mods/cnc/missions.yaml

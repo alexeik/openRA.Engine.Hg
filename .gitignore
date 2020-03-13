@@ -73,3 +73,5 @@ StyleCopViolations.xml
 /mods/d2k/*.config
 /imgui.ini
 /mods/common/OpenRA.Game.exe.config
+/mods/modcontent/
+/mods/common/SDL2-CS.dll.config

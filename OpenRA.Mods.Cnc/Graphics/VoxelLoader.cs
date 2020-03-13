@@ -15,6 +15,7 @@ using System.Linq;
 using OpenRA.FileSystem;
 using OpenRA.Graphics;
 using OpenRA.Mods.Cnc.FileFormats;
+using OpenRA.Platforms.Default;
 using OpenRA.Primitives;
 
 namespace OpenRA.Mods.Cnc.Graphics
@@ -26,7 +27,7 @@ namespace OpenRA.Mods.Cnc.Graphics
 		readonly List<Vertex[]> vertices = new List<Vertex[]>();
 		readonly Cache<Pair<string, string>, Voxel> voxels;
 		readonly IReadOnlyFileSystem fileSystem;
-		IVertexBuffer<Vertex> vertexBuffer;
+		VertexBuffer<Vertex> vertexBuffer;
 		int totalVertexCount;
 		int cachedVertexCount;
 
@@ -86,14 +87,15 @@ namespace OpenRA.Mods.Cnc.Graphics
 
 			var channelP = ChannelSelect[(int)s.Channel];
 			var channelC = ChannelSelect[(int)t.Channel];
+			int drawmode = 1;
 			return new Vertex[6]
 			{
-				new Vertex(coord(0, 0), s.Left, s.Top, t.Left, t.Top, channelP, channelC),
-				new Vertex(coord(su, 0), s.Right, s.Top, t.Right, t.Top, channelP, channelC),
-				new Vertex(coord(su, sv), s.Right, s.Bottom, t.Right, t.Bottom, channelP, channelC),
-				new Vertex(coord(su, sv), s.Right, s.Bottom, t.Right, t.Bottom, channelP, channelC),
-				new Vertex(coord(0, sv), s.Left, s.Bottom, t.Left, t.Bottom, channelP, channelC),
-				new Vertex(coord(0, 0), s.Left, s.Top, t.Left, t.Top, channelP, channelC)
+				new Vertex(coord(0, 0), s.Left, s.Top, t.Left, t.Top, channelP, channelC, drawmode, 0, 0, 0, 0, 0),
+				new Vertex(coord(su, 0), s.Right, s.Top, t.Right, t.Top, channelP, channelC, drawmode, 0, 0, 0, 0, 0),
+				new Vertex(coord(su, sv), s.Right, s.Bottom, t.Right, t.Bottom, channelP, channelC, drawmode, 0, 0, 0, 0, 0),
+				new Vertex(coord(su, sv), s.Right, s.Bottom, t.Right, t.Bottom, channelP, channelC, drawmode, 0, 0, 0, 0, 0),
+				new Vertex(coord(0, sv), s.Left, s.Bottom, t.Left, t.Bottom, channelP, channelC, drawmode, 0, 0, 0, 0, 0),
+				new Vertex(coord(0, 0), s.Left, s.Top, t.Left, t.Top, channelP, channelC, drawmode, 0, 0, 0, 0, 0)
 			};
 		}
 
@@ -196,12 +198,12 @@ namespace OpenRA.Mods.Cnc.Graphics
 		{
 			if (vertexBuffer != null)
 				vertexBuffer.Dispose();
-			vertexBuffer = Game.Renderer.CreateVertexBuffer(totalVertexCount);
+			vertexBuffer = Game.Renderer.Context.CreateVertexBuffer(totalVertexCount, "VoxelLoader");
 			vertexBuffer.SetData(vertices.SelectMany(v => v).ToArray(), totalVertexCount);
 			cachedVertexCount = totalVertexCount;
 		}
 
-		public IVertexBuffer<Vertex> VertexBuffer
+		public VertexBuffer<Vertex> VertexBuffer
 		{
 			get
 			{

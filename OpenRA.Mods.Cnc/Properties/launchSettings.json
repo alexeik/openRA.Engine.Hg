@@ -1,0 +1,9 @@
+{
+  "profiles": {
+    "OpenRA.Mods.Cnc": {
+      "commandName": "Executable",
+      "executablePath": "K:\\games.dev\\dune2.mod\\engine\\OpenRA.Game.exe",
+      "commandLineArgs": "Engine.LaunchPath=..\\..\\engine \"Engine.ModSearchPaths=..\\..\\mods,..\\..\\engine\\mods\" Game.Mod=cnc"
+    }
+  }
+}

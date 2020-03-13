@@ -433,12 +433,12 @@ namespace OpenRA.Mods.Common.Widgets
 
 		public override void Draw()
 		{
-			var iconOffset = 0.5f * IconSize.ToFloat2() + IconSpriteOffset;
+			var iconOffsetToCenter = 0.5f * IconSize.ToFloat2() + IconSpriteOffset;
 
-			timeOffset = iconOffset - overlayFont.Measure(WidgetUtils.FormatTime(0, World.Timestep)) / 2;
+			timeOffset = iconOffsetToCenter - overlayFont.Measure(WidgetUtils.FormatTime(0, World.Timestep)) / 2;
 			queuedOffset = new float2(4, 2);
-			holdOffset = iconOffset - overlayFont.Measure(HoldText) / 2;
-			readyOffset = iconOffset - overlayFont.Measure(ReadyText) / 2;
+			holdOffset = iconOffsetToCenter - overlayFont.Measure(HoldText) / 2;
+			readyOffset = iconOffsetToCenter - overlayFont.Measure(ReadyText) / 2;
 
 			if (ChromeMetrics.TryGet("InfiniteOffset", out infiniteOffset))
 				infiniteOffset += queuedOffset;
@@ -455,12 +455,12 @@ namespace OpenRA.Mods.Common.Widgets
 			// Icons
 			foreach (var icon in icons.Values)
 			{
-				WidgetUtils.DrawSHPCentered(icon.Sprite, icon.Pos + iconOffset, icon.Palette);
+				WidgetUtils.DrawSHPCentered(icon.Sprite, icon.Pos + iconOffsetToCenter, icon.Palette);
 
 				// Draw the ProductionIconOverlay's sprite
 				var pio = pios.FirstOrDefault(p => p.IsOverlayActive(icon.Actor));
 				if (pio != null)
-					WidgetUtils.DrawSHPCentered(pio.Sprite, icon.Pos + iconOffset + pio.Offset(IconSize), worldRenderer.Palette(pio.Palette), 1f);
+					WidgetUtils.DrawSHPCentered(pio.Sprite, icon.Pos + iconOffsetToCenter + pio.Offset(IconSize), worldRenderer.Palette(pio.Palette), 1f);
 
 				// Build progress
 				if (icon.Queued.Count > 0)
@@ -470,10 +470,10 @@ namespace OpenRA.Mods.Common.Widgets
 						() => (first.TotalTime - first.RemainingTime) * (clock.CurrentSequence.Length - 1) / first.TotalTime);
 					clock.Tick();
 
-					WidgetUtils.DrawSHPCentered(clock.Image, icon.Pos + iconOffset, icon.IconClockPalette);
+					WidgetUtils.DrawSHPCentered(clock.Image, icon.Pos + iconOffsetToCenter, icon.IconClockPalette);
 				}
 				else if (!buildableItems.Any(a => a.Name == icon.Name))
-					WidgetUtils.DrawSHPCentered(cantBuild.Image, icon.Pos + iconOffset, icon.IconDarkenPalette);
+					WidgetUtils.DrawSHPCentered(cantBuild.Image, icon.Pos + iconOffsetToCenter, icon.IconDarkenPalette);
 			}
 
 			// Overlays

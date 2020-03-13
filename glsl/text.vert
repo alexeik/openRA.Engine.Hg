@@ -3,15 +3,15 @@
 uniform vec3 Scroll;
 uniform vec3 r1, r2;
 
-in vec4 aVertexPosition;
+in vec3 aVertexPosition;
 in vec4 aVertexTexCoord;
-in vec2 aVertexTexMetadata;
+in vec4 aVertexTexMetadata;
 in vec4 aVertexColorInfo;
 
 
 
 out vec4 vTexCoord;
-out vec2 vTexMetadata;
+out vec4 vTexMetadata;
 out vec4 vChannelMask;
 out vec4 vDepthMask;
 out vec2 vTexSampler;
@@ -30,7 +30,7 @@ void main()
 	vTexMetadata = aVertexTexMetadata;
 	
 	//vec4 attrib = UnpackChannelAttributes(aVertexTexMetadata.t);
-	//drawMode передается в aVertexTexCoord - 4 позиция тип float.
+	//drawMode передается в aVertexTexMetadata - 2 позиция тип float.
 	
 	//vec4 drawMode = vec4(aVertexTexMetadata.t;
 	

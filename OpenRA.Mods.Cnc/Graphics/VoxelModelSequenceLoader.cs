@@ -14,6 +14,7 @@ using System.Collections.Generic;
 using System.IO;
 using OpenRA.FileSystem;
 using OpenRA.Graphics;
+using OpenRA.Platforms.Default;
 using OpenRA.Primitives;
 
 namespace OpenRA.Mods.Cnc.Graphics
@@ -110,7 +111,7 @@ namespace OpenRA.Mods.Cnc.Graphics
 			return models[model].ContainsKey(sequence);
 		}
 
-		public IVertexBuffer<Vertex> VertexBuffer { get { return loader.VertexBuffer; } }
+		public VertexBuffer<Vertex> VertexBuffer { get { return loader.VertexBuffer; } }
 
 		public void Dispose()
 		{

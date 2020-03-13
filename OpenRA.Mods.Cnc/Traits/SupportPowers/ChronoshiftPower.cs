@@ -188,7 +188,7 @@ namespace OpenRA.Mods.Cnc.Traits
 				var tiles = world.Map.FindTilesInCircle(xy, range);
 				var palette = wr.Palette(((ChronoshiftPowerInfo)power.Info).TargetOverlayPalette);
 				foreach (var t in tiles)
-					yield return new SpriteRenderable(tile, wr.World.Map.CenterOfCell(t), WVec.Zero, -511, palette, 1f, true);
+					yield return new SpriteRenderable(null, tile, wr.World.Map.CenterOfCell(t), WVec.Zero, -511, palette, 1f, true);
 			}
 
 			protected override string GetCursor(World world, CPos cell, int2 worldPixel, MouseInput mi)
@@ -271,7 +271,7 @@ namespace OpenRA.Mods.Cnc.Traits
 				foreach (var t in world.Map.FindTilesInCircle(sourceLocation, range))
 				{
 					var tile = manager.Self.Owner.Shroud.IsExplored(t + delta) ? validTile : invalidTile;
-					yield return new SpriteRenderable(tile, wr.World.Map.CenterOfCell(t + delta), WVec.Zero, -511, palette, 1f, true);
+					yield return new SpriteRenderable(null, tile, wr.World.Map.CenterOfCell(t + delta), WVec.Zero, -511, palette, 1f, true);
 				}
 
 				// Unit previews
@@ -283,7 +283,7 @@ namespace OpenRA.Mods.Cnc.Traits
 						var canEnter = manager.Self.Owner.Shroud.IsExplored(targetCell) &&
 							unit.Trait<Chronoshiftable>().CanChronoshiftTo(unit, targetCell);
 						var tile = canEnter ? validTile : invalidTile;
-						yield return new SpriteRenderable(tile, wr.World.Map.CenterOfCell(targetCell), WVec.Zero, -511, palette, 1f, true);
+						yield return new SpriteRenderable(null, tile, wr.World.Map.CenterOfCell(targetCell), WVec.Zero, -511, palette, 1f, true);
 					}
 
 					var offset = world.Map.CenterOfCell(xy) - world.Map.CenterOfCell(sourceLocation);
@@ -308,7 +308,7 @@ namespace OpenRA.Mods.Cnc.Traits
 
 				// Source tiles
 				foreach (var t in world.Map.FindTilesInCircle(sourceLocation, range))
-					yield return new SpriteRenderable(sourceTile, wr.World.Map.CenterOfCell(t), WVec.Zero, -511, palette, 1f, true);
+					yield return new SpriteRenderable(null, sourceTile, wr.World.Map.CenterOfCell(t), WVec.Zero, -511, palette, 1f, true);
 			}
 
 			bool IsValidTarget(CPos xy)

@@ -151,18 +151,19 @@ namespace OpenRA.Graphics
 		}
 
 		/// <summary>
-		/// Меняет номер кадра анимации на тот, который получает при запуске анонимной функции func.
+		/// Меняет номер кадра анимации на тот, который получает при запуске анонимной функции tickfuncOverride, которая уйдет в tickFunc delegate of type Action.
+		/// Sets tickAlways=true
 		/// </summary>
 		/// <param name="sequenceName">Название анимации</param>
-		/// <param name="func">Анонимная функция для расчета номера кадра</param>
-		public void PlayFetchIndex(string sequenceName, Func<int> func)
+		/// <param name="tickfuncOverride">Анонимная функция для расчета номера кадра</param>
+		public void PlayFetchIndex(string sequenceName, Func<int> tickfuncOverride)
 		{
 			backwards = false;
 			tickAlways = true;
 			PlaySequence(sequenceName);
 
-			frame = func(); // номер спрайта , который уйдет потом в Image свойство, через свойство CurrentFrame.
-			tickFunc = () => frame = func();
+			frame = tickfuncOverride(); // номер спрайта , который уйдет потом в Image свойство, через свойство CurrentFrame.
+			tickFunc = () => frame = tickfuncOverride();
 		}
 
 		public void PlayFetchDirection(string sequenceName, Func<int> direction)
@@ -182,12 +183,21 @@ namespace OpenRA.Graphics
 			};
 		}
 
+		/// <summary>
+		/// Calls Tick(40) respecting tickAlways.
+		/// if tickAlways==true => tickFunc().
+		/// if tickAlways==false => respects timeUntilNextFrame cycle.
+		/// </summary>
 		public void Tick()
 		{
 			if (paused == null || !paused())
 				Tick(40); // tick one frame
 		}
 
+		/// <summary>
+		/// Calls tickfuncOverride always if tickAlways=true, and some times if tickAlways=false.
+		/// </summary>
+		/// <param name="t">times to call tickFunc delegate </param>
 		public void Tick(int t)
 		{
 			if (tickAlways)

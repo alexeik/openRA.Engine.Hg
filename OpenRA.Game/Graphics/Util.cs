@@ -47,16 +47,16 @@ namespace OpenRA.Graphics
 			// тут r трактуется как класс Sprite
 			if (r.Channel == TextureChannel.RGBA)
 			{
-				ct1 = 0.4f; // это потому что, выбор текстуры зависит от 0.0 чисел в шейдере в методе vec4 Sample()
+				ct1 = 0.4f; // без разницы, что тут ставить, так как drawmode==0 и это число учтено не будет
 			}
 			else
 			{
-				ct1 = (byte)r.Channel / 10f;
+				ct1 = (byte)r.Channel+1;
 			}
 
 			// var attribC = r.Channel == TextureChannel.RGBA ? 0x02 : ((byte)r.Channel) << 1 | 0x01;
 			// attribC |= samplers.X << 6;
-			ct2 = samplers.X;
+			ct2 = samplers.X;  // это потому что, выбор текстуры зависит от 0.0 чисел в шейдере в методе vec4 Sample()
 
 			var ss = r as SpriteWithSecondaryData;
 
@@ -76,7 +76,7 @@ namespace OpenRA.Graphics
 				}
 				else
 				{
-					ct3 = (byte)ss.SecondaryChannel / 10f;
+					ct3 = (byte)ss.SecondaryChannel+1;
 				}
 
 				// attribC |= samplers.Y << 9;
@@ -106,12 +106,12 @@ namespace OpenRA.Graphics
 			}
 
 			// var fAttribC = (float)attribC;
-			vertices[nv] = new Vertex(a, r.Left, r.Top, sl, st, paletteTextureIndex, drawmode, ct1, ct2, ct3, ct4);
-			vertices[nv + 1] = new Vertex(b, r.Right, r.Top, sr, st, paletteTextureIndex, drawmode, ct1, ct2, ct3, ct4);
-			vertices[nv + 2] = new Vertex(c, r.Right, r.Bottom, sr, sb, paletteTextureIndex, drawmode, ct1, ct2, ct3, ct4);
-			vertices[nv + 3] = new Vertex(c, r.Right, r.Bottom, sr, sb, paletteTextureIndex, drawmode, ct1, ct2, ct3, ct4);
-			vertices[nv + 4] = new Vertex(d, r.Left, r.Bottom, sl, sb, paletteTextureIndex, drawmode, ct1, ct2, ct3, ct4);
-			vertices[nv + 5] = new Vertex(a, r.Left, r.Top, sl, st, paletteTextureIndex, drawmode, ct1, ct2, ct3, ct4);
+			vertices[nv] = new Vertex(a, r.Left, r.Top, sl, st, paletteTextureIndex, 0, drawmode, 0, ct1, ct2, ct3, ct4);
+			vertices[nv + 1] = new Vertex(b, r.Right, r.Top, sr, st, paletteTextureIndex, 0, drawmode, 0, ct1, ct2, ct3, ct4);
+			vertices[nv + 2] = new Vertex(c, r.Right, r.Bottom, sr, sb, paletteTextureIndex, 0, drawmode, 0, ct1, ct2, ct3, ct4);
+			vertices[nv + 3] = new Vertex(c, r.Right, r.Bottom, sr, sb, paletteTextureIndex, 0, drawmode, 0, ct1, ct2, ct3, ct4);
+			vertices[nv + 4] = new Vertex(d, r.Left, r.Bottom, sl, sb, paletteTextureIndex, 0, drawmode, 0, ct1, ct2, ct3, ct4);
+			vertices[nv + 5] = new Vertex(a, r.Left, r.Top, sl, st, paletteTextureIndex, 0, drawmode, 0, ct1, ct2, ct3, ct4);
 		}
 		public static void FastCreateQuadImGui(Vertex[] vertices, float3 a, float3 b, float3 c, float3 d, Sprite r, int2 samplers, float paletteTextureIndex, int nv)
 		{
@@ -139,9 +139,9 @@ namespace OpenRA.Graphics
 
 			var ss = r as SpriteWithSecondaryData;
 
-			// тут r трактуется уже как SpriteWithSecondaryData, если преобразование пройдет успешно! а если нет, то ss = null
+			
 			// используется для vDepthMask в шейдере и когда поставлен флаг ОтладкиГлубины SpriteRendere.SetDepthPreviewEnabled ставит у шейдера uniform EnableDepthPreview =true
-			if (ss != null)
+			if (ss != null) // тут r трактуется уже как SpriteWithSecondaryData, если преобразование пройдет успешно=> а если нет, то ss = null
 			{
 				sl = ss.SecondaryLeft;
 				st = ss.SecondaryTop;
@@ -185,12 +185,12 @@ namespace OpenRA.Graphics
 			}
 
 			drawmode = 5;
-			vertices[nv] = new Vertex(a, r.Left, r.Top, sl, st, paletteTextureIndex, drawmode, ct1, ct2, ct3, ct4);
-			vertices[nv + 1] = new Vertex(b, r.Right, r.Top, sr, st, paletteTextureIndex, drawmode, ct1, ct2, ct3, ct4);
-			vertices[nv + 2] = new Vertex(c, r.Right, r.Bottom, sr, sb, paletteTextureIndex, drawmode, ct1, ct2, ct3, ct4);
-			vertices[nv + 3] = new Vertex(c, r.Right, r.Bottom, sr, sb, paletteTextureIndex, drawmode, ct1, ct2, ct3, ct4);
-			vertices[nv + 4] = new Vertex(d, r.Left, r.Bottom, sl, sb, paletteTextureIndex, drawmode, ct1, ct2, ct3, ct4);
-			vertices[nv + 5] = new Vertex(a, r.Left, r.Top, sl, st, paletteTextureIndex, drawmode, ct1, ct2, ct3, ct4);
+			vertices[nv] = new Vertex(a, r.Left, r.Top, sl, st, paletteTextureIndex, 0, drawmode, 0, ct1, ct2, ct3, ct4);
+			vertices[nv + 1] = new Vertex(b, r.Right, r.Top, sr, st, paletteTextureIndex, 0, drawmode, 0, ct1, ct2, ct3, ct4);
+			vertices[nv + 2] = new Vertex(c, r.Right, r.Bottom, sr, sb, paletteTextureIndex, 0, drawmode, 0, ct1, ct2, ct3, ct4);
+			vertices[nv + 3] = new Vertex(c, r.Right, r.Bottom, sr, sb, paletteTextureIndex, 0, drawmode, 0, ct1, ct2, ct3, ct4);
+			vertices[nv + 4] = new Vertex(d, r.Left, r.Bottom, sl, sb, paletteTextureIndex, 0, drawmode, 0, ct1, ct2, ct3, ct4);
+			vertices[nv + 5] = new Vertex(a, r.Left, r.Top, sl, st, paletteTextureIndex, 0, drawmode, 0, ct1, ct2, ct3, ct4);
 		}
 		public static void FastCopyIntoChannel(Sprite dest, byte[] src)
 		{

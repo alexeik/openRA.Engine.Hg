@@ -235,7 +235,7 @@ namespace OpenRA.Mods.Common.Widgets
 					}
 					else
 					{
-						ve[i] = new Vertex(vertbuf[y].pos.X, vertbuf[y].pos.Y, 0, vertbuf[y].uv.X, vertbuf[y].uv.Y, 0f, 0f, 0f, 4f, c.R / 255f, c.G / 255f, c.B / 255f, c.A / 255f);
+						ve[i] = new Vertex(vertbuf[y].pos.X, vertbuf[y].pos.Y, 0, vertbuf[y].uv.X, vertbuf[y].uv.Y, 0f, 0f, 0f, 0f, 4f, 0, c.R / 255f, c.G / 255f, c.B / 255f, c.A / 255f);
 					}
 				}
 

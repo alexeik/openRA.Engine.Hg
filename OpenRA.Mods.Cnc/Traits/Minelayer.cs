@@ -154,7 +154,7 @@ namespace OpenRA.Mods.Cnc.Traits
 
 			var pal = wr.Palette(TileSet.TerrainPaletteInternalName);
 			foreach (var c in Minefield)
-				yield return new SpriteRenderable(tile, self.World.Map.CenterOfCell(c),
+				yield return new SpriteRenderable(null, tile, self.World.Map.CenterOfCell(c),
 					WVec.Zero, -511, pal, 1f, true);
 		}
 
@@ -230,7 +230,7 @@ namespace OpenRA.Mods.Cnc.Traits
 				foreach (var c in minefield)
 				{
 					var tile = movement.CanEnterCell(c, null, false) && !world.ShroudObscures(c) ? tileOk : tileBlocked;
-					yield return new SpriteRenderable(tile, world.Map.CenterOfCell(c),
+					yield return new SpriteRenderable(null, tile, world.Map.CenterOfCell(c),
 						WVec.Zero, -511, pal, 1f, true);
 				}
 			}

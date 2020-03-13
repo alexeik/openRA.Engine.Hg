@@ -36,7 +36,7 @@ namespace OpenRA
 		public FontMSDF Mfont;
 
 		internal PlatformWindow Window { get; private set; }
-		internal GraphicsContext Context { get; private set; }
+		public GraphicsContext Context { get; private set; }
 
 		internal int SheetSize { get; private set; }
 		internal int TempBufferSize { get; private set; }

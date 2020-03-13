@@ -40,6 +40,10 @@ namespace OpenRA.Graphics
 					}
 				}
 			}
+			else
+			{
+				Console.WriteLine("MSDF fonts not loaded. Create font folder and write it to mod.yaml Packages for mod=" + Game.ModData.Manifest.Id + " path=");
+			}
 		}
 		public void LoadFontTextures()
 		{
