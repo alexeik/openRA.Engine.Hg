@@ -83,7 +83,7 @@ void main()
 		// c = vec4(1,1,1,1) * texture2D(Palette, p) ;
 		c = vPalettedFraction * texture2D(Palette, p) ;
 	}
-	if (vTexMetadata.p==2.0)
+	if (vTexMetadata.p==2.0) //UI
 	{
 		//vec4 c = vColorFraction * vTexCoord;
 		 c =  vTexCoord; // vColorFraction всегда 1,1,1,1
