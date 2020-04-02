@@ -145,7 +145,10 @@ namespace OpenRA.Mods.Common.Graphics
 			Name = animation;
 			Loader = loader;
 			var d = info.ToDictionary();
+			if (sequence=="video1")
+			{
 
+			}
 			try
 			{
 				Start = LoadField(d, "Start", 0);
