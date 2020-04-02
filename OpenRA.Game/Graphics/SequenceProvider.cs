@@ -1,4 +1,4 @@
-#region Copyright & License Information
+﻿#region Copyright & License Information
 /*
  * Copyright 2007-2019 The OpenRA Developers (see AUTHORS)
  * This file is part of OpenRA, which is free software. It is made
@@ -65,9 +65,12 @@ namespace OpenRA.Graphics
 			sequences = Exts.Lazy(() =>
 			{
 				using (new Support.PerfTimer("LoadSequences"))
+				{
 					return Load(fileSystem, additionalSequences);
+				}
 			});
-
+			//выполняется первее , чем return Load(fileSystem, additionalSequences);, так как в Load методе, будут делегаты, которые выполняется 
+			// в Preload методе.
 			spriteCache = Exts.Lazy(() => new SpriteCache(fileSystem, modData.SpriteLoaders, new SheetBuilder(SheetType.Indexed)));
 		}
 
@@ -123,6 +126,7 @@ namespace OpenRA.Graphics
 					items.Add(node.Key, t);
 				else
 				{
+					//SpriteCache будет подготовлен в конструкторе класса.
 					t = Exts.Lazy(() => modData.SpriteSequenceLoader.ParseSequences(modData, tileSet, SpriteCache, node));
                     // modData.SpriteSequenceLoader.ParseSequences(modData, tileSet, SpriteCache, node);
 					sequenceCache.Add(key, t);
