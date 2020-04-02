@@ -49,6 +49,11 @@ namespace OpenRA.Graphics
 			this.paused = paused;
 		}
 
+		public void ChangeSequenceGroup(string seqgroupname)
+		{
+			Name = seqgroupname.ToLowerInvariant();
+		}
+
 		public int CurrentFrame { get { return backwards ? CurrentSequence.Length - frame - 1 : frame; } }
 		public Sprite Image { get { return CurrentSequence.GetSprite(CurrentFrame, facingFunc()); } }
 
