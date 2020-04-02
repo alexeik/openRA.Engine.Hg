@@ -72,26 +72,13 @@ namespace OpenRA.Platforms.Default
 
 			// Assemble program
 			program = OpenGL.glCreateProgram();
-			OpenGL.CheckGLError();
 
-			OpenGL.glBindAttribLocation(program, VertexPosAttributeIndex, "aVertexPosition");
-			OpenGL.CheckGLError();
-			OpenGL.glBindAttribLocation(program, TexCoordAttributeIndex, "aVertexTexCoord");
-			OpenGL.CheckGLError();
-			OpenGL.glBindAttribLocation(program, TexMetadataAttributeIndex, "aVertexTexMetadata");
-			OpenGL.CheckGLError();
-			OpenGL.glBindAttribLocation(program, VertexColorInfo, "aVertexColorInfo");
-			OpenGL.CheckGLError();
 			OpenGL.glAttachShader(program, vertexShader);
-			OpenGL.CheckGLError();
 			OpenGL.glAttachShader(program, fragmentShader);
-			OpenGL.CheckGLError();
 
 			OpenGL.glLinkProgram(program);
-			OpenGL.CheckGLError();
 			int success;
 			OpenGL.glGetProgramiv(program, OpenGL.GL_LINK_STATUS, out success);
-			OpenGL.CheckGLError();
 			if (success == OpenGL.GL_FALSE)
 			{
 				int len;
@@ -105,12 +92,10 @@ namespace OpenRA.Platforms.Default
 			}
 
 			OpenGL.glUseProgram(program);
-			OpenGL.CheckGLError();
 
 			int numUniforms;
 			OpenGL.glGetProgramiv(program, OpenGL.GL_ACTIVE_UNIFORMS, out numUniforms);
 
-			OpenGL.CheckGLError();
 
 			// забираем все переменные из shader и потом используем для связи с ними текстур
 			var nextTexUnit = 0;
@@ -121,16 +106,13 @@ namespace OpenRA.Platforms.Default
 				var sb = new StringBuilder(128);
 				OpenGL.glGetActiveUniform(program, i, 128, out length, out size, out type, sb);
 				var sampler = sb.ToString();
-				OpenGL.CheckGLError();
 
 				if (type == OpenGL.GL_SAMPLER_2D)
 				{
 					samplers.Add(sampler, nextTexUnit);
 
 					var loc = OpenGL.glGetUniformLocation(program, sampler);
-					OpenGL.CheckGLError();
 					OpenGL.glUniform1i(loc, nextTexUnit);
-					OpenGL.CheckGLError();
 
 					nextTexUnit++;
 				}
@@ -139,9 +121,7 @@ namespace OpenRA.Platforms.Default
 					samplers.Add(sampler, nextTexUnit);
 
 					var loc = OpenGL.glGetUniformLocation(program, sampler);
-					OpenGL.CheckGLError();
 					OpenGL.glUniform1i(loc, nextTexUnit);
-					OpenGL.CheckGLError();
 
 					nextTexUnit++;
 				}
