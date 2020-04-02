@@ -27,7 +27,15 @@ namespace OpenRA.Platforms.Default
 		{
 			this.window = window;
 		}
+		public static int[] VAOList;
+		public static int VAOReserveStack;
 
+		public static void ReserveVAOList()
+		{
+			VAOList = new int[30];
+			OpenGL.glGenVertexArrays(30, VAOList);
+			OpenGL.CheckGLError();
+		}
 		internal void InitializeOpenGL()
 		{
 			SetThreadAffinity();
@@ -40,7 +48,7 @@ namespace OpenRA.Platforms.Default
 
 
 			//пока через резервы сделаны VAO объекты, потому можно и через добавить/удалить
-			VertexBuffer<Vertex>.ReserveVAOList();
+			ReserveVAOList();
 		}
 
 		public VertexBuffer<Vertex> CreateVertexBuffer(int size, string ownername)
@@ -172,6 +180,7 @@ namespace OpenRA.Platforms.Default
 				case PrimitiveType.PointList: return OpenGL.GL_POINTS;
 				case PrimitiveType.LineList: return OpenGL.GL_LINES;
 				case PrimitiveType.TriangleList: return OpenGL.GL_TRIANGLES;
+				case PrimitiveType.TriangleStrip: return OpenGL.GL_TRIANGLES_STRIP;
 			}
 
 			throw new NotImplementedException();
