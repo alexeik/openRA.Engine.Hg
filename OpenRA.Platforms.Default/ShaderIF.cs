@@ -13,8 +13,10 @@ using OpenRA.Graphics;
 using OpenRA.Primitives;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Text;
+using System.Threading;
 
 namespace OpenRA.Platforms.Default
 {
@@ -25,37 +27,122 @@ namespace OpenRA.Platforms.Default
 		public const int TexMetadataAttributeIndex = 2;
 		public const int VertexColorInfo = 3;
 
+		/// <summary>
+		/// содержит все sampler2D аргументы у шейдера в формате имя(строка), позиция аргумента(число)
+		/// </summary>
 		readonly Dictionary<string, int> samplers = new Dictionary<string, int>();
 		readonly Dictionary<int, ITexture> textures = new Dictionary<int, ITexture>();
-		readonly uint program;
+		uint program;
 		public string sharerfilename;
 
-		public VertexBuffer<Vertex> VertexBuffer = new VertexBuffer<Vertex>(8012, "ShaderIF");
 
-		public void AcceptCommand(int ShaderID, int CurrentFrame, int TotalFrames, int CurrentTime, int TotalTime, int2 ResolutionXY)
+		public Dictionary<string, FileSystemWatcher> watcherbox = new Dictionary<string, FileSystemWatcher>();
+		public Dictionary<string, ShaderInfo> compiledbox = new Dictionary<string, ShaderInfo>();
+		public Dictionary<string, string> candidates = new Dictionary<string, string>();
+
+		public void AddWatcher(string shadername, string shaderext)
 		{
+			if (watcherbox.ContainsKey(shadername + "." + shaderext))
+			{
+				return;
+			}
+			FileSystemWatcher temp = new FileSystemWatcher(Path.Combine(Platform.GameDir, "glsl"), shadername + "." + shaderext);
 
+			temp.Changed += FSW_Event_ShaderFileChanged;
+			temp.EnableRaisingEvents = true;
+			watcherbox.Add(shadername + "." + shaderext, temp);
+
+		}
+		public class ShaderInfo
+		{
+			public int type;
+			public string name;
+			public uint glid;
+
+		}
+		public bool canenter = true;
+		public void UseCandidates()
+		{
+			if (canenter == false)
+			{
+				return;
+			}
+
+			if (candidates.Count == 0)
+			{
+				return;
+			}
+
+			foreach (string key in candidates.Keys)
+			{
+				canenter = false;
+				try
+				{
+					ReCompileShader(key);
+				}
+				catch (Exception s)
+				{
+					canenter = true;
+					return;//exit without candidates.clear
+				}
+			
+			}
+
+			canenter = true;
+			candidates.Clear();
+		}
+		private void FSW_Event_ShaderFileChanged(object sender, FileSystemEventArgs e)
+		{
+			if (candidates.ContainsKey(e.Name))
+			{
+				return;
+			}
+
+			candidates.Add(e.Name, "");
+
+		}
+		public string ShaderTypeToFileExt(int type)
+		{
+			var ext = "";
+
+			if (type == OpenGL.GL_VERTEX_SHADER)
+			{
+				ext = "vert";
+			}
+			if (type == OpenGL.GL_FRAGMENT_SHADER)
+			{
+				ext = "frag";
+			}
+			if (type == OpenGL.GL_GEOMETRY_SHADER)
+			{
+				ext = "geom";
+			}
+			return ext;
 		}
 		protected uint CompileShaderObject(int type, string name)
 		{
-			var ext = type == OpenGL.GL_VERTEX_SHADER ? "vert" : "frag";
+
+			var ext = ShaderTypeToFileExt(type);
 			var filename = Path.Combine(Platform.GameDir, "glsl", name + "." + ext);
 			var code = File.ReadAllText(filename);
 
 			var shader = OpenGL.glCreateShader(type);
-			OpenGL.CheckGLError();
+
+			if (shader == 0)
+			{
+
+			}
 			unsafe
 			{
 				var length = code.Length;
 				OpenGL.glShaderSource(shader, 1, new string[] { code }, new IntPtr(&length));
 			}
 
-			OpenGL.CheckGLError();
 			OpenGL.glCompileShader(shader);
-			OpenGL.CheckGLError();
+
+
 			int success;
 			OpenGL.glGetShaderiv(shader, OpenGL.GL_COMPILE_STATUS, out success);
-			OpenGL.CheckGLError();
 			if (success == OpenGL.GL_FALSE)
 			{
 				int len;
@@ -71,34 +158,82 @@ namespace OpenRA.Platforms.Default
 			return shader;
 		}
 
+		public void ReCompileShader(string shaderkey)
+		{
+			ShaderInfo si;
+			si = compiledbox[shaderkey];
+
+			//DetachAndDeleteShader(si);
+
+			////uint tp = OpenGL.glCreateProgram();
+
+			//si.glid = CompileShaderObject(si.type, si.name);
+			//if (si.glid > 0)
+			//{
+			//	OpenGL.glAttachShader(program, si.glid);
+			//}
+			CreateProgram("ShaderIF");
+
+
+
+
+		}
+	
+		public void DetachAndDeleteShader(ShaderInfo si)
+		{
+			OpenGL.glDetachShader(program, si.glid);
+			OpenGL.glDeleteShader(si.glid);
+
+			//можно найти шейдер, отключить от программы, переподключить новый
+		}
 		public ShaderIF(string name)
 		{
 			sharerfilename = name;
-			var vertexShader = CompileShaderObject(OpenGL.GL_VERTEX_SHADER, name);
-			var fragmentShader = CompileShaderObject(OpenGL.GL_FRAGMENT_SHADER, name);
+			compiledbox.Add(name + "." + ShaderTypeToFileExt(OpenGL.GL_VERTEX_SHADER), new ShaderInfo() { name = name, type = OpenGL.GL_VERTEX_SHADER });
+			compiledbox.Add(name + "." + ShaderTypeToFileExt(OpenGL.GL_FRAGMENT_SHADER), new ShaderInfo() { name = name, type = OpenGL.GL_FRAGMENT_SHADER });
+			//compiledbox.Add(name + ShaderTypeToFileExt(OpenGL.GL_GEOMETRY_SHADER), new ShaderInfo() { name = name, type = OpenGL.GL_GEOMETRY_SHADER });
+
+			CreateProgram(name);
+		}
+
+		public void CreateProgram(string name)
+		{
+
+
+
 
 			// Assemble program
-			program = OpenGL.glCreateProgram();
-			OpenGL.CheckGLError();
-
-			OpenGL.glBindAttribLocation(program, VertexPosAttributeIndex, "aVertexPosition");
-			OpenGL.CheckGLError();
-			OpenGL.glBindAttribLocation(program, TexCoordAttributeIndex, "aVertexTexCoord");
-			OpenGL.CheckGLError();
-			OpenGL.glBindAttribLocation(program, TexMetadataAttributeIndex, "aVertexTexMetadata");
-			OpenGL.CheckGLError();
-			OpenGL.glBindAttribLocation(program, VertexColorInfo, "aVertexColorInfo");
-			OpenGL.CheckGLError();
-			OpenGL.glAttachShader(program, vertexShader);
-			OpenGL.CheckGLError();
-			OpenGL.glAttachShader(program, fragmentShader);
-			OpenGL.CheckGLError();
+			if (program == 0)
+			{
+				program = OpenGL.glCreateProgram();
+			}
+			else
+			{
+				uint prevpr = program;
+				program = OpenGL.glCreateProgram();
+				OpenGL.glDeleteProgram(prevpr);
+			}
+			
+			foreach (ShaderInfo si in compiledbox.Values)
+			{
+				si.glid = CompileShaderObject(si.type, si.name);
+				if (si.glid > 0)
+				{
+					AddWatcher(si.name, ShaderTypeToFileExt(si.type));
+					OpenGL.glAttachShader(program, si.glid);
+					OpenGL.glDeleteShader(si.glid);
+				}
+			}
+			
+			
+			
+			//можно экономить на этих командах glBindAttribLocation, убрать отсюда и перенес и в сам файл vert от шейдера
+			// разметить эти позиции через layout(location=0) in vec4 aVertexPosition - означает привязка к 0 позиции формата вертбуфера 
+			// к аргументу aVertexPosition в шейдере.
 
 			OpenGL.glLinkProgram(program);
-			OpenGL.CheckGLError();
 			int success;
 			OpenGL.glGetProgramiv(program, OpenGL.GL_LINK_STATUS, out success);
-			OpenGL.CheckGLError();
 			if (success == OpenGL.GL_FALSE)
 			{
 				int len;
@@ -112,15 +247,15 @@ namespace OpenRA.Platforms.Default
 			}
 
 			OpenGL.glUseProgram(program);
-			OpenGL.CheckGLError();
 
 			int numUniforms;
 			OpenGL.glGetProgramiv(program, OpenGL.GL_ACTIVE_UNIFORMS, out numUniforms);
 
-			OpenGL.CheckGLError();
 
 			// забираем все переменные из shader и потом используем для связи с ними текстур
 			var nextTexUnit = 0;
+			samplers.Clear();
+
 			for (var i = 0; i < numUniforms; i++)
 			{
 				int length, size;
@@ -128,16 +263,13 @@ namespace OpenRA.Platforms.Default
 				var sb = new StringBuilder(128);
 				OpenGL.glGetActiveUniform(program, i, 128, out length, out size, out type, sb);
 				var sampler = sb.ToString();
-				OpenGL.CheckGLError();
 
 				if (type == OpenGL.GL_SAMPLER_2D)
 				{
 					samplers.Add(sampler, nextTexUnit);
 
 					var loc = OpenGL.glGetUniformLocation(program, sampler);
-					OpenGL.CheckGLError();
 					OpenGL.glUniform1i(loc, nextTexUnit);
-					OpenGL.CheckGLError();
 
 					nextTexUnit++;
 				}
@@ -146,13 +278,12 @@ namespace OpenRA.Platforms.Default
 					samplers.Add(sampler, nextTexUnit);
 
 					var loc = OpenGL.glGetUniformLocation(program, sampler);
-					OpenGL.CheckGLError();
 					OpenGL.glUniform1i(loc, nextTexUnit);
-					OpenGL.CheckGLError();
 
 					nextTexUnit++;
 				}
 			}
+
 		}
 
 		public override void PrepareRender()
@@ -192,7 +323,7 @@ namespace OpenRA.Platforms.Default
 		/// Устанавливает связь между названием текстуры и именем сэмплера в шейдере.
 		/// Должны быть одинаковые. Для упрощения так сделано.
 		/// </summary>
-		/// <param name="name">имя текстуры.</param>
+		/// <param name="name">имя сэмплера в шейдере.</param>
 		/// <param name="t">ссылка на текстуру.</param>
 		public override void SetTexture(string name, ITexture t)
 		{

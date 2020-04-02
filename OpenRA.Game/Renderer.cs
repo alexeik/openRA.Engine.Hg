@@ -31,11 +31,12 @@ namespace OpenRA
 		public RgbaSpriteRenderer RgbaSpriteRenderer { get; private set; }
 		public SpriteRenderer FontSpriteRenderer { get; private set; }
 		public SpriteRenderer ImguiSpriteRenderer { get; private set; }
+		public ShaderIF_API sproc;
 
 		public IReadOnlyDictionary<string, SpriteFontMSDF> Fonts;
 		public FontMSDF Mfont;
 
-		internal PlatformWindow Window { get; private set; }
+		public PlatformWindow Window { get; private set; }
 		public GraphicsContext Context { get; private set; }
 
 		internal int SheetSize { get; private set; }
@@ -76,7 +77,7 @@ namespace OpenRA
 			RgbaColorRenderer = new RgbaColorRenderer(SpriteRenderer); // эти пишут в родительский VBO
 			FontSpriteRenderer = new SpriteRenderer("FontSpriteRenderer", this, Context.CreateShader("text")); // каждый имеет свой vertex массив, VAO это tempbuffer.
 			ImguiSpriteRenderer = new SpriteRenderer("ImguiSpriteRenderer", this, Context.CreateShader("combined"));// для ImGui
-
+			sproc = new ShaderIF_API(); 
 			IntPtr context = ImGui.CreateContext();
 			ImGui.SetCurrentContext(context);
 
@@ -96,6 +97,7 @@ namespace OpenRA
 			if (Fonts != null)
 				foreach (var font in Fonts.Values)
 					font.Dispose();
+
 			Mfont = new FontMSDF();
 			Mfont.LoadFontTexturesAsPng();
 
@@ -121,6 +123,8 @@ namespace OpenRA
 				});
 			};
 			FontSpriteRenderer.SetFontMSDF(Mfont.Texture);
+
+
 		}
 
 		public void InitializeDepthBuffer(MapGrid mapGrid)
@@ -153,6 +157,8 @@ namespace OpenRA
 				SpriteRenderer.SetViewportParams(lastResolution, 0f, 0f, 1f, int2.Zero);
 				ImguiSpriteRenderer.SetViewportParams(lastResolution, 0f, 0f, 1f, int2.Zero);
 				FontSpriteRenderer.SetViewportParams(lastResolution, 0f, 0f, 1f, int2.Zero);
+				sproc.SetViewportParams(lastResolution, 0f, 0f, 1f, int2.Zero);
+
 			}
 
 			// If zoom evaluates as different due to floating point weirdness that's OK, setting the parameters again is harmless.
@@ -177,6 +183,13 @@ namespace OpenRA
 			FontSpriteRenderer.SetPalette(currentPaletteTexture);
 			WorldSpriteRenderer.SetPalette(currentPaletteTexture);
 			WorldModelRenderer.SetPalette(currentPaletteTexture);
+			sproc.SetTexture("Palette", currentPaletteTexture);
+
+		}
+		public void ResetSproc()
+		{
+			sproc.SetTexture("Palette", currentPaletteTexture);
+			sproc.SetViewportParams(lastResolution, 0f, 0f, 1f, int2.Zero);
 		}
 
 		public void EndFrame(IInputHandler inputHandler)
