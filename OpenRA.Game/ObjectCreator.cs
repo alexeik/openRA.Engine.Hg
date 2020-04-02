@@ -95,6 +95,8 @@ namespace OpenRA
 			if (ctor == null)
 				return (T)CreateBasic(type);
 			else
+				// если есть атрибут  [ObjectCreator.UseCtor] у конструктора, то получим Dep Inj для аргументов конструктора. 
+				// так можно передавать world и другие аргументы в конструктор класса
 				return (T)CreateUsingArgs(ctor, args);
 		}
 
