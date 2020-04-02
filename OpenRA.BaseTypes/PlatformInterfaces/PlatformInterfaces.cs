@@ -119,6 +119,7 @@ namespace OpenRA
 		PointList,
 		LineList,
 		TriangleList,
+		TriangleStrip,
 
 	}
 
