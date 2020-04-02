@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -24,7 +25,7 @@ namespace OpenRA.Platforms.Default
 		{
 			SetThreadAffinity();
 		}
-
+		
 		protected void SetThreadAffinity()
 		{
 			managedThreadId = Thread.CurrentThread.ManagedThreadId;

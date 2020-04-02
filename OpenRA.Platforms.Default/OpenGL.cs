@@ -10,10 +10,12 @@
 #endregion
 
 using System;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading;
 using OpenRA.Primitives;
 using SDL2;
 
@@ -23,8 +25,9 @@ namespace OpenRA.Platforms.Default
 		Justification = "C-style naming is kept for consistency with the underlying native API.")]
 	[SuppressMessage("Microsoft.StyleCop.CSharp.NamingRules", "SA1310:FieldNamesMustNotContainUnderscore",
 		Justification = "C-style naming is kept for consistency with the underlying native API.")]
-	internal static class OpenGL
+	public static class OpenGL
 	{
+
 		public enum GLFeatures
 		{
 			None = 0,
@@ -57,6 +60,7 @@ namespace OpenRA.Platforms.Default
 		public const int GL_POINTS = 0;
 		public const int GL_LINES = 0x0001;
 		public const int GL_TRIANGLES = 0x0004;
+		public const int GL_TRIANGLES_STRIP = 0x0005;
 
 		// EnableCap
 		public const int GL_ALPHA_TEST = 0x0BC0;
@@ -118,6 +122,7 @@ namespace OpenRA.Platforms.Default
 		// OpenGL 2
 		public const int GL_FRAGMENT_SHADER = 0x8B30;
 		public const int GL_VERTEX_SHADER = 0x8B31;
+		public const int GL_GEOMETRY_SHADER = 0x8DD9;
 		public const int GL_SAMPLER_2D = 0x8B5E;
 		public const int GL_SAMPLER_2D_ARRAY = 0x8DC1;
 		public const int GL_COMPILE_STATUS = 0x8B81;
@@ -393,6 +398,16 @@ namespace OpenRA.Platforms.Default
 		public delegate void glDebugMessageCallbackDelegate(DebugProc callback, IntPtr userParam);
 		public static glDebugMessageCallbackDelegate glDebugMessageCallback { get; private set; }
 
+		public delegate void DetachShaderDelegate(uint program, uint shader);
+		public static DetachShaderDelegate glDetachShader { get; private set; }
+
+		public delegate void DeleteShaderDelegate(uint shader);
+		public static DeleteShaderDelegate glDeleteShader { get; private set; }
+
+		public delegate void DeleteProgramDelegate(uint program);
+		public static DeleteProgramDelegate glDeleteProgram { get; private set; }
+		
+
 		public enum DebugSource
 		{
 			GL_DEBUG_SOURCE_API = 0x8246,
@@ -495,6 +510,9 @@ namespace OpenRA.Platforms.Default
 
 			try
 			{
+				glDeleteProgram = Bind<DeleteProgramDelegate>("glDeleteProgram");
+				glDeleteShader = Bind<DeleteShaderDelegate>("glDeleteShader");
+				glDetachShader = Bind<DetachShaderDelegate>("glDetachShader");
 				glDebugMessageControl = Bind<glDebugMessageControlDelegate>("glDebugMessageControl");
 				glDebugMessageCallback = Bind<glDebugMessageCallbackDelegate>("glDebugMessageCallback");
 				glDebugMessageCallback(openGLDebugDelegate, IntPtr.Zero);
@@ -652,5 +670,6 @@ namespace OpenRA.Platforms.Default
 			Log.Write("graphics", "Available extensions:");
 			//Log.Write("graphics", glGetString(GL_EXTENSIONS)); not valid in core profile
 		}
+
 	}
 }
