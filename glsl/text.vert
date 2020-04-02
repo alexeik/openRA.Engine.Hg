@@ -3,10 +3,10 @@
 uniform vec3 Scroll;
 uniform vec3 r1, r2;
 
-in vec3 aVertexPosition;
-in vec4 aVertexTexCoord;
-in vec4 aVertexTexMetadata;
-in vec4 aVertexColorInfo;
+layout (location = 0 ) in vec3 aVertexPosition;
+layout (location = 1 ) in vec4 aVertexTexCoord;
+layout (location = 2 ) in vec4 aVertexTexMetadata;
+layout (location = 3 ) in vec4 aVertexColorInfo;
 
 
 
