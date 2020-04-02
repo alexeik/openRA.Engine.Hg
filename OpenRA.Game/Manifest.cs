@@ -61,12 +61,13 @@ namespace OpenRA
 			Rules, ServerTraits,
 			Sequences, ModelSequences, Cursors, Chrome, Assemblies, ChromeLayout,
 			Weapons, Voices, Notifications, Music, Translations, TileSets,
-			ChromeMetrics, MapCompatibility, Missions, Hotkeys;
+			ChromeMetrics, MapCompatibility, Missions, Hotkeys, ChromeDefaultPalette;
 
 		public readonly IReadOnlyDictionary<string, string> Packages;
 		public readonly IReadOnlyDictionary<string, string> MapFolders;
 		public readonly MiniYaml LoadScreen;
 		public readonly Dictionary<string, Pair<string, int>> Fonts;
+		public readonly Dictionary<string, Pair<string, string>> FontsMSDFBaseFolders;
 
 		public readonly string[] SoundFormats = { };
 		public readonly string[] SpriteFormats = { };
@@ -76,7 +77,7 @@ namespace OpenRA
 			"Sequences", "ModelSequences", "Cursors", "Chrome", "Assemblies", "ChromeLayout", "Weapons",
 			"Voices", "Notifications", "Music", "Translations", "TileSets", "ChromeMetrics", "Missions", "Hotkeys",
 			"ServerTraits", "LoadScreen", "Fonts", "SupportsMapsFrom", "SoundFormats", "SpriteFormats",
-			"RequiresMods", "PackageFormats" };
+			"RequiresMods", "PackageFormats", "FontsMSDFBaseFolders", "ChromeDefaultPalette" };
 
 		readonly TypeDictionary modules = new TypeDictionary();
 		readonly Dictionary<string, MiniYaml> yaml;
@@ -114,11 +115,21 @@ namespace OpenRA
 			ChromeMetrics = YamlList(yaml, "ChromeMetrics");
 			Missions = YamlList(yaml, "Missions");
 			Hotkeys = YamlList(yaml, "Hotkeys");
+			ChromeDefaultPalette = YamlList(yaml, "ChromeDefaultPalette");
 
 			ServerTraits = YamlList(yaml, "ServerTraits");
 
 			if (!yaml.TryGetValue("LoadScreen", out LoadScreen))
 				throw new InvalidDataException("`LoadScreen` section is not defined.");
+
+			if (yaml.ContainsKey("FontsMSDFBaseFolders"))
+			{
+				FontsMSDFBaseFolders = yaml["FontsMSDFBaseFolders"].ToDictionary(my =>
+				{
+					var nd = my.ToDictionary();
+					return Pair.New(nd["FontName"].Value, nd["FontFolder"].Value);
+				});
+			}
 
 			Fonts = yaml["Fonts"].ToDictionary(my =>
 			{

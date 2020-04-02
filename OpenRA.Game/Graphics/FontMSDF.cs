@@ -21,7 +21,12 @@ namespace OpenRA.Graphics
 		{
 			FileSystem.IReadOnlyPackage pack;
 			string temp;
-			if (Game.ModData.DefaultFileSystem.TryGetPackageContaining(@"120.png", out pack, out temp))
+
+			string p1, p2;
+			p1 = Game.ModData.Manifest.FontsMSDFBaseFolders["Section1"].First;
+			p2 = Game.ModData.Manifest.FontsMSDFBaseFolders["Section1"].Second;
+
+			if (Game.ModData.DefaultFileSystem.TryGetPackageContaining(p2, out pack, out temp))
 			{
 				foreach (string f in pack.Contents)
 				{
