@@ -17,10 +17,21 @@ namespace OpenRA.Graphics
 	public class RgbaSpriteRenderer
 	{
 		readonly SpriteRenderer parent;
+		string defaultpalette = "";
+		public PaletteReference pr;
 
 		public RgbaSpriteRenderer(SpriteRenderer parent)
 		{
 			this.parent = parent;
+		}
+
+		public void Setup()
+		{
+			if (Game.ModData.Manifest.ChromeDefaultPalette.Length > 0)
+			{
+				defaultpalette = Game.ModData.Manifest.ChromeDefaultPalette[0];
+				pr = Game.worldRenderer.Palette(defaultpalette);
+			}
 		}
 
 		public void DrawSprite(Sprite s, float3 location, float3 size)
@@ -33,8 +44,13 @@ namespace OpenRA.Graphics
 
 		public void DrawSprite(Sprite s, float3 location)
 		{
-			if (s.Channel != TextureChannel.RGBA)
-				throw new InvalidOperationException("DrawRGBASprite requires a RGBA sprite.");
+			if (s.Channel != TextureChannel.RGBA && pr != null)
+			{
+				parent.DrawSprite(s, location, pr, s.Size);
+				return;
+			}
+				if (s.Channel != TextureChannel.RGBA && pr == null)
+				throw new InvalidOperationException("DrawRGBASprite requires a RGBA sprite and ChromeDefaultPalette(mod.yaml) is null.");
 
 			parent.DrawSprite(s, location, 0, s.Size);
 		}

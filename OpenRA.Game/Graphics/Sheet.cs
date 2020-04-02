@@ -47,6 +47,11 @@ namespace OpenRA.Graphics
 			Size = texture.Size;
 		}
 
+		/// <summary>
+		/// Сделано, только для потоков байтов типа <see cref="Png"/> .
+		/// </summary>
+		/// <param name="type">тип листа хранящего байты из потока</param>
+		/// <param name="stream">поток байтов.</param>
 		public Sheet(SheetType type, Stream stream)
 		{
 			var png = new Png(stream);

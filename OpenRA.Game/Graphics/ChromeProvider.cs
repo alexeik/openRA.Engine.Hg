@@ -12,6 +12,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using OpenRA.FileSystem;
+using OpenRA.Primitives;
 
 namespace OpenRA.Graphics
 {
@@ -27,6 +28,7 @@ namespace OpenRA.Graphics
 		static Dictionary<string, Sheet> cachedSheets;
 		static Dictionary<string, Dictionary<string, Sprite>> cachedSprites;
 		static IReadOnlyFileSystem fileSystem;
+		public static World World;
 
 		public static void Initialize(ModData modData)
 		{
@@ -83,6 +85,8 @@ namespace OpenRA.Graphics
 				Regions = yaml.Nodes.ToDictionary(n => n.Key, n => new MappedImage(yaml.Value, n.Value))
 			};
 
+			// Regions это ссылки на области внутри текстуры png файла. Name это псевдоним имени png файла. Все из chrome.yaml будет тут считано.
+
 			collections.Add(name, collection);
 		}
 
@@ -108,28 +112,70 @@ namespace OpenRA.Graphics
 			if (!collection.Regions.TryGetValue(imageName, out mi))
 				return null;
 
-			// Cached sheet
+			SequenceProvider seqprov;
+			seqprov = World.Map.Rules.Sequences;
+			// по идее, можно написать в chrome.yaml разные ресурсы игры cps и т.п. , они будут загружаться , только при обращении в этот метод.
+			// при обращении за cps , переменная wolrd уже будет заполнена.
+			bool switch2Seq = false;
+
+			if (seqprov != null)
+			{
+				if (seqprov.HasSequence(mi.Src))
+				{
+					switch2Seq = true;
+				}
+			}
+			Sprite image = null, image2 = null;
 			Sheet sheet;
-			if (cachedSheets.ContainsKey(mi.Src))
-				sheet = cachedSheets[mi.Src];
-			else
-			{
-				using (var stream = fileSystem.Open(mi.Src))
-					sheet = new Sheet(SheetType.BGRA, stream);
 
-				cachedSheets.Add(mi.Src, sheet);
+			if (switch2Seq)
+			{
+				if (cachedSheets.ContainsKey(mi.Src)) //mi.Src это имя png файла.
+					sheet = cachedSheets[mi.Src];
+				else
+				{
+
+					sheet = seqprov.GetSequence(mi.Src, "idle").GetSprite(0).Sheet;
+					cachedSheets.Add(mi.Src, sheet);
+				}
+				image2 = seqprov.GetSequence(mi.Src, "idle").GetSprite(0);
+				int2 offset = new int2(image2.Bounds.Location.X, image2.Bounds.Location.Y); //основная часть текстуры
+				image = new Sprite(sheet, new Rectangle(mi.rect.X + offset.X, mi.rect.Y + offset.Y, mi.rect.Width, mi.rect.Height), TextureChannel.Red); //смещение в основной части текстуры
+
+				if (cachedCollection == null)
+				{
+					cachedCollection = new Dictionary<string, Sprite>();
+					cachedSprites.Add(collectionName, cachedCollection);
+				}
+				cachedCollection.Add(imageName, image);
+				return image;
+
+
 			}
 
-			// Cache the sprite
-			if (cachedCollection == null)
+			if (!switch2Seq)
 			{
-				cachedCollection = new Dictionary<string, Sprite>();
-				cachedSprites.Add(collectionName, cachedCollection);
+				// Cached sheet
+				if (cachedSheets.ContainsKey(mi.Src)) //mi.Src это имя png файла. То есть Sheet создается под каждый файл png.
+					sheet = cachedSheets[mi.Src];
+				else
+				{
+					using (var stream = fileSystem.Open(mi.Src))
+						sheet = new Sheet(SheetType.BGRA, stream);
+
+					cachedSheets.Add(mi.Src, sheet);
+				}
+
+				// Cache the sprite
+				if (cachedCollection == null)
+				{
+					cachedCollection = new Dictionary<string, Sprite>();
+					cachedSprites.Add(collectionName, cachedCollection);
+				}
+
+				image = mi.GetImage(sheet);
+				cachedCollection.Add(imageName, image);
 			}
-
-			var image = mi.GetImage(sheet);
-			cachedCollection.Add(imageName, image);
-
 			return image;
 		}
 	}

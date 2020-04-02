@@ -167,6 +167,8 @@ namespace OpenRA
 			using (new PerfTimer("NewWorld"))
 				OrderManager.World = new World(ModData, map, OrderManager, type);
 
+			ChromeProvider.World = OrderManager.World; // для доступа к текстурам из seq/*.yaml
+
 			OrderManager.World.GameOver += FinishBenchmark;
 
 			worldRenderer = new WorldRenderer(ModData, OrderManager.World);
@@ -645,7 +647,8 @@ namespace OpenRA
 			using (new PerfSample("render"))
 			{
 				++RenderFrame;
-
+				Renderer.sproc.UseCandidates();
+				Renderer.ResetSproc();
 				// worldRenderer is null during the initial install/download screen
 				if (worldRenderer == null)
 					Renderer.BeginFrame(int2.Zero, 1f);

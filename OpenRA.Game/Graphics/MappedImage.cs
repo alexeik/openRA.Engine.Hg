@@ -16,7 +16,7 @@ namespace OpenRA.Graphics
 {
 	class MappedImage
 	{
-		readonly Rectangle rect = Rectangle.Empty;
+		public readonly Rectangle rect = Rectangle.Empty;
 		public readonly string Src;
 
 		public MappedImage(string defaultSrc, MiniYaml info)
@@ -30,6 +30,10 @@ namespace OpenRA.Graphics
 		public Sprite GetImage(Sheet s)
 		{
 			return new Sprite(s, rect, TextureChannel.RGBA);
+		}
+		public Sprite GetImage(Sheet s, Rectangle r)
+		{
+			return new Sprite(s, r, TextureChannel.Red);
 		}
 
 		public MiniYaml Save(string defaultSrc)

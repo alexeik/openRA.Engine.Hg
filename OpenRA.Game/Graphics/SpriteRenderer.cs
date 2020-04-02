@@ -122,7 +122,10 @@ namespace OpenRA.Graphics
 				sheets[secondarySheetIndex] = ss.SecondarySheet;
 				ns += 1;
 			}
+			if (ns>0 && sheets.Length==0)
+			{
 
+			}
 			return new int2(sheetIndex, secondarySheetIndex);
 		}
 

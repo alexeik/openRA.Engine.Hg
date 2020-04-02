@@ -252,6 +252,8 @@ namespace OpenRA.Graphics
 		{
 			palette.ApplyModifiers(World.WorldActor.TraitsImplementing<IPaletteModifier>());
 			Game.Renderer.SetPalette(palette);
+
+			Game.Renderer.RgbaSpriteRenderer.Setup(); // для ChromeDefaultPalette
 		}
 
 		// Conversion between world and screen coordinates
