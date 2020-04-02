@@ -14,10 +14,10 @@ using System.Runtime.InteropServices;
 
 namespace OpenRA.Platforms.Default
 {
-	public sealed class VertexBuffer<T> : VertexBufferUserBase<T>
+	public class VertexBuffer<T> : VertexBufferUserBase<T>
 			where T : struct
 	{
-		static readonly int VertexSize = Marshal.SizeOf(typeof(T));
+		public static readonly int VertexSize = Marshal.SizeOf(typeof(T));
 		uint buffer;
 		bool disposed;
 		int LocalVertexArrayIndex;
@@ -28,8 +28,8 @@ namespace OpenRA.Platforms.Default
 			Console.WriteLine("VB created owner: " + ownername);
 #endif
 			this.ownername = ownername;
-			VAOReserveStack += 1; //помечаем, что резерв уменьшился.
-			LocalVertexArrayIndex = VAOReserveStack;
+			GraphicsContext.VAOReserveStack += 1; //помечаем, что резерв уменьшился.
+			LocalVertexArrayIndex = GraphicsContext.VAOReserveStack;
 			
 
 			BindOnceOpen();
@@ -105,15 +105,7 @@ namespace OpenRA.Platforms.Default
 
 #region Vertex Array Managmenet
 
-		public static int[] VAOList;
-		public static int VAOReserveStack;
 
-		public static void ReserveVAOList()
-		{
-			VAOList = new int[30];
-			OpenGL.glGenVertexArrays(30, VAOList);
-			OpenGL.CheckGLError();
-		}
 #endregion
 		public override void ActivateVAO()
 		{
@@ -121,7 +113,7 @@ namespace OpenRA.Platforms.Default
 			{
 				Console.WriteLine("ERROR IN VAO Activate index==0!");
 			}
-			OpenGL.glBindVertexArray(VAOList[LocalVertexArrayIndex]);
+			OpenGL.glBindVertexArray(GraphicsContext.VAOList[LocalVertexArrayIndex]);
 #if DEBUG_VERTEX
 			Console.WriteLine("glBindVertexArray: " + VAOList[LocalVertexArrayIndex] + "owner : " +ownername);
 #endif
@@ -150,12 +142,19 @@ namespace OpenRA.Platforms.Default
 #if DEBUG_VERTEX
 			Console.WriteLine("BindOnceOpen: " + VAOList[LocalVertexArrayIndex].ToString());
 #endif
-			OpenGL.glBindVertexArray(VAOList[LocalVertexArrayIndex]);
+			OpenGL.glBindVertexArray(GraphicsContext.VAOList[LocalVertexArrayIndex]);
 			OpenGL.CheckGLError();
 			OpenGL.glGenBuffers(1, out buffer);
 			OpenGL.CheckGLError();
 			OpenGL.glBindBuffer(OpenGL.GL_ARRAY_BUFFER, buffer);
 			OpenGL.CheckGLError();
+			ApplyFormatOnVertexBuffer();
+
+
+		}
+		public virtual void ApplyFormatOnVertexBuffer()
+		{
+		
 			OpenGL.glVertexAttribPointer(Shader.VertexPosAttributeIndex, 3, OpenGL.GL_FLOAT, false, VertexSize, IntPtr.Zero);
 			OpenGL.CheckGLError();
 			OpenGL.glEnableVertexAttribArray(Shader.VertexPosAttributeIndex);
@@ -172,8 +171,6 @@ namespace OpenRA.Platforms.Default
 			OpenGL.CheckGLError();
 			OpenGL.glEnableVertexAttribArray(Shader.VertexColorInfo);
 			OpenGL.CheckGLError();
-
-
 		}
 		public void BindOnceClose()
 		{
