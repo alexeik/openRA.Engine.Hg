@@ -44,24 +44,28 @@ namespace OpenRA.Graphics
 			// See shp.vert for documentation on the channel attribute format
 			float ct1 = 0, ct2 = 0, ct3 = 0, ct4 = 0;
 
-			// тут r трактуется как класс Sprite
+			// С‚СѓС‚ r С‚СЂР°РєС‚СѓРµС‚СЃСЏ РєР°Рє РєР»Р°СЃСЃ Sprite
 			if (r.Channel == TextureChannel.RGBA)
 			{
-				ct1 = 0.4f; // без разницы, что тут ставить, так как drawmode==0 и это число учтено не будет
+				ct1 = 4f; // С‚СѓС‚ РЅСѓР¶РЅРѕ СѓРєР°Р·Р°С‚СЊ, РІ РєР°РєРѕРј РєР°РЅР°Р»Рµ С‚РµРєСЃС‚СѓСЂС‹ R,G,B Р·Р°С€РёС‚С‹ РґР°РЅРЅС‹Рµ Рѕ С†РІРµС‚Рµ. РґР»СЏ RGBA С‚РµРєСЃС‚СѓСЂС‹ РЅСѓР¶РЅРѕ С†РёС„СЂСѓ 2, СЌС‚Рѕ РІ С€РµР№РґРµСЂРµ 
+							// СѓРєР°Р¶РµС‚ РЅР° РёСЃРїРѕР»СЊР·РѕРІР°РЅРёРµ 1.1.1.1 РјР°СЃРєРё
 			}
 			else
 			{
-				ct1 = (byte)r.Channel+1;
+				ct1 = (byte)r.Channel; // С‚СѓС‚ РЅСѓР¶РЅРѕ РїРѕРЅСЏС‚СЊ, РІ РєР°РєРѕРј РєР°РЅР°Р»Рµ Р»РµР¶Р°С‚ РґР°РЅРЅС‹Рµ Рѕ С†РІРµС‚Рµ, С‚Р°Рє РєР°Рє SheetBiulder СЂР°СЃРїСЂРµРґРµР»СЏРµС‚ РґР°РЅРЅС‹Рµ РєР°СЂС‚РёРЅРѕРє
+										// РїРѕ R,G,B РіСЂСѓРїРїР°Рј. Р­С‚Рѕ СЃРґРµР»Р°РЅРѕ РґР»СЏ РєР°СЂС‚РёРЅРѕРє СЃ РїР°Р»РёС‚СЂР°РјРё. РўР°Рє РєР°Рє РёС… С†РІРµС‚ Р·Р°РЅРёРјР°РµС‚ Р»РёС€СЊ 1 Р±Р°Р№С‚, РІРјРµСЃС‚Рѕ 4 Р±Р°Р№С‚.
+										// 1 РІ С€РµР№РґРµСЂРµ СЌС‚Рѕ R РєР°РЅР°Р», 2 СЌС‚Рѕ RGBA, 3 = G , 5=B, 7=A
+										// R=0,G=1,B=2,A=3,RGBA=4 РІ r.Channel . Р’ С€РµР№РґРµСЂРµ РїРµСЂРµРґР°Р»Р°РЅР° С„СѓРЅРєС†РёСЏ СЃРІСЏР·РєРё РјР°СЃРѕРє, РЅР° С‚РѕС‡РЅРѕРµ СЃРѕРѕС‚РІРµСЃС‚РІРёРµ.
 			}
 
 			// var attribC = r.Channel == TextureChannel.RGBA ? 0x02 : ((byte)r.Channel) << 1 | 0x01;
 			// attribC |= samplers.X << 6;
-			ct2 = samplers.X;  // это потому что, выбор текстуры зависит от 0.0 чисел в шейдере в методе vec4 Sample()
+			ct2 = samplers.X;  // СЌС‚Рѕ РїРѕС‚РѕРјСѓ С‡С‚Рѕ, РІС‹Р±РѕСЂ С‚РµРєСЃС‚СѓСЂС‹ Р·Р°РІРёСЃРёС‚ РѕС‚ 0.0 С‡РёСЃРµР» РІ С€РµР№РґРµСЂРµ РІ РјРµС‚РѕРґРµ vec4 Sample()
 
 			var ss = r as SpriteWithSecondaryData;
 
-			// тут r трактуется уже как SpriteWithSecondaryData, если преобразование пройдет успешно! а если нет, то ss = null
-			// используется для vDepthMask в шейдере и когда поставлен флаг ОтладкиГлубины SpriteRendere.SetDepthPreviewEnabled ставит у шейдера uniform EnableDepthPreview =true
+			// С‚СѓС‚ r С‚СЂР°РєС‚СѓРµС‚СЃСЏ СѓР¶Рµ РєР°Рє SpriteWithSecondaryData, РµСЃР»Рё РїСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёРµ РїСЂРѕР№РґРµС‚ СѓСЃРїРµС€РЅРѕ! Р° РµСЃР»Рё РЅРµС‚, С‚Рѕ ss = null
+			// РёСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ РґР»СЏ vDepthMask РІ С€РµР№РґРµСЂРµ Рё РєРѕРіРґР° РїРѕСЃС‚Р°РІР»РµРЅ С„Р»Р°Рі РћС‚Р»Р°РґРєРёР“Р»СѓР±РёРЅС‹ SpriteRendere.SetDepthPreviewEnabled СЃС‚Р°РІРёС‚ Сѓ С€РµР№РґРµСЂР° uniform EnableDepthPreview =true
 			if (ss != null)
 			{
 				sl = ss.SecondaryLeft;
@@ -72,11 +76,11 @@ namespace OpenRA.Graphics
 				// attribC |= ((byte)ss.SecondaryChannel) << 4 | 0x08;
 				if (ss.SecondaryChannel == TextureChannel.RGBA)
 				{
-					ct3 = 0.4f;
+					ct3 = 4f;
 				}
 				else
 				{
-					ct3 = (byte)ss.SecondaryChannel+1;
+					ct3 = (byte)r.Channel;
 				}
 
 				// attribC |= samplers.Y << 9;
@@ -85,23 +89,23 @@ namespace OpenRA.Graphics
 
 			int drawmode = 0;
 
-			// Как то передать режим в котором будет рисование.
+			// РљР°Рє С‚Рѕ РїРµСЂРµРґР°С‚СЊ СЂРµР¶РёРј РІ РєРѕС‚РѕСЂРѕРј Р±СѓРґРµС‚ СЂРёСЃРѕРІР°РЅРёРµ.
 			if (r.Channel == TextureChannel.RGBA)
 			{
-				// значит режим рисования RGBA из текстуры
+				// Р·РЅР°С‡РёС‚ СЂРµР¶РёРј СЂРёСЃРѕРІР°РЅРёСЏ RGBA РёР· С‚РµРєСЃС‚СѓСЂС‹
 				drawmode = 0;
 			}
 			else
 			{
 				drawmode = 1;
 
-				// режим через палитру, в основном из канала R в текстуре идем к цвету в палитре
+				// СЂРµР¶РёРј С‡РµСЂРµР· РїР°Р»РёС‚СЂСѓ, РІ РѕСЃРЅРѕРІРЅРѕРј РёР· РєР°РЅР°Р»Р° R РІ С‚РµРєСЃС‚СѓСЂРµ РёРґРµРј Рє С†РІРµС‚Сѓ РІ РїР°Р»РёС‚СЂРµ
 
-				// drawmode=2 ставится для рисования прямоугольников и т.п. в RgbaColorRenderer, так как у него свой VBO
+				// drawmode=2 СЃС‚Р°РІРёС‚СЃСЏ РґР»СЏ СЂРёСЃРѕРІР°РЅРёСЏ РїСЂСЏРјРѕСѓРіРѕР»СЊРЅРёРєРѕРІ Рё С‚.Рї. РІ RgbaColorRenderer, С‚Р°Рє РєР°Рє Сѓ РЅРµРіРѕ СЃРІРѕР№ VBO
 			}
 			if (r.SpriteType == 1)
 			{
-				paletteTextureIndex = r.SpriteArrayNum; // положим сюда цифру указывающую на спрайт внутри Texture2dArray в TextureFontMSDF параметра шейдера.
+				paletteTextureIndex = r.SpriteArrayNum; // РїРѕР»РѕР¶РёРј СЃСЋРґР° С†РёС„СЂСѓ СѓРєР°Р·С‹РІР°СЋС‰СѓСЋ РЅР° СЃРїСЂР°Р№С‚ РІРЅСѓС‚СЂРё Texture2dArray РІ TextureFontMSDF РїР°СЂР°РјРµС‚СЂР° С€РµР№РґРµСЂР°.
 				drawmode = 3; // FontMSDF
 			}
 
@@ -123,10 +127,10 @@ namespace OpenRA.Graphics
 			// See shp.vert for documentation on the channel attribute format
 			float ct1 = 0, ct2 = 0, ct3 = 0, ct4 = 0;
 
-			// тут r трактуется как класс Sprite
+			// С‚СѓС‚ r С‚СЂР°РєС‚СѓРµС‚СЃСЏ РєР°Рє РєР»Р°СЃСЃ Sprite
 			if (r.Channel == TextureChannel.RGBA)
 			{
-				ct1 = 0.4f; // это потому что, выбор текстуры зависит от 0.0 чисел в шейдере в методе vec4 Sample()
+				ct1 = 0.4f; // СЌС‚Рѕ РїРѕС‚РѕРјСѓ С‡С‚Рѕ, РІС‹Р±РѕСЂ С‚РµРєСЃС‚СѓСЂС‹ Р·Р°РІРёСЃРёС‚ РѕС‚ 0.0 С‡РёСЃРµР» РІ С€РµР№РґРµСЂРµ РІ РјРµС‚РѕРґРµ vec4 Sample()
 			}
 			else
 			{
@@ -140,8 +144,8 @@ namespace OpenRA.Graphics
 			var ss = r as SpriteWithSecondaryData;
 
 			
-			// используется для vDepthMask в шейдере и когда поставлен флаг ОтладкиГлубины SpriteRendere.SetDepthPreviewEnabled ставит у шейдера uniform EnableDepthPreview =true
-			if (ss != null) // тут r трактуется уже как SpriteWithSecondaryData, если преобразование пройдет успешно=> а если нет, то ss = null
+			// РёСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ РґР»СЏ vDepthMask РІ С€РµР№РґРµСЂРµ Рё РєРѕРіРґР° РїРѕСЃС‚Р°РІР»РµРЅ С„Р»Р°Рі РћС‚Р»Р°РґРєРёР“Р»СѓР±РёРЅС‹ SpriteRendere.SetDepthPreviewEnabled СЃС‚Р°РІРёС‚ Сѓ С€РµР№РґРµСЂР° uniform EnableDepthPreview =true
+			if (ss != null) // С‚СѓС‚ r С‚СЂР°РєС‚СѓРµС‚СЃСЏ СѓР¶Рµ РєР°Рє SpriteWithSecondaryData, РµСЃР»Рё РїСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёРµ РїСЂРѕР№РґРµС‚ СѓСЃРїРµС€РЅРѕ=> Р° РµСЃР»Рё РЅРµС‚, С‚Рѕ ss = null
 			{
 				sl = ss.SecondaryLeft;
 				st = ss.SecondaryTop;
@@ -164,23 +168,23 @@ namespace OpenRA.Graphics
 
 			int drawmode = 0;
 
-			// Как то передать режим в котором будет рисование.
+			// РљР°Рє С‚Рѕ РїРµСЂРµРґР°С‚СЊ СЂРµР¶РёРј РІ РєРѕС‚РѕСЂРѕРј Р±СѓРґРµС‚ СЂРёСЃРѕРІР°РЅРёРµ.
 			if (r.Channel == TextureChannel.RGBA)
 			{
-				// значит режим рисования RGBA из текстуры
+				// Р·РЅР°С‡РёС‚ СЂРµР¶РёРј СЂРёСЃРѕРІР°РЅРёСЏ RGBA РёР· С‚РµРєСЃС‚СѓСЂС‹
 				drawmode = 0;
 			}
 			else
 			{
 				drawmode = 1;
 
-				// режим через палитру, в основном из канала R в текстуре идем к цвету в палитре
+				// СЂРµР¶РёРј С‡РµСЂРµР· РїР°Р»РёС‚СЂСѓ, РІ РѕСЃРЅРѕРІРЅРѕРј РёР· РєР°РЅР°Р»Р° R РІ С‚РµРєСЃС‚СѓСЂРµ РёРґРµРј Рє С†РІРµС‚Сѓ РІ РїР°Р»РёС‚СЂРµ
 
-				// drawmode=2 ставится для рисования прямоугольников и т.п. в RgbaColorRenderer, так как у него свой VBO
+				// drawmode=2 СЃС‚Р°РІРёС‚СЃСЏ РґР»СЏ СЂРёСЃРѕРІР°РЅРёСЏ РїСЂСЏРјРѕСѓРіРѕР»СЊРЅРёРєРѕРІ Рё С‚.Рї. РІ RgbaColorRenderer, С‚Р°Рє РєР°Рє Сѓ РЅРµРіРѕ СЃРІРѕР№ VBO
 			}
 			if (r.SpriteType == 1)
 			{
-				paletteTextureIndex = r.SpriteArrayNum; // положим сюда цифру указывающую на спрайт внутри Texture2dArray в TextureFontMSDF параметра шейдера.
+				paletteTextureIndex = r.SpriteArrayNum; // РїРѕР»РѕР¶РёРј СЃСЋРґР° С†РёС„СЂСѓ СѓРєР°Р·С‹РІР°СЋС‰СѓСЋ РЅР° СЃРїСЂР°Р№С‚ РІРЅСѓС‚СЂРё Texture2dArray РІ TextureFontMSDF РїР°СЂР°РјРµС‚СЂР° С€РµР№РґРµСЂР°.
 				drawmode = 3; // FontMSDF
 			}
 

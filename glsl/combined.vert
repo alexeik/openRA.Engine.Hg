@@ -3,10 +3,10 @@
 uniform vec3 Scroll;
 uniform vec3 r1, r2;
 
-in vec3 aVertexPosition;
-in vec4 aVertexTexCoord;
-in vec4 aVertexTexMetadata;
-in vec4 aVertexColorInfo;
+layout (location = 0 ) in vec3 aVertexPosition;
+layout (location = 1 ) in vec4 aVertexTexCoord;
+layout (location = 2 ) in vec4 aVertexTexMetadata;
+layout (location = 3 ) in vec4 aVertexColorInfo;
 
 out vec4 vTexCoord;
 out vec4 vTexMetadata;
@@ -83,25 +83,28 @@ vec4 SelectRGBAFraction(float x)
  
 vec4 SelectChannelMask(float x)
 {
-	if (x >= 7.0)
-		return vec4(0,0,0,1);
-	if (x >= 5.0)
-		return vec4(0,0,1,0);
-	if (x >= 3.0)
-		return vec4(0,1,0,0);
-	if (x >= 2.0)
+	if (x == 4.0)
 		return vec4(1,1,1,1);
-	if (x >= 1.0)
+	if (x == 3.0)
+		return vec4(0,0,0,1);
+	if (x == 2.0)
+		return vec4(0,0,1,0);
+	if (x == 1.0)
+		return vec4(0,1,0,0);
+
+	if (x == 0.0)
 		return vec4(1,0,0,0);
 
 	return vec4(0, 0, 0, 0);
 }
 vec4 SelectPalettedFraction(float x)
 {
+	//для чего это используеться? в каком алгоритме- не выяснил.
+	return vec4(1, 1, 1, 1);
 	if (x == 0.0 || x == 2.0)
 		return vec4(0, 0, 0, 0);
 
-	return vec4(1, 1, 1, 1);
+	
 }
 void main()
 {
@@ -128,5 +131,5 @@ void main()
 	vChannelMask = SelectChannelMask(aVertexColorInfo.s); //динамическое определение маски RGBA
 	//тут нужно из целого числа, сделать вектор, чтобы потом умножить и оставить токо ту часть, которая содержит Х коориданату в палитре
 	
-	vTexSampler = vec2(0,aVertexColorInfo.t);
+	vTexSampler = vec2(0,aVertexColorInfo.t); //номер текстуры
 } 

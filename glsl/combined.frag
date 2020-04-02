@@ -76,9 +76,10 @@ void main()
 	if (vTexMetadata.p==1.0) // рисует пиксели из палитры
 	{
 		vec4 x = Sample(vTexSampler.t, vTexCoord.st);
-		//vTexMetadata.s вертикальный индекс палитры содержит. 
 		
-		vec2 p = vec2(dot(x, vChannelMask), vTexMetadata.s);
+		//vTexMetadata.s вертикальный индекс палитры содержит. 
+		vec2 p = vec2(dot(x, vChannelMask), vTexMetadata.s);  
+		
 		//vec2 p = vec2(dot(x, vec4(1,0,0,0)), vTexMetadata.s); //статичное определение маски, всегда в R канале
 		// c = vec4(1,1,1,1) * texture2D(Palette, p) ;
 		c = vPalettedFraction * texture2D(Palette, p) ;
