@@ -35,7 +35,7 @@ namespace OpenRA.Graphics
 	{
 		public readonly SheetType Type;
 		public readonly List<Sheet> sheets = new List<Sheet>();
-		readonly Func<Sheet> allocateSheet;
+		readonly Func<Sheet> allocateSheetDelegate;
 
 		Sheet current;
 		TextureChannel channel;
@@ -59,17 +59,37 @@ namespace OpenRA.Graphics
 		public SheetBuilder(SheetType t, int w, int h)
 			: this(t, () => AllocateSheet(t, w, h)) { }
 
-		public SheetBuilder(SheetType t, Func<Sheet> allocateSheet)
+		public SheetBuilder(SheetType t, Func<Sheet> allocateSheetDelegate)
 		{
 			channel = t == SheetType.Indexed ? TextureChannel.Red : TextureChannel.RGBA;
 			Type = t;
-			current = allocateSheet();
+			current = allocateSheetDelegate();
 			sheets.Add(current);
-			this.allocateSheet = allocateSheet;
+			this.allocateSheetDelegate = allocateSheetDelegate;
 		}
 
-		public Sprite Add(ISpriteFrame frame) { return Add(frame.Data, frame.Size, 0, frame.Offset); }
-		public Sprite Add(byte[] src, Size size) { return Add(src, size, 0, float3.Zero); }
+		/// <summary>
+		/// ДОбавляет байты из ISpriteFrame класса в массив байтов текстуры
+		/// </summary>
+		/// <param name="frame"></param>
+		/// <returns></returns>
+		public Sprite Add(ISpriteFrame frame) 
+		{ 
+			return Add(frame.Data, frame.Size, 0, frame.Offset); 
+		}
+		public Sprite Add(byte[] src, Size size) 
+		{ 
+			return Add(src, size, 0, float3.Zero); 
+		}
+
+		/// <summary>
+		/// Добавляет байты в массив байтов текстуры.
+		/// </summary>
+		/// <param name="src"></param>
+		/// <param name="size"></param>
+		/// <param name="zRamp"></param>
+		/// <param name="spriteOffset"></param>
+		/// <returns></returns>
 		public Sprite Add(byte[] src, Size size, float zRamp, float3 spriteOffset)
 		{
 			// Don't bother allocating empty sprites
@@ -118,7 +138,18 @@ namespace OpenRA.Graphics
 			return (TextureChannel)nextChannel;
 		}
 
-		public Sprite Allocate(Size imageSize) { return Allocate(imageSize, 0, float3.Zero); }
+		public Sprite Allocate(Size imageSize) 
+		{ 
+			return Allocate(imageSize, 0, float3.Zero); 
+		}
+
+		/// <summary>
+		/// Резервирует место под SPrite в текстуре opengl
+		/// </summary>
+		/// <param name="imageSize"></param>
+		/// <param name="zRamp"></param>
+		/// <param name="spriteOffset"></param>
+		/// <returns></returns>
 		public Sprite Allocate(Size imageSize, float zRamp, float3 spriteOffset)
 		{
 			if (imageSize.Width + p.X > current.Size.Width)
@@ -136,7 +167,7 @@ namespace OpenRA.Graphics
 				if (next == null)
 				{
 					current.ReleaseBuffer();
-					current = allocateSheet();
+					current = allocateSheetDelegate();
 					sheets.Add(current);
 					channel = Type == SheetType.Indexed ? TextureChannel.Red : TextureChannel.RGBA;
 				}

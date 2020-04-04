@@ -64,13 +64,14 @@ namespace OpenRA.Graphics
 				nv = 0;
 				ns = 0;
 			}
+
 		}
 
 		/// <summary>
 		/// Этот метод, косвенно запускает opengl DrawBatchWithBind если текущий Renderer(наследник Renderer.IBatchRenderer) отличается от новогого.
 		/// </summary>
 		/// <param name="s">Спрайт, который записывается в VBO.</param>
-		/// <returns>Возвращает индекс Sheet куда попал спрайт.</returns>
+		/// <returns>Возвращает индекс Sheet куда попал спрайт  и канал внутри Sheet,так как 1 байтные(только R канал) может быть в R,G,B,A канале текстуры.</returns>
 		public int2 SetRenderStateForSprite(Sprite s)
 		{
 			if (rendererID == "WordlSprireRenderer")
@@ -122,12 +123,12 @@ namespace OpenRA.Graphics
 				sheets[secondarySheetIndex] = ss.SecondarySheet;
 				ns += 1;
 			}
-			if (ns>0 && sheets.Length==0)
-			{
 
-			}
+		
+
 			return new int2(sheetIndex, secondarySheetIndex);
 		}
+
 
 		internal void DrawSprite(Sprite s, float3 location, float paletteTextureIndex, float3 size)
 		{

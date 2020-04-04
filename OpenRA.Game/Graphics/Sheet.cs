@@ -26,6 +26,10 @@ namespace OpenRA.Graphics
 		public readonly Size Size;
 		public readonly SheetType Type;
 
+		/// <summary>
+		/// Дает ссылку на byte[] data , куда с помощью FastCopyIntoChannel копируются данные внутри SheetBuilder метод Add() 
+		/// </summary>
+		/// <returns></returns>
 		public byte[] GetData()
 		{
 			CreateBuffer();
@@ -63,6 +67,10 @@ namespace OpenRA.Graphics
 			ReleaseBuffer();
 		}
 
+		/// <summary>
+		/// Создает текстуру в OPenGL для данного Sheet
+		/// </summary>
+		/// <returns></returns>
 		public ITexture GetTexture()
 		{
 			if (texture == null)

@@ -209,8 +209,17 @@ namespace OpenRA
 				var ts = modData.DefaultTileSets[tileSet];
 
 				// TODO: Top-level dictionary should be moved into the Ruleset instead of in its own object
-				var sequences = mapSequences == null ? modData.DefaultSequences[tileSet] :
-					new SequenceProvider(fileSystem, modData, ts, mapSequences);
+				SequenceProvider sequences;
+				if (mapSequences == null)
+				{
+					sequences = modData.DefaultSequences[tileSet]; // это вызовет  инициализацию Lazy класса внутри defaultSequences в конструкторе ModData 
+				}
+				else
+				{
+					sequences = new SequenceProvider(fileSystem, modData, ts, mapSequences);
+				}
+				//sequences = mapSequences == null ? modData.DefaultSequences[tileSet] :
+				//	new SequenceProvider(fileSystem, modData, ts, mapSequences);
 
 				var modelSequences = dr.ModelSequences;
 				if (mapModelSequences != null)
