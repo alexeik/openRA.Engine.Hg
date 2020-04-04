@@ -10,6 +10,7 @@ Packages:
 	~^Content/cnc
 	~^Content/cnc/movies
     ~^Content/cnc/Font
+    ^Content/cnc/msdf/fontmsdf1: msdffolder1
 	.
 	$cnc: cnc
 	./mods/common: common
@@ -20,7 +21,7 @@ Packages:
 	~temperat.mix
 	~winter.mix
 	~desert.mix
-	~movies.mix
+	#~movies.mix
 	~scores.mix
 	~scores2.mix
 	~scores-covertops.mix
@@ -31,7 +32,12 @@ Packages:
 	cnc|bits/desert
 	cnc|bits/ss
 	cnc|uibits
-
+    
+FontsMSDFBaseFolders:
+    Section1:
+        FontName : font1
+        FontFolder : msdffolder1|font1
+        
 MapFolders:
 	cnc|maps: System
 	~^maps/cnc/{DEV_VERSION}: User
