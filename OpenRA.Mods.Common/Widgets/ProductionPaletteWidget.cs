@@ -18,6 +18,7 @@ using OpenRA.Mods.Common.Orders;
 using OpenRA.Mods.Common.Traits;
 using OpenRA.Mods.Common.Traits.Render;
 using OpenRA.Network;
+using OpenRA.Platforms.Default;
 using OpenRA.Primitives;
 using OpenRA.Widgets;
 
@@ -35,6 +36,7 @@ namespace OpenRA.Mods.Common.Widgets
 		public float2 Pos;
 		public List<ProductionItem> Queued;
 		public ProductionQueue ProductionQueue;
+		public int2 RenderSize;
 	}
 
 	public class ProductionPaletteWidget : Widget
@@ -71,6 +73,7 @@ namespace OpenRA.Mods.Common.Widgets
 
 		[Translate]
 		public readonly string HoldText = "";
+		public readonly bool StretchOriginalIcons = false;
 
 		[Translate]
 		public readonly string InfiniteSymbol = "\u221E";
@@ -406,7 +409,7 @@ namespace OpenRA.Mods.Common.Widgets
 				var icon = new Animation(World, rsi.GetImage(item, World.Map.Rules.Sequences, faction));
 				var bi = item.TraitInfo<BuildableInfo>();
 				icon.Play(bi.Icon);
-
+			
 				var pi = new ProductionIcon()
 				{
 					Actor = item,
@@ -420,6 +423,14 @@ namespace OpenRA.Mods.Common.Widgets
 					Queued = currentQueue.AllQueued().Where(a => a.Item == item.Name).ToList(),
 					ProductionQueue = currentQueue
 				};
+				if (StretchOriginalIcons == true)
+				{
+					pi.RenderSize = new int2(IconSize.X, IconSize.Y);
+				}
+				else
+				{
+					pi.RenderSize = new int2((int)pi.Sprite.Size.X, (int)pi.Sprite.Size.Y);
+				}
 
 				icons.Add(rect, pi);
 				DisplayedIconCount++;
@@ -453,9 +464,9 @@ namespace OpenRA.Mods.Common.Widgets
 			var pios = currentQueue.Actor.Owner.PlayerActor.TraitsImplementing<IProductionIconOverlay>();
 
 			// Icons
-			foreach (var icon in icons.Values)
+			foreach (ProductionIcon icon in icons.Values)
 			{
-				WidgetUtils.DrawSHPCentered(icon.Sprite, icon.Pos + iconOffsetToCenter, icon.Palette);
+				WidgetUtils.DrawSHPCentered(icon.Sprite, icon.Pos + iconOffsetToCenter, icon.Palette, icon.RenderSize); //этот метод использует размер от icon.Sprite.Size для размера в FastQuad
 
 				// Draw the ProductionIconOverlay's sprite
 				var pio = pios.FirstOrDefault(p => p.IsOverlayActive(icon.Actor));
@@ -466,18 +477,31 @@ namespace OpenRA.Mods.Common.Widgets
 				if (icon.Queued.Count > 0)
 				{
 					var first = icon.Queued[0];
-					clock.PlayFetchIndex(ClockSequence,
-						() => (first.TotalTime - first.RemainingTime) * (clock.CurrentSequence.Length - 1) / first.TotalTime);
-					clock.Tick();
+					if (1 == 2)
+					{
+						clock.PlayFetchIndex(ClockSequence,
+							() => (first.TotalTime - first.RemainingTime) * (clock.CurrentSequence.Length - 1) / first.TotalTime);
+						clock.Tick();
 
-					WidgetUtils.DrawSHPCentered(clock.Image, icon.Pos + iconOffsetToCenter, icon.IconClockPalette);
+						WidgetUtils.DrawSHPCentered(clock.Image, icon.Pos + iconOffsetToCenter, icon.IconClockPalette, icon.RenderSize);
+					}
+					else
+					{
+
+						int currentframe = (first.TotalTime - first.RemainingTime) * (59) / first.TotalTime;
+						float3 offs = iconOffsetToCenter - 0.5f * icon.RenderSize.ToFloat2(); // из-за  icon.Pos + iconOffsetToCenter и DrawSHPCentered
+						Game.Renderer.Flush(); // делаем, это  тут, так как рисуем вне очереди, то управляем очередью.
+						Game.Renderer.sproc.AddCommand(1, currentframe, 59, 0, 0, new int2(0, 0), icon.Pos + offs, icon.RenderSize, icon.Sprite, icon.Palette);
+						Game.Renderer.sproc.ExecCommandBuffer();
+					}
+
 				}
 				else if (!buildableItems.Any(a => a.Name == icon.Name))
-					WidgetUtils.DrawSHPCentered(cantBuild.Image, icon.Pos + iconOffsetToCenter, icon.IconDarkenPalette);
+					WidgetUtils.DrawSHPCentered(cantBuild.Image, icon.Pos + iconOffsetToCenter, icon.IconDarkenPalette, icon.RenderSize);
 			}
 
 			// Overlays
-			foreach (var icon in icons.Values)
+			foreach (ProductionIcon icon in icons.Values)
 			{
 				var total = icon.Queued.Count;
 				if (total > 0)

@@ -33,7 +33,7 @@ namespace OpenRA.Mods.Common.Widgets
 		}
 		public static void DrawSHPCentered(Sprite s, float2 pos, PaletteReference p, int2 iconSize)
 		{
-			Game.Renderer.SpriteRenderer.DrawSprite(s, pos - 0.5f * s.Size, p, iconSize);
+			Game.Renderer.SpriteRenderer.DrawSprite(s, pos - 0.5f * iconSize.ToFloat2(), p, iconSize);
 		}
 
 		public static void DrawSHPCentered(Sprite s, float2 pos, PaletteReference p)
