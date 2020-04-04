@@ -24,6 +24,7 @@ in float TotalTime;
  
 in vec2 iResolutionXY;
 in float TextureInputSlot;
+in vec4 TextureStoreChannel;
 in vec2 SpriteUVCoords;
 in float PaletteIndex;
 in vec2 fragXY;
@@ -56,7 +57,9 @@ void main()
 	{
 		
 		vec4 pixel_palette_shortcut=Sample(TextureInputSlot,SpriteUVCoords);
-		vec4 pixel_from_palette=texture(Palette,vec2(pixel_palette_shortcut.r,PaletteIndex));
+		vec4 pixel_from_palette=texture(Palette,vec2(dot(pixel_palette_shortcut,TextureStoreChannel),PaletteIndex));
+		//pixel_palette_shortcut.r компоненту нужно регулировать, так как пиксели храняться
+		//в разных каналах r g b a.
 		vec2 uv = fragXY;
 		
 		uv -=0.5; //center circle origin

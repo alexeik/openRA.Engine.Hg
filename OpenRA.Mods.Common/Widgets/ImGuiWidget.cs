@@ -22,6 +22,8 @@ namespace OpenRA.Mods.Common.Widgets
 			ImGuiSetup();
 			fpsTimer = Stopwatch.StartNew();
 		}
+		int2 imguifonttextureLocation;
+
 		public void ImGuiSetup()
 		{
 			ImGuiIOPtr io = ImGui.GetIO();
@@ -69,9 +71,11 @@ namespace OpenRA.Mods.Common.Widgets
 			io.Fonts.SetTexID(fontAtlasID);
 
 			// текстура для шрифта будет уже второй, так как перед этим была установлена текстура палитры в Renderer.cs
-			Game.Renderer.ImguiSpriteRenderer.SetRenderStateForSprite(sp); // записываем sheet от нашего спрайта в шейдерную коллекцию sheets, чтобы спрайт ушел в первый аргумент шейдера
-			Game.Renderer.ImguiSpriteRenderer.sheets[1] = Game.worldRenderer.World.Map.Rules.Sequences.SpriteCache.SheetBuilder.sheets[0];
-			Game.Renderer.ImguiSpriteRenderer.IncrementNumSheets();
+			Game.Renderer.ImguiSpriteRenderer.ns = 0;
+			imguifonttextureLocation =Game.Renderer.ImguiSpriteRenderer.SetRenderStateForSprite(sp); // записываем sheet от нашего спрайта в шейдерную коллекцию sheets, чтобы спрайт ушел в первый аргумент шейдера
+			//Game.Renderer.ImguiSpriteRenderer.sheets[1] = Game.worldRenderer.World.Map.Rules.Sequences.SpriteCache.SheetBuilder.sheets[0];
+			
+			//Game.Renderer.ImguiSpriteRenderer.IncrementNumSheets();
 
 			// Game.Renderer.ImguiSpriteRenderer.sheets[1] = Game.Renderer.SpriteRenderer.sheets[1];
 		}
@@ -191,6 +195,7 @@ namespace OpenRA.Mods.Common.Widgets
 						y = indexbuf[idxoffsettemp];
 						Vertex[] tempve = new Vertex[6 * sr.Count];
 						nv = 0;
+						
 						foreach (SpriteRenderable sre in sr)
 						{
 							PaletteReference pr = sre.Palette;
@@ -204,11 +209,14 @@ namespace OpenRA.Mods.Common.Widgets
 							// worldtoIGposl = worldtoIGposl + new float3(this.Bounds.X+100, this.Bounds.Y+100, 0) ;
 							// var xy = wr.ScreenPxPosition(pos) + wr.ScreenPxOffset(offset) - (0.5f * scale * sprite.Size.XY).ToInt2();
 							// Console.WriteLine("x: " + xy.X + " y: " + xy.Y + " | offX:" + sre.sprite.Offset.X + " offY:" + sre.sprite.Offset.Y +" |SpriteRenderable " + this.Actor.Info.Name + " owner:" + this.Actor.Owner);
-
+							int2 spritelocation = Game.Renderer.ImguiSpriteRenderer.SetRenderStateForSprite(sre.sprite);
 							// OpenRA.Graphics.Util.FastCreateQuadImGui(tempve, new float3(this.Bounds.X+ 16 * sre.Offset.X / 1024  + sre.sprite.Offset.X, this.Bounds.Y + 16 * sre.Offset.Y  / 1024  + sre.sprite.Offset.Y, 0) + sre.sprite.FractionalOffset * sre.sprite.Size, sre.sprite, new int2(4, 0), pr.TextureIndex, nv, sre.sprite.Size);
-							OpenRA.Graphics.Util.FastCreateQuadImGui(tempve, new float3(16 + vertbuf[y].pos.X + 16 * sre.Offset.X / 1024 + sre.sprite.Offset.X, 16 + vertbuf[y].pos.Y + 16 * sre.Offset.Y / 1024 + sre.sprite.Offset.Y, 0), sre.sprite, new int2(4, 0), pr.TextureIndex, nv, sre.sprite.Size);
+
+							OpenRA.Graphics.Util.FastCreateQuadImGui(tempve, new float3(16 + vertbuf[y].pos.X + 16 * sre.Offset.X / 1024 + sre.sprite.Offset.X, 16 + vertbuf[y].pos.Y + 16 * sre.Offset.Y / 1024 + sre.sprite.Offset.Y, 0), sre.sprite, spritelocation, pr.TextureIndex, nv, sre.sprite.Size);
+							
 							nv += 6;
 						}
+					
 						nv -= 6;
 						imgvelist[y] = tempve;
 
@@ -235,7 +243,8 @@ namespace OpenRA.Mods.Common.Widgets
 					}
 					else
 					{
-						ve[i] = new Vertex(vertbuf[y].pos.X, vertbuf[y].pos.Y, 0, vertbuf[y].uv.X, vertbuf[y].uv.Y, 0f, 0f, 0f, 0f, 4f, 0, c.R / 255f, c.G / 255f, c.B / 255f, c.A / 255f);
+						imguifonttextureLocation = Game.Renderer.ImguiSpriteRenderer.SetRenderStateForSprite(sp);
+						ve[i] = new Vertex(vertbuf[y].pos.X, vertbuf[y].pos.Y, 0, vertbuf[y].uv.X, vertbuf[y].uv.Y, 0f, 0f, imguifonttextureLocation.X, 0f , 4f, 0, c.R / 255f, c.G / 255f, c.B / 255f, c.A / 255f);
 					}
 				}
 
@@ -243,6 +252,7 @@ namespace OpenRA.Mods.Common.Widgets
 				// типа строчка в VBO появляется как желание нарисовать спрайт. В данном случае спрайт это должна быть буква.
 				// Но нет. Тут просто линия цветные
 				Game.Renderer.ImguiSpriteRenderer.DrawRGBAVertices(ve);
+				//Game.Renderer.ImguiSpriteRenderer.ns = 1;
 			}
 		}
 

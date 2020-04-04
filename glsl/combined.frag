@@ -95,15 +95,17 @@ void main()
 	{
 		//IMGUI внутренняя ветка.
 		//vec4 c = vColorFraction * vTexCoord; 
+		 vec4 x = Sample(vTexMetadata.s, vTexCoord.st);
 		//Texture0 текстура шрифта от ImGui , из нее берет цвета для себя.
-		 c =  vec4(vColorInfo) * texture2D(Texture0,vTexCoord.st); // vColorFraction всегда 1,1,1,1
+		 c =  vec4(vColorInfo) * x ;//  texture2D(Texture0,vTexCoord.st); // vColorFraction всегда 1,1,1,1
 	}
 	if (vTexMetadata.p==5.0)
 	{
 		//IMGUI для спрайтов из игры - ветка.
 		//vec4 c = vColorFraction * vTexCoord; 
-		 vec4 x = texture2D(Texture1,vTexCoord.st); // vColorFraction всегда 1,1,1,1
-		 vec2 p = vec2(dot(x, vec4(1,0,0,0)), vTexMetadata.s);
+		 vec4 x = Sample(vTexSampler.t, vTexCoord.st);
+		 //vec4 x = texture2D(Texture1,vTexCoord.st); // vColorFraction всегда 1,1,1,1
+		 vec2 p = vec2(dot(x, vChannelMask), vTexMetadata.s);
 		 c = vec4(1,1,1,1) * texture2D(Palette, p) ;
 	}
 	if (c.a == 0.0)

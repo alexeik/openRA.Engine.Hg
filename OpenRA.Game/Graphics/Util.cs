@@ -130,11 +130,11 @@ namespace OpenRA.Graphics
 			// тут r трактуется как класс Sprite
 			if (r.Channel == TextureChannel.RGBA)
 			{
-				ct1 = 0.4f; // это потому что, выбор текстуры зависит от 0.0 чисел в шейдере в методе vec4 Sample()
+				ct1 = 4f; // это потому что, выбор текстуры зависит от 0.0 чисел в шейдере в методе vec4 Sample()
 			}
 			else
 			{
-				ct1 = (byte)r.Channel / 10f;
+				ct1 = (byte)r.Channel ;
 			}
 
 			// var attribC = r.Channel == TextureChannel.RGBA ? 0x02 : ((byte)r.Channel) << 1 | 0x01;
@@ -155,11 +155,11 @@ namespace OpenRA.Graphics
 				// attribC |= ((byte)ss.SecondaryChannel) << 4 | 0x08;
 				if (ss.SecondaryChannel == TextureChannel.RGBA)
 				{
-					ct3 = 0.4f;
+					ct3 =4f;
 				}
 				else
 				{
-					ct3 = (byte)ss.SecondaryChannel / 10f;
+					ct3 = (byte)ss.SecondaryChannel;
 				}
 
 				// attribC |= samplers.Y << 9;
@@ -189,6 +189,7 @@ namespace OpenRA.Graphics
 			}
 
 			drawmode = 5;
+
 			vertices[nv] = new Vertex(a, r.Left, r.Top, sl, st, paletteTextureIndex, 0, drawmode, 0, ct1, ct2, ct3, ct4);
 			vertices[nv + 1] = new Vertex(b, r.Right, r.Top, sr, st, paletteTextureIndex, 0, drawmode, 0, ct1, ct2, ct3, ct4);
 			vertices[nv + 2] = new Vertex(c, r.Right, r.Bottom, sr, sb, paletteTextureIndex, 0, drawmode, 0, ct1, ct2, ct3, ct4);

@@ -36,12 +36,12 @@ namespace OpenRA.Graphics
 	}
 	public struct Vertex2
 	{
-		public readonly float X, Y, Z, S, T, U, V, P, C, Drawmode, Option, ColorTypeValue1, ColorTypeValue2, ColorTypeValue3, ColorTypeValue4;
+		public readonly float X, Y, Z, S, T, U, V, P, C, Drawmode, Option, Option2, ColorTypeValue1, ColorTypeValue2, ColorTypeValue3, ColorTypeValue4;
 
-		public Vertex2(float3 xyz, float ShaderID, float CurrentFrame, float TotalFrames, float iTime, float TotalTime, float iResolutionX, float iResolutionY, float TextureInputSlot, float SpriteUVCoordX, float SpriteUVCoodY, float PaletteIndex, float temp2)
-			: this(xyz.X, xyz.Y, xyz.Z, ShaderID, CurrentFrame, TotalFrames, iTime, TotalTime, iResolutionX, iResolutionY, TextureInputSlot, SpriteUVCoordX, SpriteUVCoodY, PaletteIndex, temp2) { }
+		public Vertex2(float3 xyz, float ShaderID, float CurrentFrame, float TotalFrames, float iTime, float TotalTime, float iResolutionX, float iResolutionY, float TextureInputSlot,float TextureStoreChannel, float SpriteUVCoordX, float SpriteUVCoodY, float PaletteIndex, float temp2)
+			: this(xyz.X, xyz.Y, xyz.Z, ShaderID, CurrentFrame, TotalFrames, iTime, TotalTime, iResolutionX, iResolutionY, TextureInputSlot, TextureStoreChannel, SpriteUVCoordX, SpriteUVCoodY, PaletteIndex, temp2) { }
 
-		public Vertex2(float x, float y, float z, float s, float t, float u, float v, float p, float c, float drawMode, float option, float colorTypeValue1, float colorTypeValue2, float colorTypeValue3, float colorTypeValue4)
+		public Vertex2(float x, float y, float z, float s, float t, float u, float v, float p, float c, float drawMode, float option,float option2, float colorTypeValue1, float colorTypeValue2, float colorTypeValue3, float colorTypeValue4)
 		{
 			//!!! при расширении в вертексе через  glVertexAttribPointer, нужно его обязательно создать прям тут, чтобы сходилось число позиции через glVertexAttribPointer и public readonly float
 			X = x; Y = y; Z = z; // shader input in vec3 aVertexPosition;
@@ -49,8 +49,10 @@ namespace OpenRA.Graphics
 			U = u; V = v; //aVertexTexCoord
 			P = p; C = c; //aVertexTexMetadata
 			Drawmode = drawMode; //aVertexTexMetadata +1 free
-			Option = option;
-			ColorTypeValue1 = colorTypeValue1; ColorTypeValue2 = colorTypeValue2; ColorTypeValue3 = colorTypeValue3; ColorTypeValue4 = colorTypeValue4; //aVertexColorInfo
+			Option = option; //vTextureInputSlot
+			Option2 = option2; //vTextureStoreChannel
+			ColorTypeValue1 = colorTypeValue1; ColorTypeValue2 = colorTypeValue2; // vec2 vSpriteUVCoords
+			ColorTypeValue3 = colorTypeValue3; ColorTypeValue4 = colorTypeValue4; //vPaletteIndex , temp
 		}
 	}
 }

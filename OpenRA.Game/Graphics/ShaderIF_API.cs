@@ -38,12 +38,22 @@ namespace OpenRA.Graphics
 			ni = 0;
 			//Vertex mapping xyz,ShaderID,CurrentFrame,TotalFrames, iTime, TotalTime,iResolutionXY, TextureInputSlot,SpriteUVCoords
 			int TextureInputSlot = 1; // всегда 1 слот, так как пока поддержка только 1 текстурки будет.
-			//PaletteIndex.TextureIndex индекс в текстуре палитр
+									  //PaletteIndex.TextureIndex индекс в текстуре палитр
+			float TextureStoreChannel;
 
-			Verts[ni] = new Vertex2(a, ShaderID, CurrentFrame, TotalFrames, 0, 0, SpriteUVCoords.Size.X, SpriteUVCoords.Size.Y, TextureInputSlot, SpriteUVCoords.Left, SpriteUVCoords.Bottom, PaletteIndex.TextureIndex, 0);
-			Verts[ni + 1] = new Vertex2(b, ShaderID, CurrentFrame, TotalFrames, 0, 0, SpriteUVCoords.Size.X, SpriteUVCoords.Size.Y, TextureInputSlot, SpriteUVCoords.Right, SpriteUVCoords.Bottom, PaletteIndex.TextureIndex, 0);
-			Verts[ni + 2] = new Vertex2(c, ShaderID, CurrentFrame, TotalFrames, 0, 0, SpriteUVCoords.Size.X, SpriteUVCoords.Size.Y, TextureInputSlot, SpriteUVCoords.Left, SpriteUVCoords.Top, PaletteIndex.TextureIndex, 0);
-			Verts[ni + 3] = new Vertex2(d, ShaderID, CurrentFrame, TotalFrames, 0, 0, SpriteUVCoords.Size.X, SpriteUVCoords.Size.Y, TextureInputSlot, SpriteUVCoords.Right, SpriteUVCoords.Top, PaletteIndex.TextureIndex, 0);
+			if (SpriteUVCoords.Channel == TextureChannel.RGBA)
+			{
+				TextureStoreChannel = 4f; // это потому что, выбор текстуры зависит от 0.0 чисел в шейдере в методе vec4 Sample()
+			}
+			else
+			{
+				TextureStoreChannel = (byte)SpriteUVCoords.Channel;
+			}
+
+			Verts[ni] = new Vertex2(a, ShaderID, CurrentFrame, TotalFrames, 0, 0, SpriteUVCoords.Size.X, SpriteUVCoords.Size.Y, TextureInputSlot, TextureStoreChannel, SpriteUVCoords.Left, SpriteUVCoords.Bottom, PaletteIndex.TextureIndex, 0);
+			Verts[ni + 1] = new Vertex2(b, ShaderID, CurrentFrame, TotalFrames, 0, 0, SpriteUVCoords.Size.X, SpriteUVCoords.Size.Y, TextureInputSlot, TextureStoreChannel, SpriteUVCoords.Right, SpriteUVCoords.Bottom, PaletteIndex.TextureIndex, 0);
+			Verts[ni + 2] = new Vertex2(c, ShaderID, CurrentFrame, TotalFrames, 0, 0, SpriteUVCoords.Size.X, SpriteUVCoords.Size.Y, TextureInputSlot, TextureStoreChannel, SpriteUVCoords.Left, SpriteUVCoords.Top, PaletteIndex.TextureIndex, 0);
+			Verts[ni + 3] = new Vertex2(d, ShaderID, CurrentFrame, TotalFrames, 0, 0, SpriteUVCoords.Size.X, SpriteUVCoords.Size.Y, TextureInputSlot, TextureStoreChannel, SpriteUVCoords.Right, SpriteUVCoords.Top, PaletteIndex.TextureIndex, 0);
 			nv = 4;
 
 		}

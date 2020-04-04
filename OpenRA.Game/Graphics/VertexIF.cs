@@ -43,14 +43,17 @@ namespace OpenRA.Graphics
 			OpenGL.glVertexAttribPointer(7, 1, OpenGL.GL_FLOAT, false, VertexSize, new IntPtr(40));  //TextureInputSlot
 			OpenGL.glEnableVertexAttribArray(7);
 
-			OpenGL.glVertexAttribPointer(8, 2, OpenGL.GL_FLOAT, false, VertexSize, new IntPtr(44));  //SpriteUVCoords
+			OpenGL.glVertexAttribPointer(8, 1, OpenGL.GL_FLOAT, false, VertexSize, new IntPtr(44));  //TextureStoreChannel
 			OpenGL.glEnableVertexAttribArray(8);
 
-			OpenGL.glVertexAttribPointer(9, 1, OpenGL.GL_FLOAT, false, VertexSize, new IntPtr(52));  //PaletteIndex
+			OpenGL.glVertexAttribPointer(9, 2, OpenGL.GL_FLOAT, false, VertexSize, new IntPtr(48));  //SpriteUVCoords
 			OpenGL.glEnableVertexAttribArray(9);
 
-			OpenGL.glVertexAttribPointer(10, 1, OpenGL.GL_FLOAT, false, VertexSize, new IntPtr(56));  //Temp
+			OpenGL.glVertexAttribPointer(10, 1, OpenGL.GL_FLOAT, false, VertexSize, new IntPtr(56));  //PaletteIndex
 			OpenGL.glEnableVertexAttribArray(10);
+
+			OpenGL.glVertexAttribPointer(11, 1, OpenGL.GL_FLOAT, false, VertexSize, new IntPtr(60));  //Temp
+			OpenGL.glEnableVertexAttribArray(11);
 
 		}
 	}

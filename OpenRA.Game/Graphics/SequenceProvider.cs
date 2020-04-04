@@ -52,32 +52,39 @@ namespace OpenRA.Graphics
 	{
 		readonly ModData modData;
 		readonly TileSet tileSet;
-		readonly Lazy<Sequences> sequences;
-		readonly Lazy<SpriteCache> spriteCache;
-		public SpriteCache SpriteCache { get { return spriteCache.Value; } }
-
+		//readonly Lazy<Sequences> sequences;
+		//readonly Lazy<SpriteCache> spriteCache;
+		//public SpriteCache SpriteCache { get { return spriteCache.Value; } }
+		public SpriteCache SpriteCache;
+		public Sequences sequences;
 		readonly Dictionary<string, UnitSequences> sequenceCache = new Dictionary<string, UnitSequences>();
+		IReadOnlyFileSystem filesystembounded;
+		MiniYaml yamlBounded;
 
 		public SequenceProvider(IReadOnlyFileSystem fileSystem, ModData modData, TileSet tileSet, MiniYaml additionalSequences)
 		{
 			this.modData = modData;
 			this.tileSet = tileSet;
-			sequences = Exts.Lazy(() =>
-			{
-				using (new Support.PerfTimer("LoadSequences"))
-				{
-					return Load(fileSystem, additionalSequences);
-				}
-			});
-			//выполняется первее , чем return Load(fileSystem, additionalSequences);, так как в Load методе, будут делегаты, которые выполняется 
-			// в Preload методе.
-			spriteCache = Exts.Lazy(() => new SpriteCache(fileSystem, modData.SpriteLoaders, new SheetBuilder(SheetType.Indexed)));
+			filesystembounded = fileSystem;
+			yamlBounded = additionalSequences;
+			//sequences = Exts.Lazy(() =>
+			//{
+			//	using (new Support.PerfTimer("LoadSequences"))
+			//	{
+			//		return Load(fileSystem, additionalSequences);
+			//	}
+			//});
+			////выполняется первее , чем return Load(fileSystem, additionalSequences);, так как в Load методе, будут делегаты, которые выполняется 
+			//// в Preload методе.
+			//spriteCache = Exts.Lazy(
+			//	() => new SpriteCache(fileSystem, modData.SpriteLoaders, new SheetBuilder(SheetType.Indexed))
+			//	);
 		}
 
 		public ISpriteSequence GetSequence(string unitName, string sequenceName)
 		{
 			UnitSequences unitSeq;
-			if (!sequences.Value.TryGetValue(unitName, out unitSeq))
+			if (!sequences.TryGetValue(unitName, out unitSeq))
 				throw new InvalidOperationException("Unit `{0}` does not have any sequences defined.".F(unitName));
 
 			ISpriteSequence seq;
@@ -89,13 +96,13 @@ namespace OpenRA.Graphics
 
 		public bool HasSequence(string unitName)
 		{
-			return sequences.Value.ContainsKey(unitName);
+			return sequences.ContainsKey(unitName);
 		}
 
 		public bool HasSequence(string unitName, string sequenceName)
 		{
 			UnitSequences unitSeq;
-			if (!sequences.Value.TryGetValue(unitName, out unitSeq))
+			if (!sequences.TryGetValue(unitName, out unitSeq))
 				throw new InvalidOperationException("Unit `{0}` does not have any sequences defined.".F(unitName));
 
 			return unitSeq.Value.ContainsKey(sequenceName);
@@ -104,7 +111,7 @@ namespace OpenRA.Graphics
 		public IEnumerable<string> Sequences(string unitName)
 		{
 			UnitSequences unitSeq;
-			if (!sequences.Value.TryGetValue(unitName, out unitSeq))
+			if (!sequences.TryGetValue(unitName, out unitSeq))
 				throw new InvalidOperationException("Unit `{0}` does not have any sequences defined.".F(unitName));
 
 			return unitSeq.Value.Keys;
@@ -128,7 +135,7 @@ namespace OpenRA.Graphics
 				{
 					//SpriteCache будет подготовлен в конструкторе класса.
 					t = Exts.Lazy(() => modData.SpriteSequenceLoader.ParseSequences(modData, tileSet, SpriteCache, node));
-                    // modData.SpriteSequenceLoader.ParseSequences(modData, tileSet, SpriteCache, node);
+					// modData.SpriteSequenceLoader.ParseSequences(modData, tileSet, SpriteCache, node);
 					sequenceCache.Add(key, t);
 					items.Add(node.Key, t);
 				}
@@ -139,16 +146,31 @@ namespace OpenRA.Graphics
 
 		public void Preload()
 		{
-			SpriteCache.SheetBuilder.Current.CreateBuffer();
-			foreach (var unitSeq in sequences.Value.Values)
-				foreach (var seq in unitSeq.Value.Values) { }
-			SpriteCache.SheetBuilder.Current.ReleaseBuffer();
+			SheetBuilder shb = new SheetBuilder(SheetType.Indexed);
+			shb.Current.CreateBuffer();
+			SpriteCache = new SpriteCache(filesystembounded, modData.SpriteLoaders, shb);
+			//SpriteCache.SheetBuilder.Current.CreateBuffer();
+
+			shb.Current.ReleaseBuffer();
+			//SpriteCache.SheetBuilder.Current.ReleaseBuffer();
+
+			using (new Support.PerfTimer("LoadSequences"))
+			{
+				sequences = Load(filesystembounded, yamlBounded);
+			}
+
+			foreach (var unitSeq in sequences.Values)
+			{
+				foreach (var seq in unitSeq.Value.Values)
+				{
+				}
+			}
 		}
 
 		public void Dispose()
 		{
-			if (spriteCache.IsValueCreated)
-				spriteCache.Value.SheetBuilder.Dispose();
+			if (SpriteCache!=null)
+				SpriteCache.SheetBuilder.Dispose();
 		}
 	}
 }

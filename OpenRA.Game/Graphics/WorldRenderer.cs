@@ -331,6 +331,7 @@ namespace OpenRA.Graphics
 			// behavior we want for the world, and the root object setup
 			// is so horrible that doing it properly would be a giant mess.
 			World.Dispose();
+			Game.ModData.ResetSequenceProviders();
 			Game.Renderer.SpriteRenderer.ClearTexturesShader();
 			palette.Dispose();
 			Theater.Dispose();
