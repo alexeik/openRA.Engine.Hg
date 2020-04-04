@@ -71,7 +71,7 @@ namespace OpenRA.Mods.Common.Widgets
 			io.Fonts.SetTexID(fontAtlasID);
 
 			// текстура для шрифта будет уже второй, так как перед этим была установлена текстура палитры в Renderer.cs
-			Game.Renderer.ImguiSpriteRenderer.ns = 0;
+			//Game.Renderer.ImguiSpriteRenderer.ns = 0;
 			imguifonttextureLocation =Game.Renderer.ImguiSpriteRenderer.SetRenderStateForSprite(sp); // записываем sheet от нашего спрайта в шейдерную коллекцию sheets, чтобы спрайт ушел в первый аргумент шейдера
 			//Game.Renderer.ImguiSpriteRenderer.sheets[1] = Game.worldRenderer.World.Map.Rules.Sequences.SpriteCache.SheetBuilder.sheets[0];
 			
