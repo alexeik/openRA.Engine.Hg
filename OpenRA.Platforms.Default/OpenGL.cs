@@ -111,6 +111,7 @@ namespace OpenRA.Platforms.Default
 
 		public const int GL_RGBA32F = 0x8814;
 		public const int GL_CLAMP_TO_EDGE = 0x812F;
+		public const int GL_REPEAT = 0x2901;
 		public const int GL_TEXTURE_BASE_LEVEL = 0x813C;
 		public const int GL_TEXTURE_MAX_LEVEL = 0x813D;
 
