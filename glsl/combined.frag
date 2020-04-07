@@ -15,8 +15,10 @@ uniform sampler2DArray TextureFontMSDF;
 uniform bool EnableDepthPreview;
 uniform float DepthTextureScale;
 
-in vec4 vTexCoord;
-in vec4 vTexMetadata;
+in vec2 vTexCoord;
+in vec2 vTexCoordSecond;
+
+
 in vec4 vChannelMask;
 in vec4 vDepthMask;
 in vec2 vTexSampler;
@@ -25,6 +27,12 @@ in vec4 vColorInfo;
 in vec4 vColorFraction;
 in vec4 vRGBAFraction;
 in vec4 vPalettedFraction;
+in vec2 fragXY;
+in vec2 StartUV;
+in vec2 EndUV;
+in float DrawMode;
+in float PaletteIndex;
+
 
 float jet_r(float x)
 {
@@ -65,78 +73,99 @@ vec4 Sample(float samplerIndex, vec2 pos)
 void main()
 {
 	vec4 c ;
-		//c= texture(TextureFontMSDF, vec3(0,0,1)); 
-	if (vTexMetadata.p==0.0) // рисует пиксели из текстуры
+		
+	if (DrawMode==0.0) // рисует пиксели из RGBA текстуры
 	{
-	vec4 x = Sample(vTexSampler.t, vTexCoord.st); //возвращает структуру (R,G,B,A) из текстуры
+	 vec4 x = Sample(vTexSampler.t, vTexCoord.st); //возвращает структуру (R,G,B,A) из текстуры
 	//vec4 c = vRGBAFraction * x ;
 	 c =  x ; // vRGBAFraction всегда 1,1,1,1
 
 	}
-	if (vTexMetadata.p==1.0) // рисует пиксели из палитры
+	if (DrawMode==6.0) // рисует пиксели из RGBA текстуры заполняя область
+	{
+	 vec2 spriteRange = (EndUV - StartUV );
+	
+	 vec2 uv = StartUV + fract(vTexCoord.st) * spriteRange;
+	 
+	 vec4 x = Sample(vTexSampler.t,uv);
+
+	 c =  x ; 
+
+	}
+	if (DrawMode==7.0) // рисует пиксели из 1 канальной текстуры заполняя область
+	{
+		
+	 vec2 spriteRange = (EndUV - StartUV );
+
+	 vec2 uv =StartUV + fract(vTexCoord) * spriteRange;
+
+	 /* uv.x = StartUV.x + fract(vTexCoord.x) * spriteRange.x;
+	 uv.y = StartUV.y + fract(vTexCoord.y) * spriteRange.y; */
+	 //алгоритм расжатия или демасштабирования. его нужно отключить,
+	 //если у нас 1 к 1 размер спрайта и полигона
+	 
+	  vec4 x;
+	 //c=vec4(floor(vTexCoord),fract(vTexCoord));
+/* 	  if (hk<=1.0f && wk<=1.0f)
+	 {
+		x = Sample(vTexSampler.t, vTexCoord.st); //забираем 4 байта из текстуры
+	 }
+	 else
+	 {
+	  x = Sample(vTexSampler.t, uv); //забираем 4 байта из текстуры
+	 }  */
+	 x = Sample(vTexSampler.t, uv); //забираем 4 байта из текстуры
+	 vec2 p = vec2(dot(x, vChannelMask), PaletteIndex);   // определяем байт в котором указатель на цвет, через vChannelMask - укажет единичкой, какой байт использовать)
+	
+	
+	 c =  texture2D(Palette, p) ;//запрос цвета в палитер; 
+
+
+	 
+	}
+	if (DrawMode==1.0) // рисует пиксели из палитры
 	{
 		vec4 x = Sample(vTexSampler.t, vTexCoord.st);
 		
 		//vTexMetadata.s вертикальный индекс палитры содержит. 
-		vec2 p = vec2(dot(x, vChannelMask), vTexMetadata.s);  
+		vec2 p = vec2(dot(x, vChannelMask), PaletteIndex);  
 		
 		//vec2 p = vec2(dot(x, vec4(1,0,0,0)), vTexMetadata.s); //статичное определение маски, всегда в R канале
 		// c = vec4(1,1,1,1) * texture2D(Palette, p) ;
-		c = vPalettedFraction * texture2D(Palette, p) ;
+		c = vPalettedFraction * texture2D(Palette, p) ;//запрос цвета в палитер
 	}
-	if (vTexMetadata.p==2.0) //UI
+	if (DrawMode==2.0) //UI
 	{
 		//vec4 c = vColorFraction * vTexCoord;
-		 c =  vTexCoord; // vColorFraction всегда 1,1,1,1
+		 c =  vec4(vTexCoord.st,vTexCoordSecond.st); // vColorFraction всегда 1,1,1,1
 
 	}
 	// 3.0 зарезервировано под MSDF в text.frag
-	if (vTexMetadata.p==4.0)
+	if (DrawMode==4.0)
 	{
 		//IMGUI внутренняя ветка.
 		//vec4 c = vColorFraction * vTexCoord; 
-		 vec4 x = Sample(vTexMetadata.s, vTexCoord.st);
+		 vec4 x = Sample(PaletteIndex, vTexCoord.st);
 		//Texture0 текстура шрифта от ImGui , из нее берет цвета для себя.
 		 c =  vec4(vColorInfo) * x ;//  texture2D(Texture0,vTexCoord.st); // vColorFraction всегда 1,1,1,1
 	}
-	if (vTexMetadata.p==5.0)
+	if (DrawMode==5.0)
 	{
 		//IMGUI для спрайтов из игры - ветка.
 		//vec4 c = vColorFraction * vTexCoord; 
 		 vec4 x = Sample(vTexSampler.t, vTexCoord.st);
 		 //vec4 x = texture2D(Texture1,vTexCoord.st); // vColorFraction всегда 1,1,1,1
-		 vec2 p = vec2(dot(x, vChannelMask), vTexMetadata.s);
+		 vec2 p = vec2(dot(x, vChannelMask), PaletteIndex);
 		 c = vec4(1,1,1,1) * texture2D(Palette, p) ;
 	}
 	if (c.a == 0.0)
 		discard;
-	
-	//для attrib.s=1, vChannelMask будет vec4(1,0,0,0)
-	//dot это просто перемножение каждой компоненты vec4 на такую же компоненту из другого vec4
-	//dot(x, vChannelMask) это будет Х координата для цвета в палитре ,
-	//vTexMetadata.s будет Y коориданатой палитры. 
-	//vChannelMask определяет в каком байте (R,G,B,A) находится позицию цвета в палитре.
-	//получаем, что х который равен цвету из текстуры, будет обреза с помощью vChannelMask до какой то компоненты r,g,b,a
-	// , чтобы понять, в какой из них хранится указатель на цвет палитры.
-	
-	//тут всегда vChannelMask будет для R канала цвета.
-	//orig-vec2 p = vec2(dot(x, vChannelMask), vTexMetadata.s);
-	//orig-vec4 c = vPalettedFraction * texture2D(Palette, p) + vRGBAFraction * x + vColorFraction * vTexCoord;
-	
-
-	//vPalettedFraction * texture2D(Palette, p) это цвет в палитре сидит по индексу X,Y
-	//vRGBAFraction * x  = это RGBA байты в текстуре
-	//vColorFraction * vTexCoord <- для обозначения места установки постройки это DrawLine использует так хитро . 
-//Пишет вместо vTexCoord значения RGBA и таким образом рисует линии;
-
-	// Discard any transparent fragments (both color and depth)
-
 
 	float depth = gl_FragCoord.z;
 	//используется для дебаг режима
 	if (length(vDepthMask) > 0.0)
 	{
-		vec4 y = Sample(vTexSampler.t, vTexCoord.pq);
+		vec4 y = Sample(vTexSampler.t, vTexCoordSecond.st);
 		depth = depth + DepthTextureScale * dot(y, vDepthMask);
 	}
 

@@ -16,7 +16,7 @@ uniform bool EnableDepthPreview;
 uniform float DepthTextureScale;
 uniform vec3 TextColor;
 
-in vec4 vTexCoord;
+in vec2 vTexCoord;
 in vec4 vTexMetadata;
 in vec4 vChannelMask;
 in vec4 vDepthMask;

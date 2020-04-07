@@ -73,6 +73,13 @@ void main()
 		fragColor = vec4(c,1);
 
 	}
-	
+	if (ShaderID==2)
+	{
+		fragColor = vec4(0.235,0.141,0,1);
+	}
+	if (ShaderID==3)
+	{
+		fragColor = vec4(0.49,0.317,0.0,1);
+	}
 	
 }
