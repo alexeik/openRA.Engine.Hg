@@ -26,55 +26,58 @@ namespace OpenRA.Platforms.Default
 
 		readonly Dictionary<string, int> samplers = new Dictionary<string, int>();
 		readonly Dictionary<int, ITexture> textures = new Dictionary<int, ITexture>();
-		readonly uint program;
+		uint program;
 		public string sharerfilename;
+		public Dictionary<string, FileSystemWatcher> watcherbox = new Dictionary<string, FileSystemWatcher>();
+		public Dictionary<string, ShaderInfo> compiledbox = new Dictionary<string, ShaderInfo>();
+		public Dictionary<string, string> candidates = new Dictionary<string, string>();
 
-		protected uint CompileShaderObject(int type, string name)
-		{
-			var ext = type == OpenGL.GL_VERTEX_SHADER ? "vert" : "frag";
-			var filename = Path.Combine(Platform.GameDir, "glsl", name + "." + ext);
-			var code = File.ReadAllText(filename);
-
-			var shader = OpenGL.glCreateShader(type);
-			OpenGL.CheckGLError();
-			unsafe
-			{
-				var length = code.Length;
-				OpenGL.glShaderSource(shader, 1, new string[] { code }, new IntPtr(&length));
-			}
-
-			OpenGL.CheckGLError();
-			OpenGL.glCompileShader(shader);
-			OpenGL.CheckGLError();
-			int success;
-			OpenGL.glGetShaderiv(shader, OpenGL.GL_COMPILE_STATUS, out success);
-			OpenGL.CheckGLError();
-			if (success == OpenGL.GL_FALSE)
-			{
-				int len;
-				OpenGL.glGetShaderiv(shader, OpenGL.GL_INFO_LOG_LENGTH, out len);
-				var log = new StringBuilder(len);
-				int length;
-				OpenGL.glGetShaderInfoLog(shader, len, out length, log);
-
-				Log.Write("graphics", "GL Info Log:\n{0}", log.ToString());
-				throw new InvalidProgramException("Compile error in shader object '{0}'".F(filename));
-			}
-
-			return shader;
-		}
+		
 
 		public Shader(string name)
 		{
 			sharerfilename = name;
-			var vertexShader = CompileShaderObject(OpenGL.GL_VERTEX_SHADER, name);
-			var fragmentShader = CompileShaderObject(OpenGL.GL_FRAGMENT_SHADER, name);
+			compiledbox.Add(name + "." + ShaderTypeToFileExt(OpenGL.GL_VERTEX_SHADER), new ShaderInfo() { name = name, type = OpenGL.GL_VERTEX_SHADER });
+			compiledbox.Add(name + "." + ShaderTypeToFileExt(OpenGL.GL_FRAGMENT_SHADER), new ShaderInfo() { name = name, type = OpenGL.GL_FRAGMENT_SHADER });
+			//compiledbox.Add(name + ShaderTypeToFileExt(OpenGL.GL_GEOMETRY_SHADER), new ShaderInfo() { name = name, type = OpenGL.GL_GEOMETRY_SHADER });
+
+			CreateProgram(name);
+
+		}
+		public void CreateProgram(string name)
+		{
+
+
+
 
 			// Assemble program
-			program = OpenGL.glCreateProgram();
+			if (program == 0)
+			{
+				program = OpenGL.glCreateProgram();
+			}
+			else
+			{
+				uint prevpr = program;
+				program = OpenGL.glCreateProgram();
+				OpenGL.glDeleteProgram(prevpr);
+			}
 
-			OpenGL.glAttachShader(program, vertexShader);
-			OpenGL.glAttachShader(program, fragmentShader);
+			foreach (ShaderInfo si in compiledbox.Values)
+			{
+				si.glid = CompileShaderObject(si.type, si.name);
+				if (si.glid > 0)
+				{
+					AddWatcher(si.name, ShaderTypeToFileExt(si.type));
+					OpenGL.glAttachShader(program, si.glid);
+					OpenGL.glDeleteShader(si.glid);
+				}
+			}
+
+
+
+			//можно экономить на этих командах glBindAttribLocation, убрать отсюда и перенес и в сам файл vert от шейдера
+			// разметить эти позиции через layout(location=0) in vec4 aVertexPosition - означает привязка к 0 позиции формата вертбуфера 
+			// к аргументу aVertexPosition в шейдере.
 
 			OpenGL.glLinkProgram(program);
 			int success;
@@ -99,6 +102,8 @@ namespace OpenRA.Platforms.Default
 
 			// забираем все переменные из shader и потом используем для связи с ними текстур
 			var nextTexUnit = 0;
+			samplers.Clear();
+
 			for (var i = 0; i < numUniforms; i++)
 			{
 				int length, size;
@@ -126,8 +131,136 @@ namespace OpenRA.Platforms.Default
 					nextTexUnit++;
 				}
 			}
+
 		}
 
+		public void AddWatcher(string shadername, string shaderext)
+		{
+			if (watcherbox.ContainsKey(shadername + "." + shaderext))
+			{
+				return;
+			}
+			FileSystemWatcher temp = new FileSystemWatcher(Path.Combine(Platform.GameDir, "glsl"), shadername + "." + shaderext);
+
+			temp.Changed += FSW_Event_ShaderFileChanged;
+			temp.EnableRaisingEvents = true;
+			watcherbox.Add(shadername + "." + shaderext, temp);
+
+		}
+
+		public bool canenter = true;
+		public bool UseCandidates()
+		{
+			if (canenter == false)
+			{
+				return false;
+			}
+
+			if (candidates.Count == 0)
+			{
+				return false;
+			}
+
+			foreach (string key in candidates.Keys)
+			{
+				canenter = false;
+				try
+				{
+					ReCompileShader(key);
+				}
+				catch (Exception s)
+				{
+					canenter = true;
+					return false;//exit without candidates.clear
+				}
+
+			}
+
+			canenter = true;
+			candidates.Clear();
+			return true;
+		}
+		private void FSW_Event_ShaderFileChanged(object sender, FileSystemEventArgs e)
+		{
+			if (candidates.ContainsKey(e.Name))
+			{
+				return;
+			}
+
+			candidates.Add(e.Name, "");
+
+		}
+		public string ShaderTypeToFileExt(int type)
+		{
+			var ext = "";
+
+			if (type == OpenGL.GL_VERTEX_SHADER)
+			{
+				ext = "vert";
+			}
+			if (type == OpenGL.GL_FRAGMENT_SHADER)
+			{
+				ext = "frag";
+			}
+			if (type == OpenGL.GL_GEOMETRY_SHADER)
+			{
+				ext = "geom";
+			}
+			return ext;
+		}
+		protected uint CompileShaderObject(int type, string name)
+		{
+
+			var ext = ShaderTypeToFileExt(type);
+			var filename = Path.Combine(Platform.GameDir, "glsl", name + "." + ext);
+			var code = File.ReadAllText(filename);
+
+			var shader = OpenGL.glCreateShader(type);
+
+			if (shader == 0)
+			{
+
+			}
+			unsafe
+			{
+				var length = code.Length;
+				OpenGL.glShaderSource(shader, 1, new string[] { code }, new IntPtr(&length));
+			}
+
+			OpenGL.glCompileShader(shader);
+
+
+			int success;
+			OpenGL.glGetShaderiv(shader, OpenGL.GL_COMPILE_STATUS, out success);
+			if (success == OpenGL.GL_FALSE)
+			{
+				int len;
+				OpenGL.glGetShaderiv(shader, OpenGL.GL_INFO_LOG_LENGTH, out len);
+				var log = new StringBuilder(len);
+				int length;
+				OpenGL.glGetShaderInfoLog(shader, len, out length, log);
+
+				Log.Write("graphics", "GL Info Log:\n{0}", log.ToString());
+				throw new InvalidProgramException("Compile error in shader object '{0}'".F(filename));
+			}
+
+			return shader;
+		}
+
+		public void ReCompileShader(string shaderkey)
+		{
+			ShaderInfo si;
+			si = compiledbox[shaderkey];
+			CreateProgram(sharerfilename);
+		}
+
+		public void DetachAndDeleteShader(ShaderInfo si)
+		{
+			OpenGL.glDetachShader(program, si.glid);
+			OpenGL.glDeleteShader(si.glid);
+
+			//можно найти шейдер, отключить от программы, переподключить новый
+		}
 		public override void PrepareRender()
 		{
 			VerifyThreadAffinity();

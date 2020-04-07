@@ -20,6 +20,13 @@ using System.Threading;
 
 namespace OpenRA.Platforms.Default
 {
+	public class ShaderInfo
+	{
+		public int type;
+		public string name;
+		public uint glid;
+
+	}
 	public class ShaderIF : ShaderBase
 	{
 		public const int VertexPosAttributeIndex = 0;
@@ -53,24 +60,18 @@ namespace OpenRA.Platforms.Default
 			watcherbox.Add(shadername + "." + shaderext, temp);
 
 		}
-		public class ShaderInfo
-		{
-			public int type;
-			public string name;
-			public uint glid;
-
-		}
+	
 		public bool canenter = true;
-		public void UseCandidates()
+		public bool UseCandidates()
 		{
 			if (canenter == false)
 			{
-				return;
+				return false;
 			}
 
 			if (candidates.Count == 0)
 			{
-				return;
+				return false;
 			}
 
 			foreach (string key in candidates.Keys)
@@ -83,13 +84,14 @@ namespace OpenRA.Platforms.Default
 				catch (Exception s)
 				{
 					canenter = true;
-					return;//exit without candidates.clear
+					return false;//exit without candidates.clear
 				}
 			
 			}
 
 			canenter = true;
 			candidates.Clear();
+			return true;
 		}
 		private void FSW_Event_ShaderFileChanged(object sender, FileSystemEventArgs e)
 		{
@@ -162,21 +164,7 @@ namespace OpenRA.Platforms.Default
 		{
 			ShaderInfo si;
 			si = compiledbox[shaderkey];
-
-			//DetachAndDeleteShader(si);
-
-			////uint tp = OpenGL.glCreateProgram();
-
-			//si.glid = CompileShaderObject(si.type, si.name);
-			//if (si.glid > 0)
-			//{
-			//	OpenGL.glAttachShader(program, si.glid);
-			//}
-			CreateProgram("ShaderIF");
-
-
-
-
+			CreateProgram(sharerfilename);
 		}
 	
 		public void DetachAndDeleteShader(ShaderInfo si)

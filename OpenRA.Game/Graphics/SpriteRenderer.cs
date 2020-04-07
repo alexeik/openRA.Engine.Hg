@@ -18,12 +18,12 @@ namespace OpenRA.Graphics
 	public class SpriteRenderer : Renderer.IBatchRenderer
 	{
 		readonly Renderer renderer;
-		readonly Shader shader;
+		public readonly Shader shader;
 
 		readonly Vertex[] vertices;
 		public readonly Sheet[] sheets = new Sheet[7];
 
-		BlendMode currentBlend = BlendMode.Alpha;
+		BlendMode currentBlend = BlendMode.None;
 		int nv = 0;
 		int ns = 0;
 		readonly string rendererID;
@@ -54,7 +54,7 @@ namespace OpenRA.Graphics
 			{
 				for (var i = 0; i < ns; i++)
 				{
-					shader.SetTexture("Texture{0}".F(i), sheets[i].GetTexture());
+					shader.SetTexture("Texture{0}".F(i), sheets[i].AssignOrGetOrSetDataGLTexture());
 					sheets[i] = null;
 				}
 				renderer.Context.SetBlendMode(currentBlend);
@@ -130,7 +130,7 @@ namespace OpenRA.Graphics
 		}
 
 
-		internal void DrawSprite(Sprite s, float3 location, float paletteTextureIndex, float3 size)
+		public void DrawSprite(Sprite s, float3 location, float paletteTextureIndex, float3 size)
 		{
 			var samplers = SetRenderStateForSprite(s); // узнает номер текстуры из которой этой спрайт в переменную samplers, чтобы потом записать это в VBO
 			Util.FastCreateQuad(vertices, location + s.FractionalOffset * size, s, samplers, paletteTextureIndex, nv, size);
@@ -164,7 +164,7 @@ namespace OpenRA.Graphics
 		/// <param name="blendMode">.</param>
 		public void DrawVertexBuffer(VertexBuffer<Vertex> buffer, int start, int length, PrimitiveType type, Sheet sheet, BlendMode blendMode)
 		{
-			shader.SetTexture("Texture0", sheet.GetTexture());
+			shader.SetTexture("Texture0", sheet.AssignOrGetOrSetDataGLTexture());
 			renderer.Context.SetBlendMode(blendMode);
 			shader.PrepareRender();
 			buffer.ActivateVAO();

@@ -190,6 +190,8 @@ namespace OpenRA
 		{
 			sproc.SetTexture("Palette", currentPaletteTexture);
 			sproc.SetViewportParams(lastResolution, 0f, 0f, 1f, int2.Zero);
+			SpriteRenderer.shader.SetTexture("Palette", currentPaletteTexture);
+			SpriteRenderer.SetViewportParams(lastResolution, 0f, 0f, 1f, int2.Zero);
 		}
 
 		public void EndFrame(IInputHandler inputHandler)
