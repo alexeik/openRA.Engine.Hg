@@ -108,15 +108,95 @@ namespace OpenRA.Graphics
 				paletteTextureIndex = r.SpriteArrayNum; // положим сюда цифру указывающую на спрайт внутри Texture2dArray в TextureFontMSDF параметра шейдера.
 				drawmode = 3; // FontMSDF
 			}
+			if (r.SpriteType == 2)
+			{
+				drawmode = 6; // fill rect with rgba sprite
+
+				float r1, t1;
+				r1 = r.Right + (b.X - a.X) / r.Size.X;
+				//b1 = r.Bottom + (b.X - a.X) / r.Size.X;
+				t1 = r.Top + (c.Y - a.Y) / r.Size.Y;
+
+				vertices[nv] =     new Vertex(a, r.Left, r.Top, sl, st, paletteTextureIndex, 0, drawmode, 0, ct1, ct2, ct3, ct4, r.Left, r.Top, r.Right,  r.Bottom);
+				vertices[nv + 1] = new Vertex(b, r1, r.Top, sr, st, paletteTextureIndex, 0, drawmode, 0, ct1, ct2, ct3, ct4, r.Left, r.Top, r.Right, r.Bottom);
+				vertices[nv + 2] = new Vertex(c, r1, t1, sr, sb, paletteTextureIndex, 0, drawmode, 0, ct1, ct2, ct3, ct4, r.Left, r.Top, r.Right, r.Bottom);
+				vertices[nv + 3] = new Vertex(c, r1, t1, sr, sb, paletteTextureIndex, 0, drawmode, 0, ct1, ct2, ct3, ct4, r.Left, r.Top, r.Right, r.Bottom);
+				vertices[nv + 4] = new Vertex(d, r.Left, t1, sl, sb, paletteTextureIndex, 0, drawmode, 0, ct1, ct2, ct3, ct4, r.Left, r.Top, r.Right, r.Bottom);
+				vertices[nv + 5] = new Vertex(a, r.Left, r.Top, sl, st, paletteTextureIndex, 0, drawmode, 0, ct1, ct2, ct3, ct4, r.Left, r.Top, r.Right, r.Bottom);
+				return;
+			}
+
+			if (r.SpriteType == 3)
+			{
+
+				drawmode = 7; // fill rect with one channel sprite 
+
+				float hlen, b1, vlen;
+				int wk = (int)((b.X - a.X) / r.Size.X); //width koof
+				int hk = (int)((c.Y - a.Y) / r.Size.Y); // height koof
+
+				if (wk == 1)
+				{
+					hlen =  wk;
+					
+				}
+				else
+				{
+					hlen =  wk; 
+				}
+
+				//b1 = r.Bottom + (b.X - a.X) / r.Size.X;
+				if (hk == 1)
+				{
+					vlen =  hk;
+					
+				}
+				else
+
+				{
+					vlen =  hk;
+				}
+
+				
+
+				float top, right, bot, left;
+				top = r.Top;
+				right = r.Right;
+				bot = r.Bottom;
+				left = r.Left;
+
+				//   top = r.Bottom;
+				//bot = r.Top;
+				//right = r.Left;
+				//left = r.Right;
+				vertices[nv] = new Vertex(a,0, 0, sl, st, paletteTextureIndex, wk, drawmode, hk, ct1, ct2, ct3, ct4, left, top, right, bot);
+				vertices[nv + 1] = new Vertex(b, hlen, 0, sr, st, paletteTextureIndex, wk, drawmode, hk, ct1, ct2, ct3, ct4, left, top, right, bot);
+				vertices[nv + 2] = new Vertex(c, hlen, vlen, sr, sb, paletteTextureIndex, wk, drawmode, hk, ct1, ct2, ct3, ct4, left, top, right, bot);
+				vertices[nv + 3] = new Vertex(c, hlen, vlen, sr, sb, paletteTextureIndex, wk, drawmode, hk, ct1, ct2, ct3, ct4, left, top, right, bot);
+				vertices[nv + 4] = new Vertex(d, 0, vlen, sl, sb, paletteTextureIndex, wk, drawmode, hk, ct1, ct2, ct3, ct4, left, top, right, bot);
+				vertices[nv + 5] = new Vertex(a, 0, 0, sl, st, paletteTextureIndex, wk, drawmode, hk, ct1, ct2, ct3, ct4, left, top, right, bot);
+
+				//vertices[nv] = new Vertex(a, r.Left, r.Top, sl, st, paletteTextureIndex, wk, drawmode, hk, ct1, ct2, ct3, ct4, left, top, right, bot);
+				//vertices[nv + 1] = new Vertex(b, r.Right, r.Top, sr, st, paletteTextureIndex, wk, drawmode, hk, ct1, ct2, ct3, ct4, left, top, right, bot);
+				//vertices[nv + 2] = new Vertex(c, r.Right, r.Bottom, sr, sb, paletteTextureIndex, wk, drawmode, hk, ct1, ct2, ct3, ct4, left, top, right, bot);
+
+				//vertices[nv + 3] = new Vertex(c, r.Right, r.Bottom, sr, sb, paletteTextureIndex, wk, drawmode, hk, ct1, ct2, ct3, ct4, left, top, right, bot);
+				//vertices[nv + 4] = new Vertex(d, r.Left, r.Bottom, sl, sb, paletteTextureIndex, wk, drawmode, hk, ct1, ct2, ct3, ct4, left, top, right, bot);
+				//vertices[nv + 5] = new Vertex(a, r.Left, r.Top, sl, st, paletteTextureIndex, wk, drawmode, hk, ct1, ct2, ct3, ct4, left, top, right, bot);
+
+				return;
+			}
 
 			// var fAttribC = (float)attribC;
-			vertices[nv] = new Vertex(a, r.Left, r.Top, sl, st, paletteTextureIndex, 0, drawmode, 0, ct1, ct2, ct3, ct4);
+			vertices[nv] =     new Vertex(a, r.Left, r.Top, sl, st, paletteTextureIndex, 0, drawmode, 0, ct1, ct2, ct3, ct4);
 			vertices[nv + 1] = new Vertex(b, r.Right, r.Top, sr, st, paletteTextureIndex, 0, drawmode, 0, ct1, ct2, ct3, ct4);
 			vertices[nv + 2] = new Vertex(c, r.Right, r.Bottom, sr, sb, paletteTextureIndex, 0, drawmode, 0, ct1, ct2, ct3, ct4);
+
 			vertices[nv + 3] = new Vertex(c, r.Right, r.Bottom, sr, sb, paletteTextureIndex, 0, drawmode, 0, ct1, ct2, ct3, ct4);
 			vertices[nv + 4] = new Vertex(d, r.Left, r.Bottom, sl, sb, paletteTextureIndex, 0, drawmode, 0, ct1, ct2, ct3, ct4);
 			vertices[nv + 5] = new Vertex(a, r.Left, r.Top, sl, st, paletteTextureIndex, 0, drawmode, 0, ct1, ct2, ct3, ct4);
 		}
+
 		public static void FastCreateQuadImGui(Vertex[] vertices, float3 a, float3 b, float3 c, float3 d, Sprite r, int2 samplers, float paletteTextureIndex, int nv)
 		{
 			float sl = 0;

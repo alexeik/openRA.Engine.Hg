@@ -31,6 +31,12 @@ namespace OpenRA.Mods.Common.Widgets
 		{
 			Game.Renderer.SpriteRenderer.DrawSprite(s, pos, p);
 		}
+
+		public static void DrawRGBAShaderFill(Sprite s, float2 pos, float3 rectSize)
+		{
+			Game.Renderer.SpriteRenderer.DrawSprite(s, pos, 0, rectSize);
+		}
+
 		public static void DrawSHPCentered(Sprite s, float2 pos, PaletteReference p, int2 iconSize)
 		{
 			Game.Renderer.SpriteRenderer.DrawSprite(s, pos - 0.5f * iconSize.ToFloat2(), p, iconSize);
@@ -53,6 +59,27 @@ namespace OpenRA.Mods.Common.Widgets
 
 		public static void FillRectWithSprite(Rectangle r, Sprite s)
 		{
+			if (s.Size.Y == r.Top && s.Size.X == r.Right)
+			{
+
+			}
+			if (s.SpriteType == 3)
+			{
+
+			}
+			else
+
+			{
+				s.SpriteType = 2; // 2-fill with sprite
+			}
+			
+			DrawRGBAShaderFill(s, r.Location, new float3(r.Width, r.Height, 0));
+
+			
+			//Game.Renderer.Flush(); //turn on for debug if any
+			
+			return;
+
 			for (var x = r.Left; x < r.Right; x += (int)s.Size.X)
 				for (var y = r.Top; y < r.Bottom; y += (int)s.Size.Y)
 				{
