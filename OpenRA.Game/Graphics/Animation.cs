@@ -192,6 +192,7 @@ namespace OpenRA.Graphics
 		/// Calls Tick(40) respecting tickAlways.
 		/// if tickAlways==true => tickFunc().
 		/// if tickAlways==false => respects timeUntilNextFrame cycle.
+		/// »ли берет Tick из sequence.yaml.
 		/// </summary>
 		public void Tick()
 		{

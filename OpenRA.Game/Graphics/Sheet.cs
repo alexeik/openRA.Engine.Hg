@@ -71,7 +71,7 @@ namespace OpenRA.Graphics
 		/// Создает текстуру в OPenGL для данного Sheet
 		/// </summary>
 		/// <returns></returns>
-		public ITexture GetTexture()
+		public ITexture AssignOrGetOrSetDataGLTexture()
 		{
 			if (texture == null)
 			{
@@ -144,7 +144,7 @@ namespace OpenRA.Graphics
 
 			// Commit data from the buffer to the texture, allowing the buffer to be released and reclaimed by GC.
 			if (Game.Renderer != null)
-				GetTexture();
+				AssignOrGetOrSetDataGLTexture();
 		}
 
 		public void Dispose()

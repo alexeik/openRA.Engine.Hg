@@ -83,7 +83,7 @@ namespace OpenRA.Mods.Common.Widgets
 
 			var rect = new Rectangle((int)(255 * sRange[0]), (int)(255 * (1 - vRange[1])), (int)(255 * (sRange[1] - sRange[0])) + 1, (int)(255 * (vRange[1] - vRange[0])) + 1);
 			var mixerSheet = new Sheet(SheetType.BGRA, new Size(256, 256));
-			mixerSheet.GetTexture().SetData(front, 256, 256);
+			mixerSheet.AssignOrGetOrSetDataGLTexture().SetData(front, 256, 256);
 			mixerSprite = new Sprite(mixerSheet, rect, TextureChannel.RGBA);
 			GenerateBitmap();
 		}
@@ -153,7 +153,7 @@ namespace OpenRA.Mods.Common.Widgets
 			{
 				try
 				{
-					mixerSprite.Sheet.GetTexture().SetData(front, 256, 256);
+					mixerSprite.Sheet.AssignOrGetOrSetDataGLTexture().SetData(front, 256, 256);
 				}
 				finally
 				{

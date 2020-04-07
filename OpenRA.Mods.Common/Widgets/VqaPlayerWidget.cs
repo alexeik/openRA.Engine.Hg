@@ -63,8 +63,8 @@ namespace OpenRA.Mods.Common.Widgets
 			var textureSize = Exts.NextPowerOf2(size);
 			var videoSheet = new Sheet(SheetType.BGRA, new Size(textureSize, textureSize));
 
-			videoSheet.GetTexture().ScaleFilter = TextureScaleFilter.Linear;
-			videoSheet.GetTexture().SetData(video.FrameData);
+			videoSheet.AssignOrGetOrSetDataGLTexture().ScaleFilter = TextureScaleFilter.Linear;
+			videoSheet.AssignOrGetOrSetDataGLTexture().SetData(video.FrameData);
 
 			videoSprite = new Sprite(videoSheet,
 				new Rectangle(
@@ -92,7 +92,7 @@ namespace OpenRA.Mods.Common.Widgets
 				overlay[y, 0] = black;
 
 			var overlaySheet = new Sheet(SheetType.BGRA, new Size(1, Exts.NextPowerOf2(scaledHeight)));
-			overlaySheet.GetTexture().SetData(overlay);
+			overlaySheet.AssignOrGetOrSetDataGLTexture().SetData(overlay);
 			overlaySprite = new Sprite(overlaySheet, new Rectangle(0, 0, 1, scaledHeight), TextureChannel.RGBA);
 		}
 
@@ -120,7 +120,7 @@ namespace OpenRA.Mods.Common.Widgets
 				while (nextFrame > video.CurrentFrame)
 				{
 					video.AdvanceFrame();
-					videoSprite.Sheet.GetTexture().SetData(video.FrameData);
+					videoSprite.Sheet.AssignOrGetOrSetDataGLTexture().SetData(video.FrameData);
 					skippedFrames++;
 				}
 
@@ -193,7 +193,7 @@ namespace OpenRA.Mods.Common.Widgets
 			paused = true;
 			Game.Sound.StopVideo();
 			video.Reset();
-			videoSprite.Sheet.GetTexture().SetData(video.FrameData);
+			videoSprite.Sheet.AssignOrGetOrSetDataGLTexture().SetData(video.FrameData);
 			Game.RunAfterTick(onComplete);
 		}
 

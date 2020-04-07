@@ -271,7 +271,7 @@ namespace OpenRA.Graphics
 			float[] ambientLight, float[] diffuseLight,
 			float colorPaletteTextureMidIndex, float normalsPaletteTextureMidIndex)
 		{
-			shader.SetTexture("DiffuseTexture", renderData.Sheet.GetTexture());
+			shader.SetTexture("DiffuseTexture", renderData.Sheet.AssignOrGetOrSetDataGLTexture());
 			shader.SetVec("PaletteRows", colorPaletteTextureMidIndex, normalsPaletteTextureMidIndex);
 			shader.SetMatrix("TransformMatrix", t);
 			shader.SetVec("LightDirection", lightDirection, 4);
