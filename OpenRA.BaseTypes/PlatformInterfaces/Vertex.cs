@@ -17,21 +17,32 @@ namespace OpenRA.Graphics
 	[StructLayout(LayoutKind.Sequential)]
 	public struct Vertex
 	{
-		public readonly float X, Y, Z, S, T, U, V, P, C, Drawmode, Option, ColorTypeValue1, ColorTypeValue2, ColorTypeValue3, ColorTypeValue4;
+		public readonly float X, Y, Z, S, T, U, V, P, C, Drawmode, Option, ColorTypeValue1, ColorTypeValue2, ColorTypeValue3, ColorTypeValue4,
+							  UVFillX, UVFillY, UVFillX1, UVFillY1;
+
+		public Vertex(float3 xyz, float s, float t, float u, float v, float p, float c, float drawMode, float Option, float colorTypeValue1, float colorTypeValue2, float colorTypeValue3, float colorTypeValue4, float uvfillx, float uvfilly, float uvfillx1, float uvfilly1)
+		: this(xyz.X, xyz.Y, xyz.Z, s, t, u, v, p, c, drawMode, Option, colorTypeValue1, colorTypeValue2, colorTypeValue3, colorTypeValue4, uvfillx,  uvfilly,  uvfillx1,  uvfilly1) { }
 
 		public Vertex(float3 xyz, float s, float t, float u, float v, float p, float c, float drawMode, float Option, float colorTypeValue1, float colorTypeValue2, float colorTypeValue3, float colorTypeValue4)
-			: this(xyz.X, xyz.Y, xyz.Z, s, t, u, v, p, c, drawMode, Option, colorTypeValue1, colorTypeValue2,  colorTypeValue3,  colorTypeValue4) { }
+			: this(xyz.X, xyz.Y, xyz.Z, s, t, u, v, p, c, drawMode, Option, colorTypeValue1, colorTypeValue2,  colorTypeValue3,  colorTypeValue4,0,0,0,0) { }
 
-		public Vertex(float x, float y, float z, float s, float t, float u, float v, float p, float c, float drawMode,float option, float colorTypeValue1, float colorTypeValue2, float colorTypeValue3, float colorTypeValue4)
+		public Vertex(float x, float y, float z, float s, float t, float u, float v, float p, float c, float drawMode, float option, float colorTypeValue1,
+					float colorTypeValue2, float colorTypeValue3, float colorTypeValue4)
+			: this(x, y, z, s, t, u, v, p, c, drawMode, option, colorTypeValue1, colorTypeValue2, colorTypeValue3, colorTypeValue4, 0, 0, 0, 0) { }
+
+		public Vertex(float x, float y, float z, float s, float t, float u, float v, float p, float c, float drawMode,float option, float colorTypeValue1, 
+						float colorTypeValue2, float colorTypeValue3, float colorTypeValue4,
+						float uvfillx,float uvfilly,float uvfillx1,float uvfilly1)
 		{
 			//!!! при расширении в вертексе через  glVertexAttribPointer, нужно его обязательно создать прям тут, чтобы сходилось число позиции через glVertexAttribPointer и public readonly float
 			X = x; Y = y; Z = z; // shader input in vec3 aVertexPosition;
 			S = s; T = t; //aVertexTexCoord
-			U = u; V = v; //aVertexTexCoord
-			P = p; C = c; //aVertexTexMetadata
-			Drawmode = drawMode; //aVertexTexMetadata +1 free
-			Option = option;
+			U = u; V = v; //aVertexTexCoordSecond
+			P = p; C = c; //aVertexPaletteIndex + aVertexTexMetadata
+			Drawmode = drawMode; //aVertexDrawmode 
+			Option = option; //aVertexTexMetadata2
 			ColorTypeValue1 = colorTypeValue1;ColorTypeValue2 = colorTypeValue2; ColorTypeValue3 = colorTypeValue3;ColorTypeValue4 = colorTypeValue4; //aVertexColorInfo
+			UVFillX = uvfillx; UVFillY = uvfilly; UVFillX1 = uvfillx1;UVFillY1 = uvfilly1; //aVertexUVFillRect
 		}
 	}
 	public struct Vertex2
