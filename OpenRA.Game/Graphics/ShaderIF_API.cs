@@ -32,28 +32,49 @@ namespace OpenRA.Graphics
 			var c = new float3(TopLeftXYrect.X, TopLeftXYrect.Y, TopLeftXYrect.Z + 0); //3
 			var d = new float3(TopLeftXYrect.X + SpriteSize.X, TopLeftXYrect.Y , TopLeftXYrect.Z + 0); //4 
 
-			shtInputSlot1 = SpriteUVCoords.Sheet;
-			this.SetTexture("Texture0", shtInputSlot1.GetTexture()); // заполняем текстуру0 для аргумента шейдера
-			
-			ni = 0;
-			//Vertex mapping xyz,ShaderID,CurrentFrame,TotalFrames, iTime, TotalTime,iResolutionXY, TextureInputSlot,SpriteUVCoords
+			float TextureStoreChannel=0;
 			int TextureInputSlot = 1; // всегда 1 слот, так как пока поддержка только 1 текстурки будет.
-									  //PaletteIndex.TextureIndex индекс в текстуре палитр
-			float TextureStoreChannel;
+			float palindex = 0;
 
-			if (SpriteUVCoords.Channel == TextureChannel.RGBA)
+			if (SpriteUVCoords != null)
 			{
-				TextureStoreChannel = 4f; // это потому что, выбор текстуры зависит от 0.0 чисел в шейдере в методе vec4 Sample()
-			}
-			else
-			{
-				TextureStoreChannel = (byte)SpriteUVCoords.Channel;
+				shtInputSlot1 = SpriteUVCoords.Sheet;
+				this.SetTexture("Texture0", shtInputSlot1.AssignOrGetOrSetDataGLTexture()); // заполняем текстуру0 для аргумента шейдера
+
+				ni = 0;
+				//Vertex mapping xyz,ShaderID,CurrentFrame,TotalFrames, iTime, TotalTime,iResolutionXY, TextureInputSlot , TextureStoreChannel,SpriteUVCoords
+
+				//PaletteIndex.TextureIndex индекс в текстуре палитр
+
+
+				if (SpriteUVCoords.Channel == TextureChannel.RGBA)
+				{
+					TextureStoreChannel = 4f; // это потому что, выбор текстуры зависит от 0.0 чисел в шейдере в методе vec4 Sample()
+				}
+				else
+				{
+					TextureStoreChannel = (byte)SpriteUVCoords.Channel;
+				}
 			}
 
-			Verts[ni] = new Vertex2(a, ShaderID, CurrentFrame, TotalFrames, 0, 0, SpriteUVCoords.Size.X, SpriteUVCoords.Size.Y, TextureInputSlot, TextureStoreChannel, SpriteUVCoords.Left, SpriteUVCoords.Bottom, PaletteIndex.TextureIndex, 0);
-			Verts[ni + 1] = new Vertex2(b, ShaderID, CurrentFrame, TotalFrames, 0, 0, SpriteUVCoords.Size.X, SpriteUVCoords.Size.Y, TextureInputSlot, TextureStoreChannel, SpriteUVCoords.Right, SpriteUVCoords.Bottom, PaletteIndex.TextureIndex, 0);
-			Verts[ni + 2] = new Vertex2(c, ShaderID, CurrentFrame, TotalFrames, 0, 0, SpriteUVCoords.Size.X, SpriteUVCoords.Size.Y, TextureInputSlot, TextureStoreChannel, SpriteUVCoords.Left, SpriteUVCoords.Top, PaletteIndex.TextureIndex, 0);
-			Verts[ni + 3] = new Vertex2(d, ShaderID, CurrentFrame, TotalFrames, 0, 0, SpriteUVCoords.Size.X, SpriteUVCoords.Size.Y, TextureInputSlot, TextureStoreChannel, SpriteUVCoords.Right, SpriteUVCoords.Top, PaletteIndex.TextureIndex, 0);
+			if (SpriteUVCoords == null)
+			{
+				SpriteUVCoords = new Sprite(new Sheet( SheetType.Indexed,new Size(0,0)), new Rectangle(new int2(0,0),new Size(0,0)) , 0);
+			}
+			if (PaletteIndex == null)
+			{
+				PaletteIndex = new PaletteReference("null", 0, null, new HardwarePalette());
+				palindex = PaletteIndex.TextureIndex;
+
+			}
+			
+		
+			
+
+			Verts[ni] = new Vertex2(a, ShaderID, CurrentFrame, TotalFrames, 0, 0, SpriteUVCoords.Size.X, SpriteUVCoords.Size.Y, TextureInputSlot, TextureStoreChannel, SpriteUVCoords.Left, SpriteUVCoords.Bottom, palindex, 0);
+			Verts[ni + 1] = new Vertex2(b, ShaderID, CurrentFrame, TotalFrames, 0, 0, SpriteUVCoords.Size.X, SpriteUVCoords.Size.Y, TextureInputSlot, TextureStoreChannel, SpriteUVCoords.Right, SpriteUVCoords.Bottom, palindex, 0);
+			Verts[ni + 2] = new Vertex2(c, ShaderID, CurrentFrame, TotalFrames, 0, 0, SpriteUVCoords.Size.X, SpriteUVCoords.Size.Y, TextureInputSlot, TextureStoreChannel, SpriteUVCoords.Left, SpriteUVCoords.Top, palindex, 0);
+			Verts[ni + 3] = new Vertex2(d, ShaderID, CurrentFrame, TotalFrames, 0, 0, SpriteUVCoords.Size.X, SpriteUVCoords.Size.Y, TextureInputSlot, TextureStoreChannel, SpriteUVCoords.Right, SpriteUVCoords.Top, palindex, 0);
 			nv = 4;
 
 		}
