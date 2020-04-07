@@ -66,25 +66,17 @@ namespace OpenRA.Platforms.Default
 
 		public virtual void PrepareTexture()
 		{
-			OpenGL.CheckGLError();
 			OpenGL.glBindTexture(OpenGL.GL_TEXTURE_2D, texture);
-			OpenGL.CheckGLError();
 
 			var filter = scaleFilter == TextureScaleFilter.Linear ? OpenGL.GL_LINEAR : OpenGL.GL_NEAREST;
 			OpenGL.glTexParameteri(OpenGL.GL_TEXTURE_2D, OpenGL.GL_TEXTURE_MAG_FILTER, filter);
-			OpenGL.CheckGLError();
 			OpenGL.glTexParameteri(OpenGL.GL_TEXTURE_2D, OpenGL.GL_TEXTURE_MIN_FILTER, filter);
-			OpenGL.CheckGLError();
 
 			OpenGL.glTexParameterf(OpenGL.GL_TEXTURE_2D, OpenGL.GL_TEXTURE_WRAP_S, OpenGL.GL_CLAMP_TO_EDGE);
-			OpenGL.CheckGLError();
 			OpenGL.glTexParameterf(OpenGL.GL_TEXTURE_2D, OpenGL.GL_TEXTURE_WRAP_T, OpenGL.GL_CLAMP_TO_EDGE);
-			OpenGL.CheckGLError();
 
 			OpenGL.glTexParameteri(OpenGL.GL_TEXTURE_2D, OpenGL.GL_TEXTURE_BASE_LEVEL, 0);
-			OpenGL.CheckGLError();
 			OpenGL.glTexParameteri(OpenGL.GL_TEXTURE_2D, OpenGL.GL_TEXTURE_MAX_LEVEL, 0);
-			OpenGL.CheckGLError();
 		}
 
 		public virtual void SetData(byte[] colors, int width, int height)
