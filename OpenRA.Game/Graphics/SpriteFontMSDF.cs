@@ -25,11 +25,15 @@ namespace OpenRA.Graphics
 		readonly Func<string, float> lineWidth;
 		readonly IFont font;
 		readonly Cache<Pair<char, Color>, GlyphInfo> glyphs;
+		public FontMSDF Mfont;
 
 		float deviceScale;
 
 		public SpriteFontMSDF(string name, byte[] data, int size, float scale, SheetBuilder builder)
 		{
+			Mfont = new FontMSDF();
+			Mfont.LoadFontTexturesAsPng(name);
+
 			if (builder.Type != SheetType.BGRA)
 				throw new ArgumentException("The sheet builder must create BGRA sheets.", "builder");
 
@@ -48,7 +52,8 @@ namespace OpenRA.Graphics
 			lineWidth = line => line.Sum(characterWidth) / deviceScale; // тоже функция как и characterWidth
 
 			//if (size <= 24) // пытается, подобрать size? чтобы в строку влезло 24 символа.
-				PrecacheColor(Color.White, name);
+
+			PrecacheColor(Color.White, name);
 
 			TopOffset = size - font.Height;
 		}
@@ -115,6 +120,9 @@ namespace OpenRA.Graphics
 					gli.Sprite.Bottom = 0f;
 					gli.Sprite.Top = 1f;
 					gli.Sprite.Right = 1f;
+					//Sprite ничего не значит тут. Он нужен лишь для определения размера полигона
+					Game.Renderer.FontSpriteRenderer.SetFontMSDF(Mfont.Texture); //assign texture arg for shader text.vert.
+
 					Game.Renderer.FontSpriteRenderer.DrawSprite(gli.Sprite, tempXY, 0, new float3(scale, scale, 0));
 				}
 

@@ -33,10 +33,7 @@ Packages:
 	cnc|bits/ss
 	cnc|uibits
     
-FontsMSDFBaseFolders:
-    Section1:
-        FontName : font1
-        FontFolder : msdffolder1|font1
+
         
 MapFolders:
 	cnc|maps: System
@@ -171,6 +168,10 @@ ChromeMetrics:
 	common|metrics.yaml
 	cnc|metrics.yaml
 
+FontsMSDFBaseFolders:
+    Original:
+        FontName : font1
+        FontFolder : msdffolder1|font1    
 Fonts:
 	Original:
 		#Font: cnc|dune2.otf

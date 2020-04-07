@@ -34,7 +34,7 @@ namespace OpenRA
 		public ShaderIF_API sproc;
 
 		public IReadOnlyDictionary<string, SpriteFontMSDF> Fonts;
-		public FontMSDF Mfont;
+	
 
 		public PlatformWindow Window { get; private set; }
 		public GraphicsContext Context { get; private set; }
@@ -98,9 +98,6 @@ namespace OpenRA
 				foreach (var font in Fonts.Values)
 					font.Dispose();
 
-			Mfont = new FontMSDF();
-			Mfont.LoadFontTexturesAsPng();
-
 			using (new PerfTimer("SpriteFonts"))
 			{
 				if (fontSheetBuilder != null)
@@ -122,9 +119,7 @@ namespace OpenRA
 						f.Value.SetScale(after);
 				});
 			};
-			FontSpriteRenderer.SetFontMSDF(Mfont.Texture);
-
-
+			
 		}
 
 		public void InitializeDepthBuffer(MapGrid mapGrid)

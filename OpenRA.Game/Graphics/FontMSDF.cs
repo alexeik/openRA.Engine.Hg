@@ -5,26 +5,39 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using OpenRA.FileFormats;
+using OpenRA.Platforms.Default;
 
 namespace OpenRA.Graphics
 {
 	public class FontMSDF
 	{
-		public ITexture Texture { get; private set; }
+		public TextureArray Texture { get; private set; }
 		public static int Size = 64;
+
 		public FontMSDF()
 		{
-			Texture = Game.Renderer.Context.CreateTexture2DArray();
-			Texture.SetEmpty(Size, Size, 127);// просто заготовка gjl 127 слойный массив, каждый слой 96 на 96 пикселей.
+			Texture = new TextureArray();
+
 		}
-		public void LoadFontTexturesAsPng()
+
+		/// <summary>
+		/// Loads pngs to 2d textures. Create 1 2dtexture for one msdf folder.
+		/// </summary>
+		public void LoadFontTexturesAsPng(string fontname)
 		{
 			FileSystem.IReadOnlyPackage pack;
 			string temp;
 
 			string p1, p2;
-			p1 = Game.ModData.Manifest.FontsMSDFBaseFolders["Section1"].First;
-			p2 = Game.ModData.Manifest.FontsMSDFBaseFolders["Section1"].Second;
+
+
+			p1 = Game.ModData.Manifest.FontsMSDFBaseFolders[fontname].First;
+			p2 = Game.ModData.Manifest.FontsMSDFBaseFolders[fontname].Second;
+
+			Texture = Game.Renderer.Context.CreateTexture2DArray();
+			Texture.SetEmpty(Size, Size, 127); // просто заготовка gjl 127 слойный массив, каждый слой 96 на 96 пикселей.
+
+
 
 			if (Game.ModData.DefaultFileSystem.TryGetPackageContaining(p2, out pack, out temp))
 			{
@@ -49,6 +62,7 @@ namespace OpenRA.Graphics
 			{
 				Console.WriteLine("MSDF fonts not loaded. Create font folder and write it to mod.yaml Packages for mod=" + Game.ModData.Manifest.Id + " path=");
 			}
+
 		}
 		public void LoadFontTextures()
 		{
@@ -78,7 +92,7 @@ namespace OpenRA.Graphics
 		}
 		public void LoadFontTexturesByChar(byte[] data, int num)
 		{
-							Texture.SetData(data, Size, Size, num);
+			Texture.SetData(data, Size, Size, num);
 		}
 
 	}
