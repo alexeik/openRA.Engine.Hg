@@ -48,14 +48,14 @@ namespace OpenRA.Graphics
 			if (r.Channel == TextureChannel.RGBA)
 			{
 				ct1 = 4f; // тут нужно указать, в каком канале текстуры R,G,B зашиты данные о цвете. для RGBA текстуры нужно цифру 2, это в шейдере 
-							// укажет на использование 1.1.1.1 маски
+						  // укажет на использование 1.1.1.1 маски
 			}
 			else
 			{
 				ct1 = (byte)r.Channel; // тут нужно понять, в каком канале лежат данные о цвете, так как SheetBiulder распределяет данные картинок
-										// по R,G,B группам. Это сделано для картинок с палитрами. Так как их цвет занимает лишь 1 байт, вместо 4 байт.
-										// 1 в шейдере это R канал, 2 это RGBA, 3 = G , 5=B, 7=A
-										// R=0,G=1,B=2,A=3,RGBA=4 в r.Channel . В шейдере передалана функция связки масок, на точное соотвествие.
+									   // по R,G,B группам. Это сделано для картинок с палитрами. Так как их цвет занимает лишь 1 байт, вместо 4 байт.
+									   // 1 в шейдере это R канал, 2 это RGBA, 3 = G , 5=B, 7=A
+									   // R=0,G=1,B=2,A=3,RGBA=4 в r.Channel . В шейдере передалана функция связки масок, на точное соотвествие.
 			}
 
 			// var attribC = r.Channel == TextureChannel.RGBA ? 0x02 : ((byte)r.Channel) << 1 | 0x01;
@@ -112,17 +112,17 @@ namespace OpenRA.Graphics
 			{
 				drawmode = 6; // fill rect with rgba sprite
 
-				float r1, t1;
-				r1 = r.Right + (b.X - a.X) / r.Size.X;
+				int r1, t1;
+				r1 = (int)((b.X - a.X) / r.Size.X);
 				//b1 = r.Bottom + (b.X - a.X) / r.Size.X;
-				t1 = r.Top + (c.Y - a.Y) / r.Size.Y;
+				t1 = (int)((c.Y - a.Y) / r.Size.Y);
 
-				vertices[nv] =     new Vertex(a, r.Left, r.Top, sl, st, paletteTextureIndex, 0, drawmode, 0, ct1, ct2, ct3, ct4, r.Left, r.Top, r.Right,  r.Bottom);
-				vertices[nv + 1] = new Vertex(b, r1, r.Top, sr, st, paletteTextureIndex, 0, drawmode, 0, ct1, ct2, ct3, ct4, r.Left, r.Top, r.Right, r.Bottom);
+				vertices[nv] = new Vertex(a, 0, 0, sl, st, paletteTextureIndex, 0, drawmode, 0, ct1, ct2, ct3, ct4, r.Left, r.Top, r.Right, r.Bottom);
+				vertices[nv + 1] = new Vertex(b, r1, 0, sr, st, paletteTextureIndex, 0, drawmode, 0, ct1, ct2, ct3, ct4, r.Left, r.Top, r.Right, r.Bottom);
 				vertices[nv + 2] = new Vertex(c, r1, t1, sr, sb, paletteTextureIndex, 0, drawmode, 0, ct1, ct2, ct3, ct4, r.Left, r.Top, r.Right, r.Bottom);
 				vertices[nv + 3] = new Vertex(c, r1, t1, sr, sb, paletteTextureIndex, 0, drawmode, 0, ct1, ct2, ct3, ct4, r.Left, r.Top, r.Right, r.Bottom);
-				vertices[nv + 4] = new Vertex(d, r.Left, t1, sl, sb, paletteTextureIndex, 0, drawmode, 0, ct1, ct2, ct3, ct4, r.Left, r.Top, r.Right, r.Bottom);
-				vertices[nv + 5] = new Vertex(a, r.Left, r.Top, sl, st, paletteTextureIndex, 0, drawmode, 0, ct1, ct2, ct3, ct4, r.Left, r.Top, r.Right, r.Bottom);
+				vertices[nv + 4] = new Vertex(d, 0, t1, sl, sb, paletteTextureIndex, 0, drawmode, 0, ct1, ct2, ct3, ct4, r.Left, r.Top, r.Right, r.Bottom);
+				vertices[nv + 5] = new Vertex(a, 0, 0, sl, st, paletteTextureIndex, 0, drawmode, 0, ct1, ct2, ct3, ct4, r.Left, r.Top, r.Right, r.Bottom);
 				return;
 			}
 
@@ -135,30 +135,9 @@ namespace OpenRA.Graphics
 				int wk = (int)((b.X - a.X) / r.Size.X); //width koof
 				int hk = (int)((c.Y - a.Y) / r.Size.Y); // height koof
 
-				if (wk == 1)
-				{
-					hlen =  wk;
-					
-				}
-				else
-				{
-					hlen =  wk; 
-				}
-
-				//b1 = r.Bottom + (b.X - a.X) / r.Size.X;
-				if (hk == 1)
-				{
-					vlen =  hk;
-					
-				}
-				else
-
-				{
-					vlen =  hk;
-				}
-
-				
-
+				hlen = wk;
+				vlen = hk;
+				 
 				float top, right, bot, left;
 				top = r.Top;
 				right = r.Right;
@@ -169,7 +148,7 @@ namespace OpenRA.Graphics
 				//bot = r.Top;
 				//right = r.Left;
 				//left = r.Right;
-				vertices[nv] = new Vertex(a,0, 0, sl, st, paletteTextureIndex, wk, drawmode, hk, ct1, ct2, ct3, ct4, left, top, right, bot);
+				vertices[nv] = new Vertex(a, 0, 0, sl, st, paletteTextureIndex, wk, drawmode, hk, ct1, ct2, ct3, ct4, left, top, right, bot);
 				vertices[nv + 1] = new Vertex(b, hlen, 0, sr, st, paletteTextureIndex, wk, drawmode, hk, ct1, ct2, ct3, ct4, left, top, right, bot);
 				vertices[nv + 2] = new Vertex(c, hlen, vlen, sr, sb, paletteTextureIndex, wk, drawmode, hk, ct1, ct2, ct3, ct4, left, top, right, bot);
 				vertices[nv + 3] = new Vertex(c, hlen, vlen, sr, sb, paletteTextureIndex, wk, drawmode, hk, ct1, ct2, ct3, ct4, left, top, right, bot);
@@ -188,7 +167,7 @@ namespace OpenRA.Graphics
 			}
 
 			// var fAttribC = (float)attribC;
-			vertices[nv] =     new Vertex(a, r.Left, r.Top, sl, st, paletteTextureIndex, 0, drawmode, 0, ct1, ct2, ct3, ct4);
+			vertices[nv] = new Vertex(a, r.Left, r.Top, sl, st, paletteTextureIndex, 0, drawmode, 0, ct1, ct2, ct3, ct4);
 			vertices[nv + 1] = new Vertex(b, r.Right, r.Top, sr, st, paletteTextureIndex, 0, drawmode, 0, ct1, ct2, ct3, ct4);
 			vertices[nv + 2] = new Vertex(c, r.Right, r.Bottom, sr, sb, paletteTextureIndex, 0, drawmode, 0, ct1, ct2, ct3, ct4);
 
@@ -214,7 +193,7 @@ namespace OpenRA.Graphics
 			}
 			else
 			{
-				ct1 = (byte)r.Channel ;
+				ct1 = (byte)r.Channel;
 			}
 
 			// var attribC = r.Channel == TextureChannel.RGBA ? 0x02 : ((byte)r.Channel) << 1 | 0x01;
@@ -223,7 +202,7 @@ namespace OpenRA.Graphics
 
 			var ss = r as SpriteWithSecondaryData;
 
-			
+
 			// используется для vDepthMask в шейдере и когда поставлен флаг ОтладкиГлубины SpriteRendere.SetDepthPreviewEnabled ставит у шейдера uniform EnableDepthPreview =true
 			if (ss != null) // тут r трактуется уже как SpriteWithSecondaryData, если преобразование пройдет успешно=> а если нет, то ss = null
 			{
@@ -235,7 +214,7 @@ namespace OpenRA.Graphics
 				// attribC |= ((byte)ss.SecondaryChannel) << 4 | 0x08;
 				if (ss.SecondaryChannel == TextureChannel.RGBA)
 				{
-					ct3 =4f;
+					ct3 = 4f;
 				}
 				else
 				{
