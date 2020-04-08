@@ -9,6 +9,7 @@
  */
 #endregion
 
+using System;
 using System.Collections.Generic;
 using OpenRA.Primitives;
 
@@ -18,6 +19,7 @@ namespace OpenRA.Graphics
 	{
 		public readonly Rectangle rect = Rectangle.Empty;
 		public readonly string Src;
+		public int Rotate;
 
 		public MappedImage(string defaultSrc, MiniYaml info)
 		{
@@ -25,6 +27,12 @@ namespace OpenRA.Graphics
 			FieldLoader.Load(this, info);
 			if (Src == null)
 				Src = defaultSrc;
+
+			if (info.Nodes.Count > 0)
+			{
+				if (info.Nodes[0].Key == "rotate")
+				Rotate = Convert.ToInt32(info.Nodes[0].Value.Value);
+			}
 		}
 
 		public Sprite GetImage(Sheet s)

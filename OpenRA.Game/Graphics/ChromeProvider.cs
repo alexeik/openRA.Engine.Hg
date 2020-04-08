@@ -142,8 +142,13 @@ namespace OpenRA.Graphics
 				int2 offset = new int2(image2.Bounds.Location.X, image2.Bounds.Location.Y); //основная часть текстуры
 				image = new Sprite(sheet, new Rectangle(mi.rect.X + offset.X, mi.rect.Y + offset.Y, mi.rect.Width, mi.rect.Height), TextureChannel.Red); //смещение в основной части текстуры
 
+				if (mi.Rotate > 0)
+				{
+					// передаем данные о повороте, если больше 0
+					image.Rotate = mi.Rotate;
+				}
 				image.SpriteType = 3; // для Utils.FastCreateQuad
-
+				
 				if (cachedCollection == null)
 				{
 					cachedCollection = new Dictionary<string, Sprite>();

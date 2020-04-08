@@ -137,24 +137,48 @@ namespace OpenRA.Graphics
 
 				hlen = wk;
 				vlen = hk;
-				 
+
 				float top, right, bot, left;
 				top = r.Top;
 				right = r.Right;
 				bot = r.Bottom;
 				left = r.Left;
 
+				float d1 = r.Right - r.Left;
+				float d2 = r.Bottom - r.Top;
+
 				//   top = r.Bottom;
 				//bot = r.Top;
 				//right = r.Left;
 				//left = r.Right;
-				vertices[nv] = new Vertex(a, 0, 0, sl, st, paletteTextureIndex, wk, drawmode, hk, ct1, ct2, ct3, ct4, left, top, right, bot);
-				vertices[nv + 1] = new Vertex(b, hlen, 0, sr, st, paletteTextureIndex, wk, drawmode, hk, ct1, ct2, ct3, ct4, left, top, right, bot);
-				vertices[nv + 2] = new Vertex(c, hlen, vlen, sr, sb, paletteTextureIndex, wk, drawmode, hk, ct1, ct2, ct3, ct4, left, top, right, bot);
-				vertices[nv + 3] = new Vertex(c, hlen, vlen, sr, sb, paletteTextureIndex, wk, drawmode, hk, ct1, ct2, ct3, ct4, left, top, right, bot);
-				vertices[nv + 4] = new Vertex(d, 0, vlen, sl, sb, paletteTextureIndex, wk, drawmode, hk, ct1, ct2, ct3, ct4, left, top, right, bot);
-				vertices[nv + 5] = new Vertex(a, 0, 0, sl, st, paletteTextureIndex, wk, drawmode, hk, ct1, ct2, ct3, ct4, left, top, right, bot);
-
+				if (r.Rotate > 0)
+				{
+					wk = (int)((b.X - a.X) / r.Size.X); //width koof
+					hk = (int)((c.Y - a.Y) / r.Size.Y); // height koof
+					if (vlen==0)
+					{
+						vlen = 1;
+					}
+														//left += d1;
+														//right -= d2;
+														//top += d2;
+														//bot -= d2;
+					vertices[nv] = new Vertex(a, 0, 0, sl, st, paletteTextureIndex, wk, drawmode, hk, ct1, ct2, ct3, ct4, left, top, right, bot);
+					vertices[nv + 1] = new Vertex(b, hlen, 0, sr, st, paletteTextureIndex, wk, drawmode, hk, ct1, ct2, ct3, ct4, left, top, right, bot);
+					vertices[nv + 2] = new Vertex(c, hlen, vlen, sr, sb, paletteTextureIndex, wk, drawmode, hk, ct1, ct2, ct3, ct4, left, top, right, bot);
+					vertices[nv + 3] = new Vertex(c, hlen, vlen, sr, sb, paletteTextureIndex, wk, drawmode, hk, ct1, ct2, ct3, ct4, left, top, right, bot);
+					vertices[nv + 4] = new Vertex(d, 0, vlen, sl, sb, paletteTextureIndex, wk, drawmode, hk, ct1, ct2, ct3, ct4, left, top, right, bot);
+					vertices[nv + 5] = new Vertex(a, 0, 0, sl, st, paletteTextureIndex, wk, drawmode, hk, ct1, ct2, ct3, ct4, left, top, right, bot);
+				}
+				else
+				{
+					vertices[nv] = new Vertex(a, 0, 0, sl, st, paletteTextureIndex, wk, drawmode, hk, ct1, ct2, ct3, ct4, left, top, right, bot);
+					vertices[nv + 1] = new Vertex(b, hlen, 0, sr, st, paletteTextureIndex, wk, drawmode, hk, ct1, ct2, ct3, ct4, left, top, right, bot);
+					vertices[nv + 2] = new Vertex(c, hlen, vlen, sr, sb, paletteTextureIndex, wk, drawmode, hk, ct1, ct2, ct3, ct4, left, top, right, bot);
+					vertices[nv + 3] = new Vertex(c, hlen, vlen, sr, sb, paletteTextureIndex, wk, drawmode, hk, ct1, ct2, ct3, ct4, left, top, right, bot);
+					vertices[nv + 4] = new Vertex(d, 0, vlen, sl, sb, paletteTextureIndex, wk, drawmode, hk, ct1, ct2, ct3, ct4, left, top, right, bot);
+					vertices[nv + 5] = new Vertex(a, 0, 0, sl, st, paletteTextureIndex, wk, drawmode, hk, ct1, ct2, ct3, ct4, left, top, right, bot);
+				}
 				//vertices[nv] = new Vertex(a, r.Left, r.Top, sl, st, paletteTextureIndex, wk, drawmode, hk, ct1, ct2, ct3, ct4, left, top, right, bot);
 				//vertices[nv + 1] = new Vertex(b, r.Right, r.Top, sr, st, paletteTextureIndex, wk, drawmode, hk, ct1, ct2, ct3, ct4, left, top, right, bot);
 				//vertices[nv + 2] = new Vertex(c, r.Right, r.Bottom, sr, sb, paletteTextureIndex, wk, drawmode, hk, ct1, ct2, ct3, ct4, left, top, right, bot);

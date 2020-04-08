@@ -30,6 +30,7 @@ namespace OpenRA.Graphics
 		public float Top, Left, Bottom, Right;
 		public int SpriteType;
 		public int SpriteArrayNum;
+		public int Rotate;
 
 		public Sprite(Sheet sheet, Rectangle bounds, TextureChannel channel)
 			: this(sheet, bounds, 0, float2.Zero, channel) { }
