@@ -59,10 +59,7 @@ namespace OpenRA.Mods.Common.Widgets
 
 		public static void FillRectWithSprite(Rectangle r, Sprite s)
 		{
-			if (s.Size.Y == r.Top && s.Size.X == r.Right)
-			{
 
-			}
 			if (s.SpriteType == 3)
 			{
 
@@ -78,24 +75,24 @@ namespace OpenRA.Mods.Common.Widgets
 			
 			//Game.Renderer.Flush(); //turn on for debug if any
 			
-			return;
+			
 
-			for (var x = r.Left; x < r.Right; x += (int)s.Size.X)
-				for (var y = r.Top; y < r.Bottom; y += (int)s.Size.Y)
-				{
-					var ss = s;
-					var left = new int2(r.Right - x, r.Bottom - y);
-					if (left.X < (int)s.Size.X || left.Y < (int)s.Size.Y)
-					{
-						var rr = new Rectangle(s.Bounds.Left,
-							s.Bounds.Top,
-							Math.Min(left.X, (int)s.Size.X),
-							Math.Min(left.Y, (int)s.Size.Y));
-						ss = new Sprite(s.Sheet, rr, s.Channel);
-					}
+			//for (var x = r.Left; x < r.Right; x += (int)s.Size.X)
+			//	for (var y = r.Top; y < r.Bottom; y += (int)s.Size.Y)
+			//	{
+			//		var ss = s;
+			//		var left = new int2(r.Right - x, r.Bottom - y);
+			//		if (left.X < (int)s.Size.X || left.Y < (int)s.Size.Y)
+			//		{
+			//			var rr = new Rectangle(s.Bounds.Left,
+			//				s.Bounds.Top,
+			//				Math.Min(left.X, (int)s.Size.X),
+			//				Math.Min(left.Y, (int)s.Size.Y));
+			//			ss = new Sprite(s.Sheet, rr, s.Channel);
+			//		}
 
-					DrawRGBA(ss, new float2(x, y));
-				}
+			//		DrawRGBA(ss, new float2(x, y));
+			//	}
 		}
 		public static void FillRectWithSprite(Rectangle r, Sprite s, PaletteReference p)
 		{
