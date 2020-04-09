@@ -19,7 +19,7 @@ using OpenRA.Primitives;
 
 namespace OpenRA.Mods.Common.SpriteLoaders
 {
-	public class ShpTDLoader : ISpriteLoader
+	public class ShpTDLoader : SpriteLoaderBase
 	{
 		static bool IsShpTD(Stream s)
 		{
@@ -57,7 +57,12 @@ namespace OpenRA.Mods.Common.SpriteLoaders
 			return b == 0x20 || b == 0x40 || b == 0x80;
 		}
 
-		public bool TryParseSprite(Stream s, out ISpriteFrame[] frames, out TypeDictionary metadata)
+		public override bool TryParseSprite(Stream s, string filename, out ISpriteFrame[] frames, out TypeDictionary metadata)
+		{
+			return TryParseSprite(s, out frames, out metadata);
+		}
+
+		public override bool TryParseSprite(Stream s, out ISpriteFrame[] frames, out TypeDictionary metadata)
 		{
 			metadata = null;
 			if (!IsShpTD(s))

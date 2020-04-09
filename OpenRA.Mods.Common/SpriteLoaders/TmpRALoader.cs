@@ -15,7 +15,7 @@ using OpenRA.Primitives;
 
 namespace OpenRA.Mods.Common.SpriteLoaders
 {
-	public class TmpRALoader : ISpriteLoader
+	public class TmpRALoader : SpriteLoaderBase
 	{
 		class TmpRAFrame : ISpriteFrame
 		{
@@ -84,7 +84,12 @@ namespace OpenRA.Mods.Common.SpriteLoaders
 			return tiles;
 		}
 
-		public bool TryParseSprite(Stream s, out ISpriteFrame[] frames, out TypeDictionary metadata)
+		public override bool TryParseSprite(Stream s, string filename, out ISpriteFrame[] frames, out TypeDictionary metadata)
+		{
+			return TryParseSprite(s, out frames, out metadata);
+		}
+
+		public override bool TryParseSprite(Stream s, out ISpriteFrame[] frames, out TypeDictionary metadata)
 		{
 			metadata = null;
 			if (!IsTmpRA(s))

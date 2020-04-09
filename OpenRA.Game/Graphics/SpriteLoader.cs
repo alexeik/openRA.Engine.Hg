@@ -14,9 +14,19 @@ using OpenRA.Primitives;
 
 namespace OpenRA.Graphics
 {
-	public interface ISpriteLoader
+	public abstract class SpriteLoaderBase
 	{
-		bool TryParseSprite(Stream s, out ISpriteFrame[] frames, out TypeDictionary metadata);
+		public abstract bool TryParseSprite(Stream s, out ISpriteFrame[] frames, out TypeDictionary metadata);
+		//{
+
+		//	return TryParseSprite(s, "", out frames, out metadata);
+		//}
+		public abstract bool TryParseSprite(Stream s, string filename, out ISpriteFrame[] frames, out TypeDictionary metadata);
+		//{
+		//	frames = null;
+		//	metadata = null;
+		//	return false;
+		//}
 	}
 
 	public interface ISpriteFrame
