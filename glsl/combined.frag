@@ -117,7 +117,7 @@ void main()
 		vec2 p = vec2(dot(x, vChannelMask), PaletteIndex);  
 		
 		
-		c = vPalettedFraction * texture2D(Palette, p) 
+		c = vPalettedFraction * texture2D(Palette, p) ;
 	}
 	if (DrawMode==2.0) //UI
 	{
