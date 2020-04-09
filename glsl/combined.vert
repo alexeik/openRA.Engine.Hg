@@ -73,7 +73,7 @@ vec4 SelectChannelMask(float x)
 }
 vec4 SelectPalettedFraction(float x)
 {
-	//для чего это используеться? в каком алгоритме- не выяснил.
+	
 	return vec4(1, 1, 1, 1);
 	if (x == 0.0 || x == 2.0)
 		return vec4(0, 0, 0, 0);
@@ -82,37 +82,22 @@ vec4 SelectPalettedFraction(float x)
 }
 void main()
 {
- // if aVertexTexMetadata.t=X=65 , primarySampler=1,x=1,primaryChannel=1 =>attrib.s=1=primaryChannel
+ 
 	gl_Position = vec4((aVertexPosition.xyz - Scroll.xyz) * r1 + r2, 1);
 	
 	vTexCoordSecond=aTexCoordSecond;
 	vTexCoord=aTexCoord;
 	DrawMode=aVertexDrawmode;
 	PaletteIndex=aVertexPaletteIndex;
-	//vec4 attrib = UnpackChannelAttributes(aVertexTexMetadata.t);
-	//drawMode передается в aVertexTexCoord - 4 позиция тип float.
-	
-	//vec4 drawMode = vec4(aVertexTexMetadata.t;
-	
-	vColorInfo = aVertexColorInfo; //теперь передаем сразу эти 4 числа float
-	
-	//vChannelMask = SelectChannelMask(attrib.s);
-	//vColorFraction = SelectColorFraction(attrib.s);
-	//vRGBAFraction = SelectRGBAFraction(attrib.s);
-	//vPalettedFraction = SelectPalettedFraction(attrib.s); primaryChannel=маска канала первая
-	//vDepthMask = SelectChannelMask(attrib.t);
-	
-	//vChannelMask = vec4(aVertexColorInfo.s,0,0,0); 
-	vPalettedFraction = SelectPalettedFraction(aVertexColorInfo.s);
-	vChannelMask = SelectChannelMask(aVertexColorInfo.s); //динамическое определение маски RGBA
-	//тут нужно из целого числа, сделать вектор, чтобы потом умножить и оставить токо ту часть, которая содержит Х коориданату в палитре
-	
-	vTexSampler = vec2(0,aVertexColorInfo.t); //номер текстуры
 
-/* 	StartUV=vec2(0.43848,0.10645);
-	EndUV=vec2(1.44434,1.11182); 
-	EndUV=vec2(0.43848,0.10645);
-	StartUV=vec2(1.44434,1.11182);  */
+	vColorInfo = aVertexColorInfo;
+
+	vPalettedFraction = SelectPalettedFraction(aVertexColorInfo.s);
+	vChannelMask = SelectChannelMask(aVertexColorInfo.s);
+
+	
+	vTexSampler = vec2(0,aVertexColorInfo.t);
+
   	StartUV = aVertexUVFillRect.rg;
 	EndUV = aVertexUVFillRect.ba; 
 

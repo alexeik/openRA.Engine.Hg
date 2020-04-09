@@ -35,10 +35,7 @@ float median(float r, float g, float b) {
 
 void main()
 {
-	/* vec4 x = Sample(vTexSampler.s, vTexCoord.st);
-	vec2 p = vec2(dot(x, vChannelMask), vTexMetadata.s);
-	vec4 c = vPalettedFraction * texture2D(Palette, p) + vRGBAFraction * x + vColorFraction * vTexCoord;
- */
+
 
 //fragColor= texture(TextureFontMSDF, vec3(0,0,1)); 
 /*
@@ -62,7 +59,7 @@ void main()
 	
 	vec2 pos = flipped_texCoords.xy;
     
-	float pxRange=12; //так было при генерации png в msdfgen.
+	float pxRange=12;
 
 	vec2 msdfUnit = pxRange/vec2(textureSize(TextureFontMSDF, 0));
     float sigDist = median(samplemsdf.r, samplemsdf.g, samplemsdf.b) - 0.5;
@@ -71,12 +68,6 @@ void main()
 
 	fragColor =vec4(TextColor.rgb,opacity ) ;
 
-	//fragColor = vec4(fragColor.rgb ,opacity); 
-	//if(fragColor.a <0.1)
-     // discard;
-	//fragColor =fragColor;
-    //vec3 NewColor = vec3(1,1,1);//можно с CPU передавать разные цвета
-  //fragColor =vec4(vColorInfo.rgb,opacity);
 
 	
 	
