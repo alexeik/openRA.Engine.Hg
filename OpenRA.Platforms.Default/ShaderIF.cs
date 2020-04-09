@@ -1,4 +1,4 @@
-#region Copyright & License Information
+п»ї#region Copyright & License Information
 /*
  * Copyright 2007-2019 The OpenRA Developers (see AUTHORS)
  * This file is part of OpenRA, which is free software. It is made
@@ -35,7 +35,7 @@ namespace OpenRA.Platforms.Default
 		public const int VertexColorInfo = 3;
 
 		/// <summary>
-		/// содержит все sampler2D аргументы у шейдера в формате имя(строка), позиция аргумента(число)
+		/// СЃРѕРґРµСЂР¶РёС‚ РІСЃРµ sampler2D Р°СЂРіСѓРјРµРЅС‚С‹ Сѓ С€РµР№РґРµСЂР° РІ С„РѕСЂРјР°С‚Рµ РёРјСЏ(СЃС‚СЂРѕРєР°), РїРѕР·РёС†РёСЏ Р°СЂРіСѓРјРµРЅС‚Р°(С‡РёСЃР»Рѕ)
 		/// </summary>
 		readonly Dictionary<string, int> samplers = new Dictionary<string, int>();
 		readonly Dictionary<int, ITexture> textures = new Dictionary<int, ITexture>();
@@ -172,7 +172,7 @@ namespace OpenRA.Platforms.Default
 			OpenGL.glDetachShader(program, si.glid);
 			OpenGL.glDeleteShader(si.glid);
 
-			//можно найти шейдер, отключить от программы, переподключить новый
+			//РјРѕР¶РЅРѕ РЅР°Р№С‚Рё С€РµР№РґРµСЂ, РѕС‚РєР»СЋС‡РёС‚СЊ РѕС‚ РїСЂРѕРіСЂР°РјРјС‹, РїРµСЂРµРїРѕРґРєР»СЋС‡РёС‚СЊ РЅРѕРІС‹Р№
 		}
 		public ShaderIF(string name)
 		{
@@ -215,9 +215,9 @@ namespace OpenRA.Platforms.Default
 			
 			
 			
-			//можно экономить на этих командах glBindAttribLocation, убрать отсюда и перенес и в сам файл vert от шейдера
-			// разметить эти позиции через layout(location=0) in vec4 aVertexPosition - означает привязка к 0 позиции формата вертбуфера 
-			// к аргументу aVertexPosition в шейдере.
+			//РјРѕР¶РЅРѕ СЌРєРѕРЅРѕРјРёС‚СЊ РЅР° СЌС‚РёС… РєРѕРјР°РЅРґР°С… glBindAttribLocation, СѓР±СЂР°С‚СЊ РѕС‚СЃСЋРґР° Рё РїРµСЂРµРЅРµСЃ Рё РІ СЃР°Рј С„Р°Р№Р» vert РѕС‚ С€РµР№РґРµСЂР°
+			// СЂР°Р·РјРµС‚РёС‚СЊ СЌС‚Рё РїРѕР·РёС†РёРё С‡РµСЂРµР· layout(location=0) in vec4 aVertexPosition - РѕР·РЅР°С‡Р°РµС‚ РїСЂРёРІСЏР·РєР° Рє 0 РїРѕР·РёС†РёРё С„РѕСЂРјР°С‚Р° РІРµСЂС‚Р±СѓС„РµСЂР° 
+			// Рє Р°СЂРіСѓРјРµРЅС‚Сѓ aVertexPosition РІ С€РµР№РґРµСЂРµ.
 
 			OpenGL.glLinkProgram(program);
 			int success;
@@ -240,7 +240,7 @@ namespace OpenRA.Platforms.Default
 			OpenGL.glGetProgramiv(program, OpenGL.GL_ACTIVE_UNIFORMS, out numUniforms);
 
 
-			// забираем все переменные из shader и потом используем для связи с ними текстур
+			// Р·Р°Р±РёСЂР°РµРј РІСЃРµ РїРµСЂРµРјРµРЅРЅС‹Рµ РёР· shader Рё РїРѕС‚РѕРј РёСЃРїРѕР»СЊР·СѓРµРј РґР»СЏ СЃРІСЏР·Рё СЃ РЅРёРјРё С‚РµРєСЃС‚СѓСЂ
 			var nextTexUnit = 0;
 			samplers.Clear();
 
@@ -308,11 +308,11 @@ namespace OpenRA.Platforms.Default
 		}
 
 		/// <summary>
-		/// Устанавливает связь между названием текстуры и именем сэмплера в шейдере.
-		/// Должны быть одинаковые. Для упрощения так сделано.
+		/// РЈСЃС‚Р°РЅР°РІР»РёРІР°РµС‚ СЃРІСЏР·СЊ РјРµР¶РґСѓ РЅР°Р·РІР°РЅРёРµРј С‚РµРєСЃС‚СѓСЂС‹ Рё РёРјРµРЅРµРј СЃСЌРјРїР»РµСЂР° РІ С€РµР№РґРµСЂРµ.
+		/// Р”РѕР»Р¶РЅС‹ Р±С‹С‚СЊ РѕРґРёРЅР°РєРѕРІС‹Рµ. Р”Р»СЏ СѓРїСЂРѕС‰РµРЅРёСЏ С‚Р°Рє СЃРґРµР»Р°РЅРѕ.
 		/// </summary>
-		/// <param name="name">имя сэмплера в шейдере.</param>
-		/// <param name="t">ссылка на текстуру.</param>
+		/// <param name="name">РёРјСЏ СЃСЌРјРїР»РµСЂР° РІ С€РµР№РґРµСЂРµ.</param>
+		/// <param name="t">СЃСЃС‹Р»РєР° РЅР° С‚РµРєСЃС‚СѓСЂСѓ.</param>
 		public override void SetTexture(string name, ITexture t)
 		{
 			VerifyThreadAffinity();
