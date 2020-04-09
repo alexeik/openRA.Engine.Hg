@@ -16,6 +16,8 @@ layout (location = 11 ) in float temp;
 uniform vec3 Scroll;
 uniform vec3 r1, r2;
 
+// vertexbuffer format mapping
+
 
 
 out float ShaderID;

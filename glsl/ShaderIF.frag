@@ -58,11 +58,12 @@ void main()
 		
 		vec4 pixel_palette_shortcut=Sample(TextureInputSlot,SpriteUVCoords);
 		vec4 pixel_from_palette=texture(Palette,vec2(dot(pixel_palette_shortcut,TextureStoreChannel),PaletteIndex));
-
+		//pixel_palette_shortcut.r компоненту нужно регулировать, так как пиксели храняться
+		//в разных каналах r g b a.
 		vec2 uv = fragXY;
 		
-		uv -=0.5; 
-		uv.x *= iResolutionXY.x/iResolutionXY.y; 
+		uv -=0.5; //center circle origin
+		uv.x *= iResolutionXY.x/iResolutionXY.y; //ratio width/height
 		
 		float le=length(uv);
 		float r=0.2+CurrentFrame*.01;
