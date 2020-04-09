@@ -20,14 +20,14 @@ namespace OpenRA.Graphics
 	public class SpriteCache
 	{
 		public readonly SheetBuilder SheetBuilder;
-		readonly ISpriteLoader[] loaders;
+		readonly SpriteLoaderBase[] loaders;
 		readonly IReadOnlyFileSystem fileSystem;
 
 		readonly Dictionary<string, List<Sprite[]>> sprites = new Dictionary<string, List<Sprite[]>>();
 		readonly Dictionary<string, ISpriteFrame[]> unloadedFrames = new Dictionary<string, ISpriteFrame[]>();
 		readonly Dictionary<string, TypeDictionary> metadata = new Dictionary<string, TypeDictionary>();
 
-		public SpriteCache(IReadOnlyFileSystem fileSystem, ISpriteLoader[] loaders, SheetBuilder sheetBuilder)
+		public SpriteCache(IReadOnlyFileSystem fileSystem, SpriteLoaderBase[] loaders, SheetBuilder sheetBuilder)
 		{
 			SheetBuilder = sheetBuilder;
 			this.fileSystem = fileSystem;

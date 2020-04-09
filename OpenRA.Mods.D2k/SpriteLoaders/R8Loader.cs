@@ -18,7 +18,7 @@ using OpenRA.Primitives;
 
 namespace OpenRA.Mods.D2k.SpriteLoaders
 {
-	public class R8Loader : ISpriteLoader
+	public class R8Loader : SpriteLoaderBase
 	{
 		class R8Frame : ISpriteFrame
 		{
@@ -97,7 +97,12 @@ namespace OpenRA.Mods.D2k.SpriteLoaders
 			return d == 8;
 		}
 
-		public bool TryParseSprite(Stream s, out ISpriteFrame[] frames, out TypeDictionary metadata)
+		public override bool TryParseSprite(Stream s, string filename, out ISpriteFrame[] frames, out TypeDictionary metadata)
+		{
+			return TryParseSprite(s, out frames, out metadata);
+		}
+
+		public override bool TryParseSprite(Stream s, out ISpriteFrame[] frames, out TypeDictionary metadata)
 		{
 			metadata = null;
 			if (!IsR8(s))

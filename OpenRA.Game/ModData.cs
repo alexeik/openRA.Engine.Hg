@@ -29,7 +29,7 @@ namespace OpenRA
 		public readonly MapCache MapCache;
 		public readonly IPackageLoader[] PackageLoaders;
 		public readonly ISoundLoader[] SoundLoaders;
-		public readonly ISpriteLoader[] SpriteLoaders;
+		public readonly SpriteLoaderBase[] SpriteLoaders;
 		public readonly ISpriteSequenceLoader SpriteSequenceLoader;
 		public readonly IModelSequenceLoader ModelSequenceLoader;
 		public readonly HotkeyManager Hotkeys;
@@ -72,7 +72,7 @@ namespace OpenRA
 			MapCache = new MapCache(this);
 
 			SoundLoaders = ObjectCreator.GetLoaders<ISoundLoader>(Manifest.SoundFormats, "sound");
-			SpriteLoaders = ObjectCreator.GetLoaders<ISpriteLoader>(Manifest.SpriteFormats, "sprite");
+			SpriteLoaders = ObjectCreator.GetLoadersInherits<SpriteLoaderBase>(Manifest.SpriteFormats, "sprite");
 
 			var sequenceFormat = Manifest.Get<SpriteSequenceFormat>();
 			var sequenceLoader = ObjectCreator.FindType(sequenceFormat.Type + "Loader");

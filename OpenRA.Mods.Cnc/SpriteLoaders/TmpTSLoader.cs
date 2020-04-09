@@ -15,7 +15,7 @@ using OpenRA.Primitives;
 
 namespace OpenRA.Mods.Cnc.SpriteLoaders
 {
-	public class TmpTSLoader : ISpriteLoader
+	public class TmpTSLoader : SpriteLoaderBase
 	{
 		class TmpTSDepthFrame : ISpriteFrame
 		{
@@ -182,7 +182,12 @@ namespace OpenRA.Mods.Cnc.SpriteLoaders
 			return tiles;
 		}
 
-		public bool TryParseSprite(Stream s, out ISpriteFrame[] frames, out TypeDictionary metadata)
+		public override bool TryParseSprite(Stream s, string filename, out ISpriteFrame[] frames, out TypeDictionary metadata)
+		{
+			return TryParseSprite(s, out frames, out metadata);
+		}
+
+		public override bool TryParseSprite(Stream s, out ISpriteFrame[] frames, out TypeDictionary metadata)
 		{
 			metadata = null;
 			if (!IsTmpTS(s))
