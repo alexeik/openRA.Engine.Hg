@@ -12,6 +12,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using OpenRA.FileFormats;
 using OpenRA.Primitives;
 using OpenRA.Support;
 
@@ -31,13 +32,18 @@ namespace OpenRA.Graphics
 		}
 	}
 
+	/// <summary>
+	/// Класс по-сути SequenceProvider для спрайтов карты.
+	/// </summary>
 	public sealed class Theater : IDisposable
 	{
 		readonly Dictionary<ushort, TheaterTemplate> templates = new Dictionary<ushort, TheaterTemplate>();
 		readonly SheetBuilder sheetBuilder;
+		public readonly SheetBuilder sbMegaTexture;
 		readonly Sprite missingTile;
+		Sprite MegaTextureSprite;
 		readonly MersenneTwister random;
-		TileSet tileset;
+		public TileSet tileset;
 
 		public Theater(TileSet tileset)
 		{
@@ -54,6 +60,13 @@ namespace OpenRA.Graphics
 			};
 
 			sheetBuilder = new SheetBuilder(SheetType.Indexed, allocate);
+
+			sbMegaTexture = new SheetBuilder(SheetType.BGRA, 2080, 2080);
+
+			if (!string.IsNullOrEmpty(tileset.MegaTexture))
+			{
+				LoadsbMegaTexture(tileset.MegaTexture);
+			}
 			random = new MersenneTwister();
 
 			var frameCache = new FrameCache(Game.ModData.DefaultFileSystem, Game.ModData.SpriteLoaders);
@@ -100,7 +113,7 @@ namespace OpenRA.Graphics
 
 				if (t.Value.Variants == "Calc")
 				{
-                    templates.Add(t.Value.Id, new TheaterTemplate(allSprites.ToArray(), 1, variants.First().Count()));
+					templates.Add(t.Value.Id, new TheaterTemplate(allSprites.ToArray(), 1, variants.First().Count()));
 				}
 				else
 				{
@@ -114,17 +127,56 @@ namespace OpenRA.Graphics
 			Sheet.ReleaseBuffer();
 		}
 
+		public void LoadsbMegaTexture(string filename)
+		{
+			FileSystem.IReadOnlyPackage pack;
+			string temp;
+
+			if (Game.ModData.DefaultFileSystem.TryGetPackageContaining(filename, out pack, out temp))
+			{
+				using (var stream = Game.ModData.DefaultFileSystem.Open("noise.png"))
+				{
+					Png pic;
+					try
+					{
+						pic = new Png(stream);
+						MegaTextureSprite = sbMegaTexture.Add(pic);
+					}
+					catch (Exception e)
+					{
+						//Console.WriteLine("Error loading char: {0} x {1}", f, Convert.ToInt32(f.Split('.')[0]));
+					}
+				}
+			}
+		}
+
 		public Sprite TileSprite(TerrainTile r, int? variant = null)
 		{
-			TheaterTemplate template;
-			if (!templates.TryGetValue(r.Type, out template))
-				return missingTile;
+			bool flag1=false;
+			if (!string.IsNullOrEmpty(tileset.MegaTexture))
+			{
+				flag1 = true;
+			}
 
-			if (r.Index >= template.Stride)
-				return missingTile;
-			// if variant == null then random.Next calls
-			var start = template.Variants > 1 ? (variant.HasValue ? variant.Value : random.Next(template.Variants)) : 0;
-			return template.Sprites[start * template.Stride + r.Index];
+			if (r.Type==0 &&  flag1)
+			{
+				Sprite sp = new Sprite(sbMegaTexture.Current, new Rectangle(0, 0, 16, 16), TextureChannel.RGBA);
+				sp.SpriteType = 4;
+				return sp;
+			}
+			else
+			{
+				TheaterTemplate template;
+				if (!templates.TryGetValue(r.Type, out template))
+					return missingTile;
+
+				if (r.Index >= template.Stride)
+					return missingTile;
+				// if variant == null then random.Next calls
+				var start = template.Variants > 1 ? (variant.HasValue ? variant.Value : random.Next(template.Variants)) : 0;
+				return template.Sprites[start * template.Stride + r.Index];
+			}
+
 		}
 
 		public Rectangle TemplateBounds(TerrainTemplateInfo template, Size tileSize, MapGridType mapGrid)

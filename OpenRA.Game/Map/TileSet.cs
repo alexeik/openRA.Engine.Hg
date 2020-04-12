@@ -129,6 +129,9 @@ namespace OpenRA
 		}
 	}
 
+	/// <summary>
+	/// Ѕерет данные из tilesets\*.yaml , которые потом уход€т в Theater
+	/// </summary>
 	public class TileSet
 	{
 		public const string TerrainPaletteInternalName = "terrain";
@@ -140,7 +143,7 @@ namespace OpenRA
 		public readonly string[] EditorTemplateOrder;
 		public readonly bool IgnoreTileSpriteOffsets;
 		public readonly bool EnableDepth = false;
-
+		public readonly string MegaTexture = "";
 		[FieldLoader.Ignore]
 		public readonly IReadOnlyDictionary<ushort, TerrainTemplateInfo> Templates;
 

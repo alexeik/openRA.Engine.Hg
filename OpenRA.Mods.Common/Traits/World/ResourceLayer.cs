@@ -185,9 +185,9 @@ namespace OpenRA.Mods.Common.Traits
 				});
 
 				// Validate that sprites are compatible with this layer
-				var sheet = layer.Sheet;
-				if (r.Value.Variants.Any(kv => kv.Value.Any(s => s.Sheet != sheet)))
-					throw new InvalidDataException("Resource sprites span multiple sheets. Try loading their sequences earlier.");
+				//var sheet = layer.Sheet;
+				//if (r.Value.Variants.Any(kv => kv.Value.Any(s => s.Sheet != sheet)))
+				//	throw new InvalidDataException("Resource sprites span multiple sheets. Try loading their sequences earlier.");
 
 				var blendMode = layer.BlendMode;
 				if (r.Value.Variants.Any(kv => kv.Value.Any(s => s.BlendMode != blendMode)))

@@ -172,6 +172,23 @@ namespace OpenRA.Graphics
 			buffer.CloseVAO();
 			renderer.Context.SetBlendMode(BlendMode.None);
 		}
+		public void DrawVertexBuffer(VertexBuffer<Vertex> buffer, int start, int length, PrimitiveType type, Sheet[] sheets, BlendMode blendMode)
+		{
+			for (var i = 0; i < sheets.Length; i++)
+			{
+				if (sheets[i] == null)
+				{
+					continue;
+				}
+				shader.SetTexture("Texture{0}".F(i), sheets[i].AssignOrGetOrSetDataGLTexture());
+			}
+			renderer.Context.SetBlendMode(blendMode);
+			shader.PrepareRender();
+			buffer.ActivateVAO();
+			renderer.DrawBatcForOpenGLVertexBuffer(buffer, start, length, type);
+			buffer.CloseVAO();
+			renderer.Context.SetBlendMode(BlendMode.None);
+		}
 
 		// For RGBAColorRenderer
 		public void DrawRGBAVertices(Vertex[] v)

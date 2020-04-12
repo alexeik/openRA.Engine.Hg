@@ -123,6 +123,19 @@ void main()
 
 	 
 	}
+	if (DrawMode==8.0) // рисует спрайты тайлов карты из мегатекстуры.
+	{
+		vec4 x;
+		vec2 tilexy=floor(vTexCoord);
+		 vec2 uv = fract(vTexCoord);
+		x = Sample(vTexSampler.t, vTexCoord.st); //забираем 4 байта из текстуры
+		if (x.r>=0.01961 && x.g>=0.01961 && x.b>=0.01961)
+		{
+			x=vec4(0.65234,0.30469,0.09082,1);
+		}
+			//x=vec4(1,0.82745,0.4902,1);
+			c=x;
+	}
 	if (DrawMode==1.0) // рисует пиксели из палитры
 	{
 		vec4 x = Sample(vTexSampler.t, vTexCoord.st);

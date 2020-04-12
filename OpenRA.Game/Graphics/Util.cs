@@ -190,6 +190,17 @@ namespace OpenRA.Graphics
 				return;
 			}
 
+			if (r.SpriteType==4)
+			{
+				drawmode = 8;
+				//vertices[nv] = new Vertex(a, a.X + 0, a.Y + 0, sl, st, paletteTextureIndex, 0, drawmode, 0, ct1, ct2, ct3, ct4, r.Left, r.Top, r.Right, r.Bottom);
+				//vertices[nv + 1] = new Vertex(b, a.X + 1, a.Y + 0, sr, st, paletteTextureIndex, 0, drawmode, 0, ct1, ct2, ct3, ct4, r.Left, r.Top, r.Right, r.Bottom);
+				//vertices[nv + 2] = new Vertex(c, a.X + 1, a.Y + 1, sr, sb, paletteTextureIndex, 0, drawmode, 0, ct1, ct2, ct3, ct4, r.Left, r.Top, r.Right, r.Bottom);
+				//vertices[nv + 3] = new Vertex(c, a.X + 1, a.Y + 1, sr, sb, paletteTextureIndex, 0, drawmode, 0, ct1, ct2, ct3, ct4, r.Left, r.Top, r.Right, r.Bottom);
+				//vertices[nv + 4] = new Vertex(d, a.X + 0, a.Y + 1, sl, sb, paletteTextureIndex, 0, drawmode, 0, ct1, ct2, ct3, ct4, r.Left, r.Top, r.Right, r.Bottom);
+				//vertices[nv + 5] = new Vertex(a, a.X + 0, a.Y + 0, sl, st, paletteTextureIndex, 0, drawmode, 0, ct1, ct2, ct3, ct4, r.Left, r.Top, r.Right, r.Bottom);
+				//return;
+			}
 			// var fAttribC = (float)attribC;
 			vertices[nv] = new Vertex(a, r.Left, r.Top, sl, st, paletteTextureIndex, 0, drawmode, 0, ct1, ct2, ct3, ct4);
 			vertices[nv + 1] = new Vertex(b, r.Right, r.Top, sr, st, paletteTextureIndex, 0, drawmode, 0, ct1, ct2, ct3, ct4);
@@ -280,6 +291,12 @@ namespace OpenRA.Graphics
 			vertices[nv + 4] = new Vertex(d, r.Left, r.Bottom, sl, sb, paletteTextureIndex, 0, drawmode, 0, ct1, ct2, ct3, ct4);
 			vertices[nv + 5] = new Vertex(a, r.Left, r.Top, sl, st, paletteTextureIndex, 0, drawmode, 0, ct1, ct2, ct3, ct4);
 		}
+
+		/// <summary>
+		/// ДОполняет данные в data у Sheet новыми данными из разных картинок.
+		/// </summary>
+		/// <param name="dest"></param>
+		/// <param name="src"></param>
 		public static void FastCopyIntoChannel(Sprite dest, byte[] src)
 		{
 			var data = dest.Sheet.GetData();

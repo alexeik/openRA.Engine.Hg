@@ -26,7 +26,7 @@ namespace OpenRA.Mods.Common.Traits
 	{
 		readonly Map map;
 		readonly Dictionary<string, TerrainSpriteLayer> spriteLayers = new Dictionary<string, TerrainSpriteLayer>();
-		public Theater theater;
+		public Theater terrainspriteProvider;
 		bool disposed;
 
 		public TerrainRenderer(World world)
@@ -39,13 +39,22 @@ namespace OpenRA.Mods.Common.Traits
 		}
 		void IWorldLoaded.WorldLoaded(World world, WorldRenderer wr)
 		{
-			theater = wr.Theater;
+			terrainspriteProvider = wr.Theater;
 
 			foreach (var template in map.Rules.TileSet.Templates)
 			{
 				var palette = template.Value.Palette ?? TileSet.TerrainPaletteInternalName;
-				spriteLayers.GetOrAdd(palette, pal =>
-					new TerrainSpriteLayer(world, wr, theater.Sheet, BlendMode.Alpha, wr.Palette(palette), world.Type != WorldType.Editor,"TerrainRenderer"));
+				if (string.IsNullOrEmpty(terrainspriteProvider.tileset.MegaTexture))
+				{
+					spriteLayers.GetOrAdd(palette, pal =>
+					new TerrainSpriteLayer(world, wr, terrainspriteProvider.Sheet, BlendMode.Alpha, wr.Palette(palette), world.Type != WorldType.Editor, "TerrainRenderer"));
+				}
+				else
+				{
+					spriteLayers.GetOrAdd(palette, pal =>
+					new TerrainSpriteLayer(world, wr, terrainspriteProvider.sbMegaTexture.Current, BlendMode.Alpha, wr.Palette(palette), world.Type != WorldType.Editor, "TerrainRenderer"));
+				}
+				
 			}
 
 			foreach (var cell in map.AllCells)
@@ -55,14 +64,15 @@ namespace OpenRA.Mods.Common.Traits
 			map.Height.CellEntryChanged += SubmitCell;
 		}
 
-		public void SubmitCell(CPos cell)
+		public void SubmitCell(CPos cell) //определяет какие спрайты в каком полигоне должны быть. 
 		{
 			var tile = map.Tiles[cell];
 			var palette = TileSet.TerrainPaletteInternalName;
 			if (map.Rules.TileSet.Templates.ContainsKey(tile.Type))
 				palette = map.Rules.TileSet.Templates[tile.Type].Palette ?? palette;
 
-			var sprite = theater.TileSprite(tile);
+			var sprite = terrainspriteProvider.TileSprite(tile);
+
 			foreach (var kv in spriteLayers)
 				kv.Value.Update(cell, palette == kv.Key ? sprite : null);
 		}
@@ -79,10 +89,10 @@ namespace OpenRA.Mods.Common.Traits
 			// TODO: по идее, рисуется карта, а потом на ней рисуются разные слои от IRenderOverlay , но вышло не так. Каждый IRenderOverlay
 			// рисует карту заново со своими добавками :) IRenderOverlay= D2TerrainLayer,BuildableTerrainLayer,SmudgeLayer,D2ResourceLayer.
 			
-			foreach (var kv in spriteLayers.Values)
+			foreach (var kv in spriteLayers.Values) //draws TerrainSpriteLayer as base Layer
 				kv.Draw(wr.Viewport);
-
-			foreach (var r in wr.World.WorldActor.TraitsImplementing<IRenderOverlay>())
+ 
+			foreach (var r in wr.World.WorldActor.TraitsImplementing<IRenderOverlay>()) //draws over layers with IRenderOverlay
 			{
 				//Console.WriteLine("cc" + cc + " obj" + r.GetType().Name);
 

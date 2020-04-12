@@ -83,7 +83,7 @@ namespace OpenRA.Graphics
 		}
 
 		/// <summary>
-		/// Добавляет байты в массив байтов текстуры.
+		/// Добавляет байты в массив байтов текстуры, которая привязан к данному SheetBuilder.
 		/// </summary>
 		/// <param name="src"></param>
 		/// <param name="size"></param>

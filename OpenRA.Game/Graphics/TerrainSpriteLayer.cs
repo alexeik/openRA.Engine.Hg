@@ -1,4 +1,4 @@
-#region Copyright & License Information
+﻿#region Copyright & License Information
 /*
  * Copyright 2007-2019 The OpenRA Developers (see AUTHORS)
  * This file is part of OpenRA, which is free software. It is made
@@ -19,7 +19,7 @@ namespace OpenRA.Graphics
 {
 	public sealed class TerrainSpriteLayer : IDisposable
 	{
-		public readonly Sheet Sheet;
+		public readonly Sheet[] sheets=new Sheet[7];
 		public readonly BlendMode BlendMode;
 
 		readonly Sprite emptySprite;
@@ -27,7 +27,7 @@ namespace OpenRA.Graphics
 		readonly VertexBuffer<Vertex> vertexBuffer;
 		readonly Vertex[] vertices;
 		readonly HashSet<int> dirtyRows = new HashSet<int>();
-		readonly int rowStride;
+		readonly int TerrainFullRowLenInVertexRowsNums;
 		readonly bool restrictToBounds;
 
 		readonly WorldRenderer worldRenderer;
@@ -37,20 +37,70 @@ namespace OpenRA.Graphics
 		public string ownername;
 		public TerrainSpriteLayer(World world, WorldRenderer wr, Sheet sheet, BlendMode blendMode, PaletteReference palette, bool restrictToBounds, string ownername)
 		{
+			// Так как все вертексы хранятся плоским списком, то приходится отправлять в рендер всю ширину карты. Так как нельзя вырезать регион из плоского списка по Ширине
+			// Поэтому отрезается только по высоте. А ширина учитывается полностью.
 			worldRenderer = wr;
 			this.restrictToBounds = restrictToBounds;
-			Sheet = sheet;
+			
 			BlendMode = blendMode;
 			this.palette = palette;
 			this.ownername = ownername;
 			map = world.Map;
-			rowStride = 6 * map.MapSize.X;
+			TerrainFullRowLenInVertexRowsNums = 6 * map.MapSize.X;
 
-			vertices = new Vertex[rowStride * map.MapSize.Y];
+			vertices = new Vertex[TerrainFullRowLenInVertexRowsNums * map.MapSize.Y];
 			vertexBuffer = Game.Renderer.Context.CreateVertexBuffer(vertices.Length, "TerrainSpriteLayer");
 			emptySprite = new Sprite(sheet, Rectangle.Empty, TextureChannel.Alpha);
 			vertexBuffer.ownername += "->" + ownername;
 			wr.PaletteInvalidated += UpdatePaletteIndices;
+		}
+
+		public int ns;
+
+		public int2 SetRenderStateForSprite(Sprite s)
+		{
+
+			// Check if the sheet (or secondary data sheet) have already been mapped
+			var sheet = s.Sheet;
+			var sheetIndex = 0;
+			for (; sheetIndex < ns; sheetIndex++)
+				if (sheets[sheetIndex] == sheet)
+					break;
+
+			var secondarySheetIndex = 0;
+			var ss = s as SpriteWithSecondaryData;
+			if (ss != null)
+			{
+				var secondarySheet = ss.SecondarySheet;
+				for (; secondarySheetIndex < ns; secondarySheetIndex++)
+					if (sheets[secondarySheetIndex] == secondarySheet)
+						break;
+			}
+
+			// Make sure that we have enough free samplers to map both if needed, otherwise flush
+			var needSamplers = (sheetIndex == ns ? 1 : 0) + (secondarySheetIndex == ns ? 1 : 0);
+			if (ns + needSamplers >= sheets.Length)
+			{
+				sheetIndex = 0;
+				if (ss != null)
+					secondarySheetIndex = 1;
+			}
+
+			if (sheetIndex >= ns)
+			{
+				sheets[sheetIndex] = sheet;
+				ns += 1;
+			}
+
+			if (secondarySheetIndex >= ns && ss != null)
+			{
+				sheets[secondarySheetIndex] = ss.SecondarySheet;
+				ns += 1;
+			}
+
+
+
+			return new int2(sheetIndex, secondarySheetIndex);
 		}
 
 		void UpdatePaletteIndices()
@@ -79,8 +129,8 @@ namespace OpenRA.Graphics
 		{
 			if (sprite != null)
 			{
-				if (sprite.Sheet != Sheet)
-					throw new InvalidDataException("Attempted to add sprite from a different sheet");
+				//if (sprite.Sheet != Sheet)
+				//	throw new InvalidDataException("Attempted to add sprite from a different sheet");
 
 				if (sprite.BlendMode != BlendMode)
 					throw new InvalidDataException("Attempted to add sprite with a different blend mode");
@@ -88,13 +138,26 @@ namespace OpenRA.Graphics
 			else
 				sprite = emptySprite;
 
+
 			// The vertex buffer does not have geometry for cells outside the map
 			if (!map.Tiles.Contains(uv))
 				return;
+			int2 textslot;
+			
 
-			var offset = rowStride * uv.V + 6 * uv.U;
-			Util.FastCreateQuad(vertices, pos, sprite, int2.Zero, palette.TextureIndex, offset, sprite.Size);
-
+			var offset = TerrainFullRowLenInVertexRowsNums * uv.V + 6 * uv.U;
+			if (sprite.SpriteType == 4)
+			{
+				Sprite tmpsp = new Sprite(sprite.Sheet, new Rectangle((int)pos.X, (int)pos.Y, 16, 16), TextureChannel.RGBA);
+				tmpsp.SpriteType = 4;
+				textslot = SetRenderStateForSprite(tmpsp);
+				Util.FastCreateQuad(vertices, pos, tmpsp, textslot, palette.TextureIndex, offset, tmpsp.Size);
+			}
+			else
+			{
+				textslot = SetRenderStateForSprite(sprite);
+				Util.FastCreateQuad(vertices, pos, sprite, textslot, palette.TextureIndex, offset, sprite.Size);
+			}
 			dirtyRows.Add(uv.V);
 		}
 
@@ -110,12 +173,12 @@ namespace OpenRA.Graphics
 
 			vertexBuffer.ActivateVertextBuffer();
 			// Flush any visible changes to the GPU
-			for (var row = firstRow; row <= lastRow; row++)
+			for (var row = firstRow; row <= lastRow; row++) //update changed quads if any
 			{
 				if (!dirtyRows.Remove(row))
 					continue;
 
-				var rowOffset = rowStride * row;
+				var rowOffset = TerrainFullRowLenInVertexRowsNums * row;
 
 				unsafe
 				{
@@ -125,14 +188,16 @@ namespace OpenRA.Graphics
 
 					fixed (Vertex* vPtr = &vertices[0])
 					{
-						vertexBuffer.SetData((IntPtr)(vPtr + rowOffset), rowOffset, rowStride);
+						vertexBuffer.SetData((IntPtr)(vPtr + rowOffset), rowOffset, TerrainFullRowLenInVertexRowsNums);
 					}
 				}
 			}
 	
+			// Так как все вертексы хранятся плоским списком, то приходится отправлять в рендер всю ширину карты. Так как нельзя вырезать регион из плоского списка по Ширине
+			// Поэтому отрезается только по высоте. А ширина учитывается полностью.
 			Game.Renderer.WorldSpriteRenderer.DrawVertexBuffer(
-				vertexBuffer, rowStride * firstRow, rowStride * (lastRow - firstRow),
-				PrimitiveType.TriangleList, Sheet, BlendMode);
+				vertexBuffer, TerrainFullRowLenInVertexRowsNums * firstRow, TerrainFullRowLenInVertexRowsNums * (lastRow - firstRow),
+				PrimitiveType.TriangleList, sheets, BlendMode);
 			
 			Game.Renderer.Flush();
 		}
