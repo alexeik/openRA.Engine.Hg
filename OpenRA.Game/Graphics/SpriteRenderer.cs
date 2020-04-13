@@ -46,6 +46,10 @@ namespace OpenRA.Graphics
 
 		public void Flush()
 		{
+			if (Game.Renderer.PauseRender)
+			{
+				return;
+			}
 			if (rendererID == "WorldSpriteRenderer")
 			{
 
@@ -132,6 +136,10 @@ namespace OpenRA.Graphics
 
 		public void DrawSprite(Sprite s, float3 location, float paletteTextureIndex, float3 size)
 		{
+			if (Game.Renderer.PauseRender)
+			{
+				return;
+			}
 			var samplers = SetRenderStateForSprite(s); // узнает номер текстуры из которой этой спрайт в переменную samplers, чтобы потом записать это в VBO
 			Util.FastCreateQuad(vertices, location + s.FractionalOffset * size, s, samplers, paletteTextureIndex, nv, size);
 			nv += 6;
@@ -193,6 +201,10 @@ namespace OpenRA.Graphics
 		// For RGBAColorRenderer
 		public void DrawRGBAVertices(Vertex[] v)
 		{
+			if (Game.Renderer.PauseRender)
+			{
+				return;
+			}
 			renderer.CurrentBatchRenderer = this;
 
 			if (currentBlend != BlendMode.Alpha || nv + v.Length > renderer.TempBufferSize)

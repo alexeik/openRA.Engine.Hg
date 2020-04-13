@@ -102,7 +102,7 @@ namespace OpenRA.Platforms.Default
 							context.EnableScissor(t.Item1, t.Item2, t.Item3, t.Item4);
 						};
 					doSetBlendMode = mode => { context.SetBlendMode((BlendMode)mode); };
-					doSaveScreenshot = path => context.SaveScreenshot((string)path);
+					//doSaveScreenshot = path => context.SaveScreenshot((string)path);
 
 					Monitor.Pulse(syncObject);
 				}

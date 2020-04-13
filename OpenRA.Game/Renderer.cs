@@ -33,8 +33,9 @@ namespace OpenRA
 		public SpriteRenderer ImguiSpriteRenderer { get; private set; }
 		public ShaderIF_API sproc;
 
+		public PixelDumpRenderer PixelDumpRenderer { get; private set; }
+
 		public IReadOnlyDictionary<string, SpriteFontMSDF> Fonts;
-	
 
 		public PlatformWindow Window { get; private set; }
 		public GraphicsContext Context { get; private set; }
@@ -77,6 +78,8 @@ namespace OpenRA
 			RgbaColorRenderer = new RgbaColorRenderer(SpriteRenderer); // эти пишут в родительский VBO
 			FontSpriteRenderer = new SpriteRenderer("FontSpriteRenderer", this, Context.CreateShader("text")); // каждый имеет свой vertex массив, VAO это tempbuffer.
 			ImguiSpriteRenderer = new SpriteRenderer("ImguiSpriteRenderer", this, Context.CreateShader("combined"));// для ImGui
+			PixelDumpRenderer = new PixelDumpRenderer("ImguiSpriteRenderer", this, Context.CreateShader("combined"));// для ImGui
+			
 			sproc = new ShaderIF_API(); 
 			IntPtr context = ImGui.CreateContext();
 			ImGui.SetCurrentContext(context);
@@ -153,7 +156,7 @@ namespace OpenRA
 				ImguiSpriteRenderer.SetViewportParams(lastResolution, 0f, 0f, 1f, int2.Zero);
 				FontSpriteRenderer.SetViewportParams(lastResolution, 0f, 0f, 1f, int2.Zero);
 				sproc.SetViewportParams(lastResolution, 0f, 0f, 1f, int2.Zero);
-
+				
 			}
 
 			// If zoom evaluates as different due to floating point weirdness that's OK, setting the parameters again is harmless.
@@ -179,7 +182,7 @@ namespace OpenRA
 			WorldSpriteRenderer.SetPalette(currentPaletteTexture);
 			WorldModelRenderer.SetPalette(currentPaletteTexture);
 			sproc.SetTexture("Palette", currentPaletteTexture);
-
+		
 		}
 		public void ResetSproc()
 		{
@@ -189,6 +192,7 @@ namespace OpenRA
 			SpriteRenderer.SetViewportParams(lastResolution, 0f, 0f, 1f, int2.Zero);
 			WorldSpriteRenderer.shader.SetTexture("Palette", currentPaletteTexture);
 			WorldSpriteRenderer.SetViewportParams(lastResolution, depthScale, depthOffset, lastZoom, lastScroll);
+			
 		}
 
 		public void EndFrame(IInputHandler inputHandler)
@@ -248,6 +252,10 @@ namespace OpenRA
 
 		public void Flush()
 		{
+			if (PauseRender)
+			{
+				return;
+			}
 			CurrentBatchRenderer = null;
 		}
 
@@ -255,6 +263,7 @@ namespace OpenRA
 		public float WindowScale { get { return Window.WindowScale; } }
 
 		public interface IBatchRenderer { void Flush(); }
+		public bool PauseRender = false;
 
 		public IBatchRenderer CurrentBatchRenderer
 		{

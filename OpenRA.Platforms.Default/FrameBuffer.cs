@@ -94,7 +94,7 @@ namespace OpenRA.Platforms.Default
 			OpenGL.CheckGLError();
 			OpenGL.glViewport(0, 0, size.Width, size.Height);
 			OpenGL.CheckGLError();
-			OpenGL.glClearColor(0, 0, 0, 0);
+			OpenGL.glClearColor(1, 1, 1, 1);
 			OpenGL.CheckGLError();
 			OpenGL.glClear(OpenGL.GL_COLOR_BUFFER_BIT | OpenGL.GL_DEPTH_BUFFER_BIT);
 			OpenGL.CheckGLError();

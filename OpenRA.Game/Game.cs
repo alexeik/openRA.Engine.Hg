@@ -19,6 +19,7 @@ using System.Net;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using OpenRA.FileFormats;
 using OpenRA.Graphics;
 using OpenRA.Network;
 using OpenRA.Platforms.Default;
@@ -536,7 +537,7 @@ namespace OpenRA
 		public static void RunAfterTick(Action a) { delayedActions.Add(a, RunTime); }
 		public static void RunAfterDelay(int delayMilliseconds, Action a) { delayedActions.Add(a, RunTime + delayMilliseconds); }
 
-		static void TakeScreenshotInner()
+		public static void TakeScreenshotInner()
 		{
 			using (new PerfTimer("Renderer.SaveScreenshot"))
 			{
@@ -548,10 +549,116 @@ namespace OpenRA
 				var path = Path.Combine(directory, string.Concat(filename, ".png"));
 				Log.Write("debug", "Taking screenshot " + path);
 
-				Renderer.Context.SaveScreenshot(path);
+				SaveScreenshot(path);
 				Debug("Saved screenshot " + filename);
 			}
 		}
+		public static void TakeTextureInner(ITexture texture)
+		{
+			using (new PerfTimer("Renderer.SaveScreenshot"))
+			{
+				var mod = ModData.Manifest.Metadata;
+				var directory = Platform.ResolvePath(Platform.SupportDirPrefix, "Screenshots", ModData.Manifest.Id, mod.Version);
+				Directory.CreateDirectory(directory);
+
+				var filename = TimestampedFilename(true);
+				var path = Path.Combine(directory, string.Concat("Texture_" + filename, ".png"));
+				Log.Write("debug", "Taking screenshot " + path);
+
+				SaveTexture(path, texture);
+				Debug("Saved screenshot " + filename);
+			}
+		}
+		public static void SaveScreenshot(string path)
+		{
+			var s = Game.Renderer.Resolution;
+			s = new Size(2048, 2048);
+			var raw = new byte[s.Width * s.Height * 4];
+
+			OpenGL.glPushClientAttrib(OpenGL.GL_CLIENT_PIXEL_STORE_BIT);
+
+			OpenGL.glPixelStoref(OpenGL.GL_PACK_ROW_LENGTH, s.Width);
+			OpenGL.glPixelStoref(OpenGL.GL_PACK_ALIGNMENT, 1);
+
+			unsafe
+			{
+				fixed (byte* pRaw = raw)
+					OpenGL.glReadPixels(0, 0, s.Width, s.Height,
+						OpenGL.GL_BGRA, OpenGL.GL_UNSIGNED_BYTE, (IntPtr)pRaw);
+			}
+
+			OpenGL.glFinish();
+			OpenGL.glPopClientAttrib();
+
+	
+				// Convert GL pixel data into format expected by png
+				// - Flip vertically
+				// - BGRA to RGBA
+				// - Force A to 255 (no transparent pixels!)
+				var data = new byte[raw.Length];
+				for (var y = 0; y < s.Height; y++)
+				{
+					for (var x = 0; x < s.Width; x++)
+					{
+						var iData = 4 * (y * s.Width + x);
+						var iRaw = 4 * ((s.Height - y - 1) * s.Width + x);
+						data[iData] = raw[iRaw + 2];
+						data[iData + 1] = raw[iRaw + 1];
+						data[iData + 2] = raw[iRaw + 0];
+						data[iData + 3] = byte.MaxValue;
+					}
+				}
+
+				var screenshot = new Png(data, s.Width, s.Height);
+				screenshot.Save(path);
+		
+		}
+		public static void SaveTexture(string path, ITexture texture)
+		{
+			var s = Game.Renderer.Resolution;
+			s =texture.Size;
+			var raw = new byte[s.Width * s.Height * 4];
+
+			OpenGL.glPushClientAttrib(OpenGL.GL_CLIENT_PIXEL_STORE_BIT);
+
+			OpenGL.glPixelStoref(OpenGL.GL_PACK_ROW_LENGTH, s.Width);
+			OpenGL.glPixelStoref(OpenGL.GL_PACK_ALIGNMENT, 1);
+
+			unsafe
+			{
+				fixed (byte* pRaw = raw)
+					OpenGL.glGetTexImage(OpenGL.GL_TEXTURE_2D, 0,OpenGL.GL_BGRA,OpenGL.GL_UNSIGNED_BYTE , (IntPtr)pRaw);
+
+				//OpenGL.glReadPixels(0, 0, s.Width, s.Height,OpenGL.GL_BGRA, OpenGL.GL_UNSIGNED_BYTE, (IntPtr)pRaw);
+			}
+
+			OpenGL.glFinish();
+			OpenGL.glPopClientAttrib();
+
+
+			// Convert GL pixel data into format expected by png
+			// - Flip vertically
+			// - BGRA to RGBA
+			// - Force A to 255 (no transparent pixels!)
+			var data = new byte[raw.Length];
+			for (var y = 0; y < s.Height; y++)
+			{
+				for (var x = 0; x < s.Width; x++)
+				{
+					var iData = 4 * (y * s.Width + x);
+					var iRaw = 4 * ((s.Height - y - 1) * s.Width + x);
+					data[iData] = raw[iRaw + 2];
+					data[iData + 1] = raw[iRaw + 1];
+					data[iData + 2] = raw[iRaw + 0];
+					data[iData + 3] = byte.MaxValue;
+				}
+			}
+
+			var screenshot = new Png(data, s.Width, s.Height);
+			screenshot.Save(path);
+
+		}
+
 
 		static void InnerLogicTick(OrderManager orderManager)
 		{
@@ -644,6 +751,7 @@ namespace OpenRA
 
 		static void RenderTick()
 		{
+
 			using (new PerfSample("render"))
 			{
 				++RenderFrame;
@@ -673,6 +781,34 @@ namespace OpenRA
 						worldRenderer.Draw();
 				}
 
+				{
+				//	Game.Renderer.PixelDumpRenderer.Setup();
+				//	Game.Renderer.PixelDumpRenderer.fb.Bind();
+				//	Sheet seqsheet;
+				//	seqsheet = Game.ModData.DefaultSequences["arrakis2"].SpriteCache.SheetBuilder.Current;
+				//	Sprite sp = new Sprite(seqsheet, new Rectangle() { Width = 2048, Height = 2048 }, TextureChannel.Red); //чтобы прочитать все 4 канала seqsheet
+				//	//нужно использовать 4 итерации, где нужно менять канал в спрайте.
+
+				//	Game.Renderer.PixelDumpRenderer.DrawSprite(sp, new float3(0, 0, 0));
+				//	Game.Renderer.PixelDumpRenderer.Flush();
+				//	Game.Renderer.PixelDumpRenderer.fb.Unbind();
+				//	//нарисовали в текстуру в другой фреймбуфер.
+
+
+				//	//теперь нужно запустить еще раз рендер, где эта текстура будет как аргумент у шейдера и он нарисует все пиксели в фреймбуфер главный.
+				//	sp.SpriteType = 5;
+				//	Sheet sh1 = new Sheet(SheetType.BGRA, Game.Renderer.PixelDumpRenderer.fb.Texture);
+				//	Sprite sp2 = new Sprite(sh1, new Rectangle(0, 0, 2048, 2048), TextureChannel.Red);
+				//	sp2.SpriteType = 5;
+				//	Game.Renderer.PixelDumpRenderer.DrawSprite(sp2, new float3(0, 0, 0));
+
+				//	//Game.Renderer.PixelDumpRenderer.DrawSprite(sp, new float3(0, 0, 0));
+				//	sp.SpriteType = 0;
+				//	Game.Renderer.PixelDumpRenderer.Flush();
+				////	Game.Renderer.Context.Present();
+				//	//Game.TakeScreenshotInner();
+				}
+				
 				using (new PerfSample("render_widgets"))
 				{
 					Renderer.WorldModelRenderer.BeginFrame();

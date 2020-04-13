@@ -201,6 +201,11 @@ namespace OpenRA.Graphics
 				//vertices[nv + 5] = new Vertex(a, a.X + 0, a.Y + 0, sl, st, paletteTextureIndex, 0, drawmode, 0, ct1, ct2, ct3, ct4, r.Left, r.Top, r.Right, r.Bottom);
 				//return;
 			}
+
+			if (r.SpriteType==5)
+			{
+				drawmode = 9;
+			}
 			// var fAttribC = (float)attribC;
 			vertices[nv] = new Vertex(a, r.Left, r.Top, sl, st, paletteTextureIndex, 0, drawmode, 0, ct1, ct2, ct3, ct4);
 			vertices[nv + 1] = new Vertex(b, r.Right, r.Top, sr, st, paletteTextureIndex, 0, drawmode, 0, ct1, ct2, ct3, ct4);

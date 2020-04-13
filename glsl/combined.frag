@@ -74,6 +74,7 @@ void main()
 {
 	vec4 c ;
 		
+		
 	if (DrawMode==0.0) // рисует пиксели из RGBA текстуры
 	{
 	 vec4 x = Sample(vTexSampler.t, vTexCoord.st); //возвращает структуру (R,G,B,A) из текстуры
@@ -81,61 +82,7 @@ void main()
 	 c =  x ; // vRGBAFraction всегда 1,1,1,1
 
 	}
-	if (DrawMode==6.0) // рисует пиксели из RGBA текстуры заполняя область
-	{
-	 vec2 spriteRange = (EndUV - StartUV );
 	
-	 vec2 uv = StartUV + fract(vTexCoord.st) * spriteRange;
-	 
-	 vec4 x = Sample(vTexSampler.t,uv);
-
-	 c =  x ; 
-
-	}
-	if (DrawMode==7.0) // рисует пиксели из 1 канальной текстуры заполняя область
-	{
-		
-	 vec2 spriteRange = (EndUV - StartUV );
-
-	 vec2 uv =StartUV + fract(vTexCoord) * spriteRange;
-
-	 /* uv.x = StartUV.x + fract(vTexCoord.x) * spriteRange.x;
-	 uv.y = StartUV.y + fract(vTexCoord.y) * spriteRange.y; */
-	 //алгоритм расжатия или демасштабирования. его нужно отключить,
-	 //если у нас 1 к 1 размер спрайта и полигона
-	 
-	  vec4 x;
-	 //c=vec4(floor(vTexCoord),fract(vTexCoord));
-/* 	  if (hk<=1.0f && wk<=1.0f)
-	 {
-		x = Sample(vTexSampler.t, vTexCoord.st); //забираем 4 байта из текстуры
-	 }
-	 else
-	 {
-	  x = Sample(vTexSampler.t, uv); //забираем 4 байта из текстуры
-	 }  */
-	 x = Sample(vTexSampler.t, uv); //забираем 4 байта из текстуры
-	 vec2 p = vec2(dot(x, vChannelMask), PaletteIndex);   // определяем байт в котором указатель на цвет, через vChannelMask - укажет единичкой, какой байт использовать)
-	
-	
-	 c =  texture2D(Palette, p) ;//запрос цвета в палитер; 
-
-
-	 
-	}
-	if (DrawMode==8.0) // рисует спрайты тайлов карты из мегатекстуры.
-	{
-		vec4 x;
-		vec2 tilexy=floor(vTexCoord);
-		 vec2 uv = fract(vTexCoord);
-		x = Sample(vTexSampler.t, vTexCoord.st); //забираем 4 байта из текстуры
-		if (x.r>=0.01961 && x.g>=0.01961 && x.b>=0.01961)
-		{
-			x=vec4(0.65234,0.30469,0.09082,1);
-		}
-			//x=vec4(1,0.82745,0.4902,1);
-			c=x;
-	}
 	if (DrawMode==1.0) // рисует пиксели из палитры
 	{
 		vec4 x = Sample(vTexSampler.t, vTexCoord.st);
@@ -145,8 +92,10 @@ void main()
 		
 		//vec2 p = vec2(dot(x, vec4(1,0,0,0)), vTexMetadata.s); //статичное определение маски, всегда в R канале
 		// c = vec4(1,1,1,1) * texture2D(Palette, p) ;
-		c = vPalettedFraction * texture2D(Palette, p) ;//запрос цвета в палитер
+		c = vPalettedFraction * texture2D(Palette, p) ;//запрос цвета в палитре
 	}
+
+	
 	if (DrawMode==2.0) //UI
 	{
 		//vec4 c = vColorFraction * vTexCoord;
@@ -171,6 +120,56 @@ void main()
 		 vec2 p = vec2(dot(x, vChannelMask), PaletteIndex);
 		 c = vec4(1,1,1,1) * texture2D(Palette, p) ;
 	}
+	
+	if (DrawMode==6.0) // рисует пиксели из RGBA текстуры заполняя область
+	{
+	 vec2 spriteRange = (EndUV - StartUV );
+	
+	 vec2 uv = StartUV + fract(vTexCoord.st) * spriteRange;
+	 
+	 vec4 x = Sample(vTexSampler.t,uv);
+
+	 c =  x ; 
+
+	}
+	if (DrawMode==7.0) // рисует пиксели из 1 канальной текстуры заполняя область
+	{
+		
+	 vec2 spriteRange = (EndUV - StartUV );
+
+	 vec2 uv =StartUV + fract(vTexCoord) * spriteRange;
+
+	
+	  vec4 x;
+
+	 x = Sample(vTexSampler.t, uv); //забираем 4 байта из текстуры
+	 vec2 p = vec2(dot(x, vChannelMask), PaletteIndex);   // определяем байт в котором указатель на цвет, через vChannelMask - укажет единичкой, какой байт использовать)
+	
+	
+	 c =  texture2D(Palette, p) ;//запрос цвета в палитер; 
+	}
+	if (DrawMode==8.0) // рисует спрайты тайлов карты из мегатекстуры.
+	{
+		vec4 x;
+		vec2 tilexy=floor(vTexCoord);
+		 vec2 uv = fract(vTexCoord);
+		x = Sample(vTexSampler.t, vTexCoord.st); //забираем 4 байта из текстуры
+		if (x.r>=0.01961 && x.g>=0.01961 && x.b>=0.01961)
+		{
+			x=vec4(0.65234,0.30469,0.09082,1);
+		}
+			//x=vec4(1,0.82745,0.4902,1);
+			c=x;
+	}
+	
+		
+	if (DrawMode==9.0)
+	{
+		c=texture2D(Texture0, vTexCoord);
+		//c=vec4(1,1,1,1);
+	}	
+	
+	
 	if (c.a == 0.0)
 		discard;
 
