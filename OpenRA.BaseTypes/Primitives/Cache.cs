@@ -40,7 +40,11 @@ namespace OpenRA.Primitives
 		{
 			get { return cache.GetOrAdd(key, loader); }
 		}
-
+		public bool Add(T key, U value)
+		{
+			cache.Add(key, value);
+			return true;
+		}
 		public bool ContainsKey(T key) { return cache.ContainsKey(key); }
 		public bool TryGetValue(T key, out U value) { return cache.TryGetValue(key, out value); }
 		public int Count { get { return cache.Count; } }
