@@ -72,7 +72,7 @@ void main()
     float opacity = clamp(sigDist + 0.5, 0.0, 1.0);
 
 	vec4 tempcolor;
-	tempcolor =vec4(TextColor.rgb,opacity ) ;
+	fragColor =vec4(TextColor.rgb,opacity ) ;
 /* 
 	vec4 tl = texture(TextureFontMSDF, flipped_texCoords - vec3(-onepixel,  0));
    vec4 br = texture(TextureFontMSDF, flipped_texCoords + vec3( onepixel,  0));
@@ -84,13 +84,14 @@ void main()
    //fragColor = vec4(((opacity - fade_const) * color0 + fade_const * sum).rgb ,opacity );	
    fragColor =((opacity - fade_const) * color0 + fade_const * sum * opacity);	 */
   
-	vec3 color ;
+  //emboss or bevel
+/* 	vec3 color ;
 	color = vec3(opacity);
 	
 	color += texture(TextureFontMSDF,flipped_texCoords - vec3(onepixel,0)).rgb * 3;
 	color -= texture(TextureFontMSDF,flipped_texCoords + vec3(onepixel,0)).rgb * 3;
 	color = vec3((color.r + color.g + color.b )/3.0);
-	fragColor =vec4(color,opacity) ; 
+	fragColor =vec4(color,opacity) ;  */
 	 
 	//fragColor = vec4(fragColor.rgb ,opacity); 
 	//if(fragColor.a <0.1)
