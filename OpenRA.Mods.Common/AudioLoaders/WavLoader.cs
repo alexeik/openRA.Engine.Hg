@@ -11,12 +11,13 @@
 
 using System;
 using System.IO;
+using OpenRA.GameRules;
 using OpenRA.Mods.Common.FileFormats;
 using OpenRA.Primitives;
 
 namespace OpenRA.Mods.Common.AudioLoaders
 {
-	public class WavLoader : ISoundLoader
+	public class WavLoader : SoundLoader
 	{
 		bool IsWave(Stream s)
 		{
@@ -29,7 +30,7 @@ namespace OpenRA.Mods.Common.AudioLoaders
 			return type == "RIFF" && format == "WAVE";
 		}
 
-		bool ISoundLoader.TryParseSound(Stream stream, out ISoundFormat sound)
+		public override bool TryParseSound(Stream stream, out ISoundFormat sound)
 		{
 			try
 			{
@@ -44,6 +45,12 @@ namespace OpenRA.Mods.Common.AudioLoaders
 				// Not a (supported) WAV
 			}
 
+			sound = null;
+			return false;
+		}
+
+		public override bool TryParseSound(Stream stream, out ISoundFormat sound, MusicInfo m)
+		{
 			sound = null;
 			return false;
 		}

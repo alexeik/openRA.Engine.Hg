@@ -19,9 +19,10 @@ using OpenRA.Primitives;
 
 namespace OpenRA
 {
-	public interface ISoundLoader
+	public abstract class SoundLoader
 	{
-		bool TryParseSound(Stream stream, out ISoundFormat sound);
+		public abstract bool TryParseSound(Stream stream, out ISoundFormat sound);
+		public abstract bool TryParseSound(Stream stream, out ISoundFormat sound, MusicInfo m);
 	}
 
 	public interface ISoundFormat : IDisposable
@@ -38,7 +39,7 @@ namespace OpenRA
 	public sealed class Sound : IDisposable
 	{
 		public readonly ISoundEngine soundEngine;
-		ISoundLoader[] loaders;
+		SoundLoader[] loaders;
 		IReadOnlyFileSystem fileSystem;
 		Cache<string, ISoundSource> sounds;
 		ISoundSource videoSource;
@@ -55,6 +56,31 @@ namespace OpenRA
 				MuteAudio();
 		}
 
+		T LoadSound<T>(string filename,MusicInfo m, Func<ISoundFormat, T> loadFormat)
+		{
+			if (!fileSystem.Exists(filename))
+			{
+				Log.Write("sound", "LoadSound, file does not exist: {0}", filename);
+				return default(T);
+			}
+
+			using (var stream = fileSystem.Open(filename))
+			{
+				ISoundFormat soundFormat;
+				foreach (var loader in loaders)
+				{
+					stream.Position = 0;
+					if (loader.TryParseSound(stream, out soundFormat, m))
+					{
+						var source = loadFormat(soundFormat);
+						soundFormat.Dispose();
+						return source;
+					}
+				}
+			}
+
+			throw new InvalidDataException(filename + " is not a valid sound file!");
+		}
 		T LoadSound<T>(string filename, Func<ISoundFormat, T> loadFormat)
 		{
 			if (!fileSystem.Exists(filename))
@@ -81,7 +107,9 @@ namespace OpenRA
 			throw new InvalidDataException(filename + " is not a valid sound file!");
 		}
 
-		public void Initialize(ISoundLoader[] loaders, IReadOnlyFileSystem fileSystem)
+		Func<ISoundFormat, ISoundSource> loadIntoMemoryDelegate;
+
+		public void Initialize(SoundLoader[] loaders, IReadOnlyFileSystem fileSystem)
 		{
 			StopMusic();
 			soundEngine.StopAllSounds();
@@ -93,9 +121,10 @@ namespace OpenRA
 
 			this.loaders = loaders;
 			this.fileSystem = fileSystem;
-			Func<ISoundFormat, ISoundSource> loadIntoMemory = soundFormat => soundEngine.AddSoundSourceFromMemory(
+			 loadIntoMemoryDelegate = soundFormat => soundEngine.AddSoundSourceFromMemory(
 				soundFormat.GetPCMInputStream().ReadAllBytes(), soundFormat.Channels, soundFormat.SampleBits, soundFormat.SampleRate);
-			sounds = new Cache<string, ISoundSource>(filename => LoadSound(filename, loadIntoMemory));
+
+			sounds = new Cache<string, ISoundSource>(filename => LoadSound(filename, loadIntoMemoryDelegate));
 			currentSounds = new Dictionary<uint, ISound>();
 			video = null;
 		}
@@ -224,14 +253,22 @@ namespace OpenRA
 
 			StopMusic();
 
-			Func<ISoundFormat, ISound> stream = soundFormat => soundEngine.Play2DStream(Game.LocalTick,
-				soundFormat.GetPCMInputStream(), soundFormat.Channels, soundFormat.SampleBits, soundFormat.SampleRate,
-				false, true, WPos.Zero, MusicVolume * m.VolumeModifier);
+			//Func<ISoundFormat, ISound> stream = soundFormat => soundEngine.Play2DStream(Game.LocalTick,
+			//	soundFormat.GetPCMInputStream(), soundFormat.Channels, soundFormat.SampleBits, soundFormat.SampleRate,
+			//	false, true, WPos.Zero, MusicVolume * m.VolumeModifier);
 			//music = LoadSound(m.Filename, stream);
 
-			music = soundEngine.Play2D(Game.LocalTick, sounds[m.Filename],
-			   false, true, WPos.Zero,
-			   MusicVolume * m.VolumeModifier, true);
+			if (sounds.ContainsKey(m.Filename))
+			{
+				music = soundEngine.Play2D(Game.LocalTick, sounds[m.Filename], false, true, WPos.Zero, MusicVolume * m.VolumeModifier, true);
+			}
+			else
+			{
+				sounds.Add(m.Filename, LoadSound<ISoundSource>(m.Filename, m, loadIntoMemoryDelegate));
+				music = soundEngine.Play2D(Game.LocalTick, sounds[m.Filename], false, true, WPos.Zero, MusicVolume * m.VolumeModifier, true);
+			}
+
+			
 
 			if (music == null)
 			{

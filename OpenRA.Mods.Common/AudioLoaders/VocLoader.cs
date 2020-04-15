@@ -13,13 +13,14 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using OpenRA.GameRules;
 using OpenRA.Primitives;
 
 namespace OpenRA.Mods.Common.AudioLoaders
 {
-	public class VocLoader : ISoundLoader
+	public class VocLoader : SoundLoader
 	{
-		bool ISoundLoader.TryParseSound(Stream stream, out ISoundFormat sound)
+		public override bool TryParseSound(Stream stream, out ISoundFormat sound)
 		{
 			try
 			{
@@ -31,6 +32,12 @@ namespace OpenRA.Mods.Common.AudioLoaders
 				// Not a (supported) WAV
 			}
 
+			sound = null;
+			return false;
+		}
+
+		public override bool TryParseSound(Stream stream, out ISoundFormat sound, MusicInfo m)
+		{
 			sound = null;
 			return false;
 		}

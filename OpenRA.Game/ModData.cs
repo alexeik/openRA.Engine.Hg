@@ -28,7 +28,7 @@ namespace OpenRA
 		public readonly WidgetLoader WidgetLoader;
 		public readonly MapCache MapCache;
 		public readonly IPackageLoader[] PackageLoaders;
-		public readonly ISoundLoader[] SoundLoaders;
+		public readonly SoundLoader[] SoundLoaders;
 		public readonly SpriteLoaderBase[] SpriteLoaders;
 		public readonly ISpriteSequenceLoader SpriteSequenceLoader;
 		public readonly IModelSequenceLoader ModelSequenceLoader;
@@ -71,7 +71,7 @@ namespace OpenRA
 			WidgetLoader = new WidgetLoader(this);
 			MapCache = new MapCache(this);
 
-			SoundLoaders = ObjectCreator.GetLoaders<ISoundLoader>(Manifest.SoundFormats, "sound");
+			SoundLoaders = ObjectCreator.GetLoadersInherits<SoundLoader>(Manifest.SoundFormats, "sound");
 			SpriteLoaders = ObjectCreator.GetLoadersInherits<SpriteLoaderBase>(Manifest.SpriteFormats, "sprite");
 
 			var sequenceFormat = Manifest.Get<SpriteSequenceFormat>();

@@ -11,11 +11,12 @@
 
 using System;
 using System.IO;
+using OpenRA.GameRules;
 using OpenRA.Mods.Common.FileFormats;
 
 namespace OpenRA.Mods.Common.AudioLoaders
 {
-	public class AudLoader : ISoundLoader
+	public class AudLoader : SoundLoader
 	{
 		bool IsAud(Stream s)
 		{
@@ -31,7 +32,7 @@ namespace OpenRA.Mods.Common.AudioLoaders
 			return Enum.IsDefined(typeof(SoundFormat), readFormat);
 		}
 
-		bool ISoundLoader.TryParseSound(Stream stream, out ISoundFormat sound)
+		public override bool TryParseSound(Stream stream, out ISoundFormat sound)
 		{
 			try
 			{
@@ -46,6 +47,12 @@ namespace OpenRA.Mods.Common.AudioLoaders
 				// Not a supported AUD
 			}
 
+			sound = null;
+			return false;
+		}
+
+		public override bool TryParseSound(Stream stream, out ISoundFormat sound, MusicInfo m)
+		{
 			sound = null;
 			return false;
 		}
