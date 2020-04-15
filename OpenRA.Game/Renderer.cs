@@ -192,7 +192,7 @@ namespace OpenRA
 			SpriteRenderer.SetViewportParams(lastResolution, 0f, 0f, 1f, int2.Zero);
 			WorldSpriteRenderer.shader.SetTexture("Palette", currentPaletteTexture);
 			WorldSpriteRenderer.SetViewportParams(lastResolution, depthScale, depthOffset, lastZoom, lastScroll);
-			
+			FontSpriteRenderer.SetViewportParams(lastResolution, 0f, 0f, 1f, int2.Zero);
 		}
 
 		public void EndFrame(IInputHandler inputHandler)

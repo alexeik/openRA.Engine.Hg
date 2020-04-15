@@ -71,11 +71,11 @@ namespace OpenRA.Graphics
 		
 			
 
-			Verts[ni] = new Vertex2(a, ShaderID, CurrentFrame, TotalFrames, 0, 0, SpriteUVCoords.Size.X, SpriteUVCoords.Size.Y, TextureInputSlot, TextureStoreChannel, SpriteUVCoords.Left, SpriteUVCoords.Bottom, palindex, 0);
-			Verts[ni + 1] = new Vertex2(b, ShaderID, CurrentFrame, TotalFrames, 0, 0, SpriteUVCoords.Size.X, SpriteUVCoords.Size.Y, TextureInputSlot, TextureStoreChannel, SpriteUVCoords.Right, SpriteUVCoords.Bottom, palindex, 0);
-			Verts[ni + 2] = new Vertex2(c, ShaderID, CurrentFrame, TotalFrames, 0, 0, SpriteUVCoords.Size.X, SpriteUVCoords.Size.Y, TextureInputSlot, TextureStoreChannel, SpriteUVCoords.Left, SpriteUVCoords.Top, palindex, 0);
-			Verts[ni + 3] = new Vertex2(d, ShaderID, CurrentFrame, TotalFrames, 0, 0, SpriteUVCoords.Size.X, SpriteUVCoords.Size.Y, TextureInputSlot, TextureStoreChannel, SpriteUVCoords.Right, SpriteUVCoords.Top, palindex, 0);
-			nv = 4;
+			Verts[nv] = new Vertex2(a, ShaderID, CurrentFrame, TotalFrames, 0, 0, SpriteUVCoords.Size.X, SpriteUVCoords.Size.Y, TextureInputSlot, TextureStoreChannel, SpriteUVCoords.Left, SpriteUVCoords.Bottom, palindex, 0);
+			Verts[nv + 1] = new Vertex2(b, ShaderID, CurrentFrame, TotalFrames, 0, 0, SpriteUVCoords.Size.X, SpriteUVCoords.Size.Y, TextureInputSlot, TextureStoreChannel, SpriteUVCoords.Right, SpriteUVCoords.Bottom, palindex, 0);
+			Verts[nv + 2] = new Vertex2(c, ShaderID, CurrentFrame, TotalFrames, 0, 0, SpriteUVCoords.Size.X, SpriteUVCoords.Size.Y, TextureInputSlot, TextureStoreChannel, SpriteUVCoords.Left, SpriteUVCoords.Top, palindex, 0);
+			Verts[nv + 3] = new Vertex2(d, ShaderID, CurrentFrame, TotalFrames, 0, 0, SpriteUVCoords.Size.X, SpriteUVCoords.Size.Y, TextureInputSlot, TextureStoreChannel, SpriteUVCoords.Right, SpriteUVCoords.Top, palindex, 0);
+			nv += 4;
 
 		}
 
@@ -99,7 +99,7 @@ namespace OpenRA.Graphics
 			Game.Renderer.Context.SetBlendMode(BlendMode.Alpha);
 			Game.Renderer.DrawBatcForOpenGLVertexBuffer(GLVertexBuffer, 0, nv, PrimitiveType.TriangleStrip);
 			GLVertexBuffer.CloseVAO();
-
+			nv = 0;
 			//переливка из локального Verts в opengl VBO : VertexBuffer
 			//вызов glDrawCall рисуем GL_TRIANGLE_STRIP
 		}

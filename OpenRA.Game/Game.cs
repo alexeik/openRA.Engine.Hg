@@ -767,6 +767,10 @@ namespace OpenRA
 				{
 					Renderer.ResetSproc();
 				}
+				if (Renderer.FontSpriteRenderer.shader.UseCandidates())
+				{
+					Renderer.ResetSproc();
+				}
 
 				// worldRenderer is null during the initial install/download screen
 				if (worldRenderer == null)

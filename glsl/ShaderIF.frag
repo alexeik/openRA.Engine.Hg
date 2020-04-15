@@ -81,5 +81,14 @@ void main()
 	{
 		fragColor = vec4(0.49,0.317,0.0,1);
 	}
+	if (ShaderID==4)
+	{
+		vec4 pixel_palette_shortcut=Sample(TextureInputSlot,SpriteUVCoords);
+		vec4 pixel_from_palette=texture(Palette,vec2(dot(pixel_palette_shortcut,TextureStoreChannel),PaletteIndex));
+		//pixel_palette_shortcut.r компоненту нужно регулировать, так как пиксели храняться
+		//в разных каналах r g b a.
+		vec2 uv = fragXY;
+		fragColor=pixel_from_palette;
+	}
 	
 }

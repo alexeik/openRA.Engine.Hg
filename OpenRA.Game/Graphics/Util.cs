@@ -202,7 +202,7 @@ namespace OpenRA.Graphics
 				//return;
 			}
 
-			if (r.SpriteType==5)
+			if (r.SpriteType==5) //dump texture to png
 			{
 				drawmode = 9;
 			}

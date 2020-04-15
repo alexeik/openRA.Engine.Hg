@@ -62,15 +62,36 @@ void main()
 	
 	vec2 pos = flipped_texCoords.xy;
     
-	float pxRange=12; //так было при генерации png в msdfgen.
+	float pxRange=16; //так было при генерации png в msdfgen.
+
+	vec2 onepixel=1.0/vec2(textureSize(TextureFontMSDF, 0));
 
 	vec2 msdfUnit = pxRange/vec2(textureSize(TextureFontMSDF, 0));
     float sigDist = median(samplemsdf.r, samplemsdf.g, samplemsdf.b) - 0.5;
     sigDist *= dot(msdfUnit, 0.5/fwidth(pos));
     float opacity = clamp(sigDist + 0.5, 0.0, 1.0);
 
-	fragColor =vec4(TextColor.rgb,opacity ) ;
-
+	vec4 tempcolor;
+	tempcolor =vec4(TextColor.rgb,opacity ) ;
+/* 
+	vec4 tl = texture(TextureFontMSDF, flipped_texCoords - vec3(-onepixel,  0));
+   vec4 br = texture(TextureFontMSDF, flipped_texCoords + vec3( onepixel,  0));
+   vec4 color0 = vec4(opacity);
+   vec4 sum=(2.0*tl-color0-br);
+   float luminance = clamp(0.299 * sum.r + 0.587 * sum.g + 0.114 * sum.b,0.0,1.0);
+   sum = vec4( 0.5, 0.5, 0.5, 1.0 ) + vec4( luminance,luminance,luminance,1.0 );
+	float fade_const=0.4;
+   //fragColor = vec4(((opacity - fade_const) * color0 + fade_const * sum).rgb ,opacity );	
+   fragColor =((opacity - fade_const) * color0 + fade_const * sum * opacity);	 */
+  
+	vec3 color ;
+	color = vec3(opacity);
+	
+	color += texture(TextureFontMSDF,flipped_texCoords - vec3(onepixel,0)).rgb * 3;
+	color -= texture(TextureFontMSDF,flipped_texCoords + vec3(onepixel,0)).rgb * 3;
+	color = vec3((color.r + color.g + color.b )/3.0);
+	fragColor =vec4(color,opacity) ; 
+	 
 	//fragColor = vec4(fragColor.rgb ,opacity); 
 	//if(fragColor.a <0.1)
      // discard;
