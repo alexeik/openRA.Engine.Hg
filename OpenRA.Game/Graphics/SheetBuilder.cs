@@ -96,7 +96,7 @@ namespace OpenRA.Graphics
 			if (size.Width == 0 || size.Height == 0)
 				return new Sprite(current, Rectangle.Empty, 0, spriteOffset, channel, BlendMode.Alpha);
 
-			var rect = Allocate(size, zRamp, spriteOffset);
+			Sprite rect = Allocate(size, zRamp, spriteOffset);
 			Util.FastCopyIntoChannel(rect, src);
 			current.CommitBufferedData();
 			return rect;
@@ -145,6 +145,7 @@ namespace OpenRA.Graphics
 
 		/// <summary>
 		/// Резервирует место под SPrite в текстуре opengl
+		/// Определяет в какой канал текстуры будут записаны байты
 		/// </summary>
 		/// <param name="imageSize"></param>
 		/// <param name="zRamp"></param>

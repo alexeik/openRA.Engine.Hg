@@ -24,7 +24,7 @@ namespace OpenRA.Graphics
 		readonly IReadOnlyFileSystem fileSystem;
 
 		readonly Dictionary<string, List<Sprite[]>> sprites = new Dictionary<string, List<Sprite[]>>();
-		readonly Dictionary<string, ISpriteFrame[]> unloadedFrames = new Dictionary<string, ISpriteFrame[]>();
+		readonly Dictionary<string, ISpriteFrame[]> framesCandidatesStorage = new Dictionary<string, ISpriteFrame[]>();
 		readonly Dictionary<string, TypeDictionary> metadata = new Dictionary<string, TypeDictionary>();
 
 		public SpriteCache(IReadOnlyFileSystem fileSystem, SpriteLoaderBase[] loaders, SheetBuilder sheetBuilder)
@@ -47,9 +47,9 @@ namespace OpenRA.Graphics
 				var allSprites = sprites.GetOrAdd(filename);
 				var sprite = allSprites.FirstOrDefault();
 
-				ISpriteFrame[] unloaded;
-				if (!unloadedFrames.TryGetValue(filename, out unloaded))
-					unloaded = null;
+				ISpriteFrame[] framesCandidates;
+				if (!framesCandidatesStorage.TryGetValue(filename, out framesCandidates))
+					framesCandidates = null;
 
 				// This is the first time that the file has been requested
 				// Load all of the frames into the unused buffer and initialize
@@ -57,11 +57,11 @@ namespace OpenRA.Graphics
 				if (sprite == null)
 				{
 					TypeDictionary fileMetadata = null;
-					unloaded = FrameLoader.GetFrames(fileSystem, filename, loaders, out fileMetadata);
-					unloadedFrames[filename] = unloaded;
+					framesCandidates = FrameLoader.GetFrames(fileSystem, filename, loaders, out fileMetadata);
+					framesCandidatesStorage[filename] = framesCandidates;
 					metadata[filename] = fileMetadata;
 
-					sprite = new Sprite[unloaded.Length];
+					sprite = new Sprite[framesCandidates.Length];
 					allSprites.Add(sprite);
 				}
 
@@ -70,20 +70,20 @@ namespace OpenRA.Graphics
 					Enumerable.Range(0, sprite.Length);
 
 				// Load any unused frames into the SheetBuilder
-				if (unloaded != null)
+				if (framesCandidates != null)
 				{
 					foreach (var i in indices)
 					{
-						if (unloaded[i] != null)
+						if (framesCandidates[i] != null)
 						{
-							sprite[i] = SheetBuilder.Add(unloaded[i]);
-							unloaded[i] = null;
+							sprite[i] = SheetBuilder.Add(framesCandidates[i]);
+							framesCandidates[i] = null;
 						}
 					}
 
 					// All frames have been loaded
-					if (unloaded.All(f => f == null))
-						unloadedFrames.Remove(filename);
+					if (framesCandidates.All(f => f == null))
+						framesCandidatesStorage.Remove(filename);
 				}
 
 				return sprite;
