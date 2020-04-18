@@ -70,6 +70,10 @@ namespace OpenRA.Mods.Common.Traits
 	{
 		public readonly PlayerResourcesInfo Info;
 		readonly Player owner;
+		Action<int,int> afterTakeCashDelegate;
+		Action<int, int> afterGiveCashDelegate;
+		Action<int, int> afterGiveSpiceDelegate;
+		Action<int, int> afterTakeSpiceDelegate;
 
 		public PlayerResources(Actor self, PlayerResourcesInfo info)
 		{
@@ -82,7 +86,13 @@ namespace OpenRA.Mods.Common.Traits
 			if (!int.TryParse(startingCash, out Cash))
 				Cash = info.DefaultCash;
 		}
-
+		public void AssignDelegates(Action<int, int> AfterTakeCashDelegate,Action<int, int> AfterGiveCashDelegate, Action<int, int> AfterTakeSpriceDelegate, Action<int, int> AfterGiveSpriceDelegate)
+		{
+			afterTakeCashDelegate = AfterTakeCashDelegate;
+			afterGiveCashDelegate = AfterGiveCashDelegate;
+			afterGiveSpiceDelegate = AfterGiveSpriceDelegate;
+			afterTakeSpiceDelegate = AfterTakeSpriceDelegate;
+		}
 		[Sync]
 		public int Cash;
 
@@ -127,6 +137,10 @@ namespace OpenRA.Mods.Common.Traits
 				Earned -= Resources - ResourceCapacity;
 				Resources = ResourceCapacity;
 			}
+			if (afterGiveSpiceDelegate != null)
+			{
+				afterGiveSpiceDelegate(Cash, Resources);
+			}
 		}
 
 		public bool TakeResources(int num)
@@ -134,6 +148,11 @@ namespace OpenRA.Mods.Common.Traits
 			if (Resources < num) return false;
 			Resources -= num;
 			Spent += num;
+
+			if (afterTakeSpiceDelegate != null)
+			{
+				afterTakeSpiceDelegate(Cash, Resources);
+			}
 
 			return true;
 		}
@@ -169,6 +188,11 @@ namespace OpenRA.Mods.Common.Traits
 					Earned = int.MaxValue;
 				}
 			}
+
+			if (afterGiveCashDelegate != null)
+			{
+				afterGiveCashDelegate(Cash, Resources);
+			}
 		}
 
 		public bool TakeCash(int num, bool notifyLowFunds = false)
@@ -193,7 +217,10 @@ namespace OpenRA.Mods.Common.Traits
 				Cash += Resources;
 				Resources = 0;
 			}
-
+			if (afterTakeCashDelegate != null)
+			{
+				afterTakeCashDelegate(Cash, Resources);
+			}
 			return true;
 		}
 
