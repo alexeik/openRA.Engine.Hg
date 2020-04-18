@@ -136,10 +136,6 @@ namespace OpenRA.Graphics
 
 		public void DrawSprite(Sprite s, float3 location, float paletteTextureIndex, float3 size)
 		{
-			if (Game.Renderer.PauseRender)
-			{
-				return;
-			}
 			var samplers = SetRenderStateForSprite(s); // узнает номер текстуры из которой этой спрайт в переменную samplers, чтобы потом записать это в VBO
 			Util.FastCreateQuad(vertices, location + s.FractionalOffset * size, s, samplers, paletteTextureIndex, nv, size);
 			nv += 6;
