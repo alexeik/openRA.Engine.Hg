@@ -20,6 +20,7 @@ namespace OpenRA.Graphics
 		public readonly Rectangle rect = Rectangle.Empty;
 		public readonly string Src;
 		public int Rotate;
+		public bool Stretched;
 
 		public MappedImage(string defaultSrc, MiniYaml info)
 		{
@@ -30,8 +31,14 @@ namespace OpenRA.Graphics
 
 			if (info.Nodes.Count > 0)
 			{
-				if (info.Nodes[0].Key == "rotate")
-				Rotate = Convert.ToInt32(info.Nodes[0].Value.Value);
+				foreach (MiniYamlNode my in info.Nodes)
+				{
+					if (my.Key == "rotate")
+						Rotate = Convert.ToInt32(my.Value.Value);
+
+					if (my.Key == "stretched")
+						Stretched = Convert.ToBoolean(my.Value.Value);
+				}
 			}
 		}
 

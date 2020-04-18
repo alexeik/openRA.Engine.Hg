@@ -60,22 +60,22 @@ namespace OpenRA.Mods.Common.Widgets
 		public static void FillRectWithSprite(Rectangle r, Sprite s)
 		{
 
-			if (s.SpriteType == 3)
+			if (s.SpriteType == 3) //fill rect with palette sprite
 			{
 
 			}
 			else
 
 			{
-				s.SpriteType = 2; // 2-fill with sprite
+				s.SpriteType = 2; // 2-fill rect with rgba sprite
 			}
-			
+
 			DrawRGBAShaderFill(s, r.Location, new float3(r.Width, r.Height, 0));
 
-			
+
 			//Game.Renderer.Flush(); //turn on for debug if any
-			
-			
+
+
 
 			//for (var x = r.Left; x < r.Right; x += (int)s.Size.X)
 			//	for (var y = r.Top; y < r.Bottom; y += (int)s.Size.Y)
@@ -192,10 +192,22 @@ namespace OpenRA.Mods.Common.Widgets
 
 			// Background
 			if (ps.HasFlags(PanelSides.Center) && background != null)
-				FillRectWithSprite(new Rectangle(bounds.Left + marginLeft, bounds.Top + marginTop,
+			{
+				if (background.Stretched)
+				{
+					Rectangle rect = new Rectangle(bounds.Left + marginLeft, bounds.Top + marginTop,
+					bounds.Width - marginWidth, bounds.Height - marginHeight);
+
+					DrawRGBAShaderFill(background, rect.Location, new float3(rect.Width, rect.Height, 0));
+				}
+				else
+				{
+					FillRectWithSprite(new Rectangle(bounds.Left + marginLeft, bounds.Top + marginTop,
 					bounds.Width - marginWidth, bounds.Height - marginHeight),
 					background);
-
+				}
+				
+			}
 			// Left border
 			if (ps.HasFlags(PanelSides.Left) && borderLeft != null)
 				FillRectWithSprite(new Rectangle(bounds.Left, bounds.Top + marginTop,

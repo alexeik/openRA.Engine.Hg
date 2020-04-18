@@ -31,6 +31,7 @@ namespace OpenRA.Graphics
 		public int SpriteType;
 		public int SpriteArrayNum;
 		public int Rotate;
+		public bool Stretched;
 
 		public Sprite(Sheet sheet, Rectangle bounds, TextureChannel channel)
 			: this(sheet, bounds, 0, float2.Zero, channel) { }

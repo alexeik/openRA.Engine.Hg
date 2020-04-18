@@ -146,6 +146,11 @@ namespace OpenRA.Graphics
 				{
 					// передаем данные о повороте, если больше 0
 					image.Rotate = mi.Rotate;
+
+				}
+				if (mi.Stretched)
+				{
+					image.Stretched = true;
 				}
 				image.SpriteType = 3; // для Utils.FastCreateQuad
 				
