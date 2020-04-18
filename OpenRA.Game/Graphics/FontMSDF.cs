@@ -30,7 +30,10 @@ namespace OpenRA.Graphics
 
 			string p1, p2;
 
-
+			if (Game.ModData.Manifest.FontsMSDFBaseFolders==null)
+			{
+				return;
+			}
 			p1 = Game.ModData.Manifest.FontsMSDFBaseFolders[fontname].First;
 			p2 = Game.ModData.Manifest.FontsMSDFBaseFolders[fontname].Second;
 
