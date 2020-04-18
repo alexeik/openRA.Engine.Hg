@@ -12,6 +12,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 using OpenRA.FileSystem;
 using OpenRA.GameRules;
 using OpenRA.Platforms.Default;
@@ -236,12 +237,16 @@ namespace OpenRA
 		{
 			PlayMusicThen(m, () => { });
 		}
-
+		Task playmus;
 		public void PlayMusicThen(MusicInfo m, Action then)
 		{
-			if (m == null || !m.Exists)
+			if (m == null || !m.Exists )
 				return;
 
+			if (playmus!=null && !playmus.IsCompleted && MusicPlaying)
+			{
+				return;
+			}
 			onMusicComplete = then;
 
 			if (m == currentMusic && music != null)
@@ -252,32 +257,37 @@ namespace OpenRA
 			}
 
 			StopMusic();
+		
+			playmus = Task.Run(() =>
+			  {
+				  if (sounds.ContainsKey(m.Filename))
+				  {
+					  music = soundEngine.Play2D(Game.LocalTick, sounds[m.Filename], false, true, WPos.Zero, MusicVolume * m.VolumeModifier, true);
+				  }
+				  else
+				  {
+					  ISoundSource temp;
+					  temp = LoadSound<ISoundSource>(m.Filename, m, loadIntoMemoryDelegate);
+					  sounds.Add(m.Filename, temp);
+					  music = soundEngine.Play2D(Game.LocalTick, sounds[m.Filename], false, true, WPos.Zero, MusicVolume * m.VolumeModifier, true);
+				  }
 
-			//Func<ISoundFormat, ISound> stream = soundFormat => soundEngine.Play2DStream(Game.LocalTick,
-			//	soundFormat.GetPCMInputStream(), soundFormat.Channels, soundFormat.SampleBits, soundFormat.SampleRate,
-			//	false, true, WPos.Zero, MusicVolume * m.VolumeModifier);
-			//music = LoadSound(m.Filename, stream);
+				  if (music == null)
+				  {
+					  onMusicComplete = null;
+					  return;
+				  }
 
-			if (sounds.ContainsKey(m.Filename))
-			{
-				music = soundEngine.Play2D(Game.LocalTick, sounds[m.Filename], false, true, WPos.Zero, MusicVolume * m.VolumeModifier, true);
-			}
-			else
-			{
-				sounds.Add(m.Filename, LoadSound<ISoundSource>(m.Filename, m, loadIntoMemoryDelegate));
-				music = soundEngine.Play2D(Game.LocalTick, sounds[m.Filename], false, true, WPos.Zero, MusicVolume * m.VolumeModifier, true);
-			}
+				  currentMusic = m;
+				  MusicPlaying = true;
+
+			  });
 
 			
 
-			if (music == null)
-			{
-				onMusicComplete = null;
-				return;
-			}
+			
 
-			currentMusic = m;
-			MusicPlaying = true;
+		
 		}
 
 		public void PlayMusic()
