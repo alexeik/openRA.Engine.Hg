@@ -299,24 +299,25 @@ namespace OpenRA.Graphics
 
 		/// <summary>
 		/// ДОполняет данные в data у Sheet новыми данными из разных картинок.
+		/// Учитывая в какой канала записать R,G,B,A , так как эти картинки занимают только 1 байт на 1 пиксель.
 		/// </summary>
 		/// <param name="dest"></param>
 		/// <param name="src"></param>
 		public static void FastCopyIntoChannel(Sprite dest, byte[] src)
 		{
 			var data = dest.Sheet.GetData();
-			var srcStride = dest.Bounds.Width;
-			var destStride = dest.Sheet.Size.Width * 4;
-			var destOffset = destStride * dest.Bounds.Top + dest.Bounds.Left * 4 + ChannelMasks[(int)dest.Channel];
+			var srcStride = dest.Bounds.Width; //ширина спрайта в пикселях, после которой делается destSkip
+			var destStride = dest.Sheet.Size.Width * 4; //ширина текстуры в байтах, с переводом пикселей в байты. Берется ширина, потому что предпологается, что ширина=высоте, так как степень двойки.
+			var destOffset = destStride * dest.Bounds.Top + dest.Bounds.Left * 4 + ChannelMasks[(int)dest.Channel]; // 
 			var destSkip = destStride - 4 * srcStride;
 			var height = dest.Bounds.Height;
 
 			var srcOffset = 0;
 			for (var j = 0; j < height; j++)
 			{
-				for (var i = 0; i < srcStride; i++, srcOffset++)
+				for (var i = 0; i < srcStride; i++, srcOffset++) // после прогона в количестве равному ширине в пикселях
 				{
-					data[destOffset] = src[srcOffset];
+					data[destOffset] = src[srcOffset]; //пишется в data по смещению destOffset
 					destOffset += 4;
 				}
 
