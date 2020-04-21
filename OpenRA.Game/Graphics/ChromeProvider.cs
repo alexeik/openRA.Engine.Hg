@@ -92,6 +92,10 @@ namespace OpenRA.Graphics
 
 		public static Sprite GetImage(string collectionName, string imageName)
 		{
+			if(imageName== "harktitle")
+			{
+
+			}
 			if (string.IsNullOrEmpty(collectionName))
 				return null;
 
@@ -152,7 +156,7 @@ namespace OpenRA.Graphics
 				{
 					image.Stretched = true;
 				}
-				image.SpriteType = 3; // для Utils.FastCreateQuad
+				image.SpriteType = 3; // для Utils.FastCreateQuad для алгоритма Fill rect with
 				
 				if (cachedCollection == null)
 				{
