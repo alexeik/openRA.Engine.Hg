@@ -37,7 +37,7 @@ namespace OpenRA.Graphics
 		public readonly List<Sheet> sheets = new List<Sheet>();
 		readonly Func<Sheet> allocateSheetDelegate;
 
-		Sheet current;
+		Sheet currentSheet;
 		TextureChannel channel;
 		int rowHeight = 0;
 		int2 p;
@@ -63,13 +63,13 @@ namespace OpenRA.Graphics
 		{
 			channel = t == SheetType.Indexed ? TextureChannel.Red : TextureChannel.RGBA;
 			Type = t;
-			current = allocateSheetDelegate();
-			sheets.Add(current);
+			currentSheet = allocateSheetDelegate();
+			sheets.Add(currentSheet);
 			this.allocateSheetDelegate = allocateSheetDelegate;
 		}
 
 		/// <summary>
-		/// ��������� ����� �� ISpriteFrame ������ � ������ ������ ��������
+		/// ДОбавляет байты из ISpriteFrame класса в массив байтов текстуры
 		/// </summary>
 		/// <param name="frame"></param>
 		/// <returns></returns>
@@ -83,7 +83,7 @@ namespace OpenRA.Graphics
 		}
 
 		/// <summary>
-		/// ��������� ����� � ������ ������ ��������, ������� �������� � ������� SheetBuilder.
+		/// Добавляет байты в массив байтов текстуры, которая привязан к данному SheetBuilder.
 		/// </summary>
 		/// <param name="src"></param>
 		/// <param name="size"></param>
@@ -94,29 +94,29 @@ namespace OpenRA.Graphics
 		{
 			// Don't bother allocating empty sprites
 			if (size.Width == 0 || size.Height == 0)
-				return new Sprite(current, Rectangle.Empty, 0, spriteOffset, channel, BlendMode.Alpha);
+				return new Sprite(currentSheet, Rectangle.Empty, 0, spriteOffset, channel, BlendMode.Alpha);
 
 			Sprite rect = Allocate(size, zRamp, spriteOffset);
 			Util.FastCopyIntoChannel(rect, src);
-			current.CommitBufferedData();
+			currentSheet.CommitBufferedData();
 			return rect;
 		}
 		public Sprite AddRGBA(byte[] src, Size size)
 		{
 			// Don't bother allocating empty sprites
 			if (size.Width == 0 || size.Height == 0)
-				return new Sprite(current, Rectangle.Empty, 0, float3.Zero, channel, BlendMode.Alpha);
+				return new Sprite(currentSheet, Rectangle.Empty, 0, float3.Zero, channel, BlendMode.Alpha);
 
 			var rect = Allocate(size, 0, float3.Zero);
 			Util.FastCopyIntoRGBA(rect, src);
-			current.CommitBufferedData();
+			currentSheet.CommitBufferedData();
 			return rect;
 		}
 		public Sprite Add(Png src)
 		{
 			var rect = Allocate(new Size(src.Width, src.Height));
 			Util.FastCopyIntoSprite(rect, src);
-			current.CommitBufferedData();
+			currentSheet.CommitBufferedData();
 			return rect;
 		}
 
@@ -144,8 +144,8 @@ namespace OpenRA.Graphics
 		}
 
 		/// <summary>
-		/// ����������� ����� ��� SPrite � �������� opengl
-		/// ���������� � ����� ����� �������� ����� �������� �����
+		/// Резервирует место под SPrite в текстуре opengl
+		/// Определяет в какой канал текстуры будут записаны байты
 		/// </summary>
 		/// <param name="imageSize"></param>
 		/// <param name="zRamp"></param>
@@ -153,7 +153,8 @@ namespace OpenRA.Graphics
 		/// <returns></returns>
 		public Sprite Allocate(Size imageSize, float zRamp, float3 spriteOffset)
 		{
-			if (imageSize.Width + p.X > current.Size.Width)
+			//используется одномерный массив. Поэтому все разбито по Height(row) и смещение внутри row.
+			if (imageSize.Width + p.X > currentSheet.Size.Width) //если дошли до смещения равного ширине картинки, то сбрасываем смещение до 0 и делаем переход на высоту равную предыдущей высоте.
 			{
 				p = new int2(0, p.Y + rowHeight);
 				rowHeight = imageSize.Height;
@@ -162,14 +163,14 @@ namespace OpenRA.Graphics
 			if (imageSize.Height > rowHeight)
 				rowHeight = imageSize.Height;
 
-			if (p.Y + imageSize.Height > current.Size.Height)
+			if (p.Y + imageSize.Height > currentSheet.Size.Height) //если вышли за пределы высоты в одном канале, то переходим в другой канал. и скидываем p=int2.Zero
 			{
 				var next = NextChannel(channel);
-				if (next == null)
+				if (next == null) //если закончились каналы внутри текстуры , то создаем новый Sheet.
 				{
-					current.ReleaseBuffer();
-					current = allocateSheetDelegate();
-					sheets.Add(current);
+					currentSheet.ReleaseBuffer();
+					currentSheet = allocateSheetDelegate();
+					sheets.Add(currentSheet);
 					channel = Type == SheetType.Indexed ? TextureChannel.Red : TextureChannel.RGBA;
 				}
 				else
@@ -179,13 +180,13 @@ namespace OpenRA.Graphics
 				p = int2.Zero;
 			}
 
-			var rect = new Sprite(current, new Rectangle(p.X, p.Y, imageSize.Width, imageSize.Height), zRamp, spriteOffset, channel, BlendMode.Alpha);
+			var rect = new Sprite(currentSheet, new Rectangle(p.X, p.Y, imageSize.Width, imageSize.Height), zRamp, spriteOffset, channel, BlendMode.Alpha);
 			p += new int2(imageSize.Width, 0);
 
 			return rect;
 		}
 
-		public Sheet Current { get { return current; } }
+		public Sheet Current { get { return currentSheet; } }
 		public TextureChannel CurrentChannel { get { return channel; } }
 		public IEnumerable<Sheet> AllSheets { get { return sheets; } }
 
