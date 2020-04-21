@@ -17,6 +17,9 @@ namespace OpenRA.Platforms.Default
 {
 	public class TextureArray : Texture, ITextureInternal
 	{
+		public int CapacityDepth = 256;
+		public int CapacityReserved = 0;
+
 		public override void PrepareTexture()
 		{
 			TextureType = OpenGL.GL_TEXTURE_2D_ARRAY;
