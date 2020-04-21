@@ -40,7 +40,7 @@ namespace OpenRA.Graphics
 		/// are guaranteed to be loaded.  The value of other indices in the returned
 		/// array are undefined and should never be accessed.
 		/// </summary>
-		public Sprite[] this[string filename, Func<int, IEnumerable<int>> getUsedFramesDelegate = null]
+		public Sprite[] this[string filename, Func<int, IEnumerable<int>> getThisIndexesSpritesFromFile = null]
 		{
 			get
 			{
@@ -66,7 +66,7 @@ namespace OpenRA.Graphics
 				}
 
 				// HACK: The sequency code relies on side-effects from getUsedFrames
-				var indices = getUsedFramesDelegate != null ? getUsedFramesDelegate(sprite.Length) :
+				var indices = getThisIndexesSpritesFromFile != null ? getThisIndexesSpritesFromFile(sprite.Length) :
 					Enumerable.Range(0, sprite.Length);
 
 				// Load any unused frames into the SheetBuilder
