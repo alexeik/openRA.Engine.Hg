@@ -81,6 +81,7 @@ namespace OpenRA.Graphics
 
 			if (data != null && dirty)
 			{
+				//Flush CPU data to GPU data(OpenGL Texture)
 				texture.SetData(data, Size.Width, Size.Height);
 				dirty = false;
 				if (releaseBufferOnCommit)
