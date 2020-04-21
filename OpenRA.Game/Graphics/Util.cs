@@ -314,8 +314,8 @@ namespace OpenRA.Graphics
 			var data = dest.Sheet.GetData();
 			var srcStride = dest.Bounds.Width; //ширина спрайта в пикселях, после которой делается destSkip
 			var destStride = dest.Sheet.Size.Width * 4; //ширина текстуры в байтах, с переводом пикселей в байты. Берется ширина, потому что предпологается, что ширина=высоте, так как степень двойки.
-			var destOffset = destStride * dest.Bounds.Top + dest.Bounds.Left * 4 + ChannelMasks[(int)dest.Channel]; // 
-			var destSkip = destStride - 4 * srcStride;
+			var destOffset = destStride * dest.Bounds.Top + dest.Bounds.Left * 4 + ChannelMasks[(int)dest.Channel]; // местро в квартете из RGBA, поэтому и 0 1 2 3 
+			var destSkip = destStride - 4 * srcStride; //куда возвращать картеку, после прохождения левой границы картинки
 			var height = dest.Bounds.Height;
 
 			var srcOffset = 0;
@@ -323,11 +323,11 @@ namespace OpenRA.Graphics
 			{
 				for (var i = 0; i < srcStride; i++, srcOffset++) // после прогона в количестве равному ширине в пикселях
 				{
-					data[destOffset] = src[srcOffset]; //пишется в data по смещению destOffset
-					destOffset += 4;
+					data[destOffset] = src[srcOffset]; //пишется в data по смещению destOffset, где это смещение , это позиция одного из каналов внутри 4 байтов
+					destOffset += 4; //проходим каждую четверку и пишем в место нужного канала RGBA заданного в Sprite
 				}
 
-				destOffset += destSkip;
+				destOffset += destSkip; //сдвигаем на левый край картинки
 			}
 		}
 		public static void FastCopyIntoRGBA(Sprite dest, byte[] src)
