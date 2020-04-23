@@ -21,7 +21,7 @@ namespace OpenRA.Graphics
 	{
 		bool dirty;
 		bool releaseBufferOnCommit;
-		TextureArray texture;
+		public TextureArray texture;
 		byte[] data;
 		public int textureArrayIndex;
 		public readonly Size Size;
@@ -80,13 +80,15 @@ namespace OpenRA.Graphics
 			if (texture == null)
 			{
 				texture = Game.Renderer.Context.CreateTexture2DArray();
+				texture.scaleFilter = TextureScaleFilter.Nearest;
+				texture.SetEmpty(Size.Width, Size.Width, 10);
 				dirty = true;
 			}
 
 			if (data != null && dirty)
 			{
 				//Flush CPU data to GPU data(OpenGL Texture)
-				texture.SetData(data, Size.Width, Size.Height, textureArrayIndex);
+				texture.SetData(data, Size.Width, Size.Width, textureArrayIndex);
 				dirty = false;
 				if (releaseBufferOnCommit)
 					data = null;

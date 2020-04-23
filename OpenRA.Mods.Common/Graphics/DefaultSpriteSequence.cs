@@ -264,12 +264,16 @@ namespace OpenRA.Mods.Common.Graphics
 						};
 
 						var subSrc = GetSpriteSrc(modData, tileSet, sequence, animation, sub.Key, sd);
+						//var subSprites = cache[subSrc, subGetUsedFrames].Select(
+						//	s => s != null ? new Sprite(s.Sheet,
+						//		FlipRectangle(s.Bounds, subFlipX, subFlipY), ZRamp,
+						//		new float3(subFlipX ? -s.Offset.X : s.Offset.X, subFlipY ? -s.Offset.Y : s.Offset.Y, s.Offset.Z) + subOffset + offset,
+						//		s.Channel, blendMode) : null);
 						var subSprites = cache[subSrc, subGetUsedFrames].Select(
-							s => s != null ? new Sprite(s.Sheet,
+							s => s != null ? new Sprite(s.Sheet2D,
 								FlipRectangle(s.Bounds, subFlipX, subFlipY), ZRamp,
 								new float3(subFlipX ? -s.Offset.X : s.Offset.X, subFlipY ? -s.Offset.Y : s.Offset.Y, s.Offset.Z) + subOffset + offset,
 								s.Channel, blendMode) : null);
-
 						combined = combined.Concat(subSprites.Skip(subStart).Take(subLength));
 					}
 
@@ -281,8 +285,13 @@ namespace OpenRA.Mods.Common.Graphics
 					// Apply offset to each sprite in the sequence
 					// Different sequences may apply different offsets to the same frame
 					var src = GetSpriteSrc(modData, tileSet, sequence, animation, info.Value, d);
+					//sprites = cache[src, getUsedFrames].Select(
+					//	s => s != null ? new Sprite(s.Sheet,
+					//		FlipRectangle(s.Bounds, flipX, flipY), ZRamp,
+					//		new float3(flipX ? -s.Offset.X : s.Offset.X, flipY ? -s.Offset.Y : s.Offset.Y, s.Offset.Z) + offset,
+					//		s.Channel, blendMode) : null).ToArray();
 					sprites = cache[src, getUsedFrames].Select(
-						s => s != null ? new Sprite(s.Sheet,
+						s => s != null ? new Sprite(s.Sheet2D,
 							FlipRectangle(s.Bounds, flipX, flipY), ZRamp,
 							new float3(flipX ? -s.Offset.X : s.Offset.X, flipY ? -s.Offset.Y : s.Offset.Y, s.Offset.Z) + offset,
 							s.Channel, blendMode) : null).ToArray();

@@ -41,20 +41,20 @@ void main()
  */
 
 //fragColor= texture(TextureFontMSDF, vec3(0,0,1)); 
-/*
-	vec3 flipped_texCoords = vec3(vTexCoord.s, 1.0 - vTexCoord.t, vTexMetadata.s);
+
+/* 	vec3 flipped_texCoords = vec3(vTexCoord.s, 1.0 - vTexCoord.t, vTexMetadata.s);
     vec2 pos = flipped_texCoords.xy;
-    vec3 sample = texture(TextureFontMSDF, flipped_texCoords).rgb;
+    vec3 sample1 = texture(TextureFontMSDF, flipped_texCoords).rgb;
     ivec2 sz = textureSize(TextureFontMSDF, 0).xy;
     float dx = dFdx(pos.x) * sz.x; 
     float dy = dFdy(pos.y) * sz.y;
     float toPixels = 12 * inversesqrt(dx * dx + dy * dy);
-    float sigDist = median(sample.r, sample.g, sample.b);
+    float sigDist = median(sample1.r, sample1.g, sample1.b);
     float w = fwidth(sigDist);
     float opacity = smoothstep(0.5 - w, 0.5 + w, sigDist);
     fragColor = vec4(TextColor.rgb, opacity);
+	 */
 	
-	*/
 	
 	vec3 flipped_texCoords = vec3(vTexCoord.s,1.0-vTexCoord.t,vTexMetadata.s); 	//vec3 flipped_texCoords = vec3(0.0,0.0,84);
 	
@@ -72,8 +72,8 @@ void main()
     float opacity = clamp(sigDist + 0.5, 0.0, 1.0);
 
 	vec4 tempcolor;
-	fragColor =vec4(TextColor.rgb,opacity ) ;
-/* 
+	fragColor =vec4(TextColor.rgb,opacity ) ; 
+/* lumination
 	vec4 tl = texture(TextureFontMSDF, flipped_texCoords - vec3(-onepixel,  0));
    vec4 br = texture(TextureFontMSDF, flipped_texCoords + vec3( onepixel,  0));
    vec4 color0 = vec4(opacity);

@@ -38,8 +38,8 @@ namespace OpenRA.Graphics
 	public sealed class Theater : IDisposable
 	{
 		readonly Dictionary<ushort, TheaterTemplate> templates = new Dictionary<ushort, TheaterTemplate>();
-		readonly SheetBuilder sheetBuilder;
-		public readonly SheetBuilder sbMegaTexture;
+		readonly SheetBuilder2D sheetBuilder2d;
+		public readonly SheetBuilder2D sbMegaTexture;
 		readonly Sprite missingTile;
 		Sprite MegaTextureSprite;
 		readonly MersenneTwister random;
@@ -50,21 +50,24 @@ namespace OpenRA.Graphics
 			this.tileset = tileset;
 			var allocated = false;
 
-			Func<Sheet> allocate = () =>
-			{
-				if (allocated)
-					throw new SheetOverflowException("Terrain sheet overflow. Try increasing the tileset SheetSize parameter.");
-				allocated = true;
+			//Func<Sheet2D> allocate = () =>
+			//{
+			//	if (allocated)
+			//		throw new SheetOverflowException("Terrain sheet overflow. Try increasing the tileset SheetSize parameter.");
+			//	allocated = true;
+			//	SheetBuilder2D shb= Game.worldRenderer.World.Map.Rules.Sequences.SpriteCache.SheetBuilder2D;
+			//	return new Sheet2D(SheetType.Indexed, shb., shb.TextureArrayIndex);
+			//};
+			
+			SheetBuilder2D shb = Game.OrderManager.World.Map.Rules.Sequences.SpriteCache.SheetBuilder2D;
 
-				return new Sheet(SheetType.Indexed, new Size(tileset.SheetSize, tileset.SheetSize));
-			};
+			sheetBuilder2d = Game.OrderManager.World.Map.Rules.Sequences.SpriteCache.SheetBuilder2D;
 
-			sheetBuilder = new SheetBuilder(SheetType.Indexed, allocate);
-
-			sbMegaTexture = new SheetBuilder(SheetType.BGRA, 2080, 2080);
+			
 
 			if (!string.IsNullOrEmpty(tileset.MegaTexture))
 			{
+				sbMegaTexture = sheetBuilder2d;
 				LoadsbMegaTexture(tileset.MegaTexture);
 			}
 			random = new MersenneTwister();
@@ -88,12 +91,12 @@ namespace OpenRA.Graphics
 						var zOffset = tile != null ? -tile.ZOffset : 0;
 						var zRamp = tile != null ? tile.ZRamp : 1f;
 						var offset = new float3(f.Offset, zOffset);
-						var s = sheetBuilder.Allocate(f.Size, zRamp, offset);
+						var s = sheetBuilder2d.Allocate(f.Size, zRamp, offset);
 						Util.FastCopyIntoChannel(s, f.Data);
 
 						if (tileset.EnableDepth)
 						{
-							var ss = sheetBuilder.Allocate(f.Size, zRamp, offset);
+							var ss = sheetBuilder2d.Allocate(f.Size, zRamp, offset);
 							Util.FastCopyIntoChannel(ss, allFrames[j + frameCount].Data);
 
 							// s and ss are guaranteed to use the same sheet
@@ -109,7 +112,7 @@ namespace OpenRA.Graphics
 
 				// Ignore the offsets baked into R8 sprites
 				if (tileset.IgnoreTileSpriteOffsets)
-					allSprites = allSprites.Select(s => new Sprite(s.Sheet, s.Bounds, s.ZRamp, new float3(float2.Zero, s.Offset.Z), s.Channel, s.BlendMode));
+					allSprites = allSprites.Select(s => new Sprite(s.Sheet2D, s.Bounds, s.ZRamp, new float3(float2.Zero, s.Offset.Z), s.Channel, s.BlendMode));
 
 				if (t.Value.Variants == "Calc")
 				{
@@ -122,9 +125,9 @@ namespace OpenRA.Graphics
 			}
 
 			// 1x1px transparent tile
-			missingTile = sheetBuilder.Add(new byte[1], new Size(1, 1));
+			missingTile = sheetBuilder2d.Add(new byte[1], new Size(1, 1));
 
-			Sheet.ReleaseBuffer();
+			//Sheet2D.ReleaseBuffer();
 		}
 
 		public void LoadsbMegaTexture(string filename)
@@ -208,11 +211,11 @@ namespace OpenRA.Graphics
 			return templateRect.HasValue ? templateRect.Value : Rectangle.Empty;
 		}
 
-		public Sheet Sheet { get { return sheetBuilder.Current; } }
+		public Sheet2D Sheet { get { return sheetBuilder2d.Current; } }
 
 		public void Dispose()
 		{
-			sheetBuilder.Dispose();
+			sheetBuilder2d.Dispose();
 		}
 	}
 }

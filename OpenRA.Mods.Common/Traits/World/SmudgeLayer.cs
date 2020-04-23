@@ -113,8 +113,8 @@ namespace OpenRA.Mods.Common.Traits
 		public void WorldLoaded(World w, WorldRenderer wr)
 		{
 			var first = smudges.First().Value.First();
-			var sheet = first.Sheet;
-			if (smudges.Values.Any(sprites => sprites.Any(s => s.Sheet != sheet)))
+			var sheet = first.Sheet2D;
+			if (smudges.Values.Any(sprites => sprites.Any(s => s.Sheet2D != sheet)))
 				throw new InvalidDataException("Resource sprites span multiple sheets. Try loading their sequences earlier.");
 
 			var blendMode = first.BlendMode;

@@ -110,22 +110,22 @@ namespace OpenRA.Platforms.Default
 				int type;
 				var sb = new StringBuilder(128);
 				OpenGL.glGetActiveUniform(program, i, 128, out length, out size, out type, sb);
-				var sampler = sb.ToString();
+				var samplerName = sb.ToString();
 
 				if (type == OpenGL.GL_SAMPLER_2D)
 				{
-					samplers.Add(sampler, nextTexUnit);
+					samplers.Add(samplerName, nextTexUnit);
 
-					var loc = OpenGL.glGetUniformLocation(program, sampler);
+					var loc = OpenGL.glGetUniformLocation(program, samplerName);
 					OpenGL.glUniform1i(loc, nextTexUnit);
 
 					nextTexUnit++;
 				}
 				if (type == OpenGL.GL_SAMPLER_2D_ARRAY)
 				{
-					samplers.Add(sampler, nextTexUnit);
+					samplers.Add(samplerName, nextTexUnit);
 
-					var loc = OpenGL.glGetUniformLocation(program, sampler);
+					var loc = OpenGL.glGetUniformLocation(program, samplerName);
 					OpenGL.glUniform1i(loc, nextTexUnit);
 
 					nextTexUnit++;

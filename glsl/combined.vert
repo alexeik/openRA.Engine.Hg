@@ -29,8 +29,11 @@ out vec4 vPalettedFraction;
 out vec2 fragXY;
 out vec2 StartUV;
 out vec2 EndUV;
+out float VertexTexMetadataOption2;
+out float TextureArrayIndex;
 out float DrawMode;
 out float PaletteIndex;
+
 
 /* 
 
@@ -84,7 +87,7 @@ void main()
 {
  // if aVertexTexMetadata.t=X=65 , primarySampler=1,x=1,primaryChannel=1 =>attrib.s=1=primaryChannel
 	gl_Position = vec4((aVertexPosition.xyz - Scroll.xyz) * r1 + r2, 1);
-	
+	VertexTexMetadataOption2=aVertexTexMetadataOption2;
 	vTexCoordSecond=aTexCoordSecond;
 	vTexCoord=aTexCoord;
 	DrawMode=aVertexDrawmode;
@@ -106,7 +109,7 @@ void main()
 	vPalettedFraction = SelectPalettedFraction(aVertexColorInfo.s);
 	vChannelMask = SelectChannelMask(aVertexColorInfo.s); //динамическое определение маски RGBA
 	//тут нужно из целого числа, сделать вектор, чтобы потом умножить и оставить токо ту часть, которая содержит Х коориданату в палитре
-	
+	TextureArrayIndex=aVertexColorInfo.s;
 	vTexSampler = vec2(0,aVertexColorInfo.t); //номер текстуры
 
 /* 	StartUV=vec2(0.43848,0.10645);

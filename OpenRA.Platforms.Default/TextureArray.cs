@@ -22,12 +22,15 @@ namespace OpenRA.Platforms.Default
 
 		public override void PrepareTexture()
 		{
+			var filter = scaleFilter == TextureScaleFilter.Linear ? OpenGL.GL_LINEAR : OpenGL.GL_NEAREST;
+
 			TextureType = OpenGL.GL_TEXTURE_2D_ARRAY;
 			OpenGL.CheckGLError();
 			OpenGL.glBindTexture(OpenGL.GL_TEXTURE_2D_ARRAY, texture);
 			OpenGL.CheckGLError();
 
-			var filter = OpenGL.GL_LINEAR ;
+			//var filter = OpenGL.GL_NEAREST;
+			//var filter = OpenGL.GL_LINEAR;
 			OpenGL.glTexParameteri(OpenGL.GL_TEXTURE_2D_ARRAY, OpenGL.GL_TEXTURE_MAG_FILTER, filter);
 			OpenGL.CheckGLError();
 			OpenGL.glTexParameteri(OpenGL.GL_TEXTURE_2D_ARRAY, OpenGL.GL_TEXTURE_MIN_FILTER, filter);
@@ -57,7 +60,7 @@ namespace OpenRA.Platforms.Default
 				fixed (byte* ptr = &colors[0])
 				{
 					var intPtr = new IntPtr((void*)ptr);
-					OpenGL.glTexSubImage3D(OpenGL.GL_TEXTURE_2D_ARRAY, 0, 0, 0, depth, width, height, 1, OpenGL.GL_RGBA, OpenGL.GL_UNSIGNED_BYTE, intPtr);
+					OpenGL.glTexSubImage3D(OpenGL.GL_TEXTURE_2D_ARRAY, 0, 0, 0, depth, width, height, 1, OpenGL.GL_BGRA, OpenGL.GL_UNSIGNED_BYTE, intPtr);
 					OpenGL.CheckGLError();
 				}
 			}
@@ -82,7 +85,7 @@ namespace OpenRA.Platforms.Default
 					var intPtr = new IntPtr((void*)ptr);
 					PrepareTexture();
 					OpenGL.glTexImage3D(OpenGL.GL_TEXTURE_2D, 0, OpenGL.GL_RGBA32F, width, height, depth,
-						0, OpenGL.GL_RGBA, OpenGL.GL_UNSIGNED_BYTE, intPtr);
+						0, OpenGL.GL_BGRA, OpenGL.GL_UNSIGNED_BYTE, intPtr);
 					OpenGL.CheckGLError();
 
 				}

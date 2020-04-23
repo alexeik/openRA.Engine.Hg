@@ -17,11 +17,11 @@ namespace OpenRA.Graphics
 {
 	class MappedImage
 	{
-		public readonly Rectangle rect = Rectangle.Empty;
+		public  Rectangle rect = Rectangle.Empty;
 		public readonly string Src;
 		public int Rotate;
 		public bool Stretched;
-
+		public int OffsetTop, OffsetLeft; //смещение внутри opengl текстуры.
 		public MappedImage(string defaultSrc, MiniYaml info)
 		{
 			FieldLoader.LoadField(this, "rect", info.Value);
@@ -44,6 +44,12 @@ namespace OpenRA.Graphics
 
 		public Sprite GetImage(Sheet s)
 		{
+			return new Sprite(s, rect, TextureChannel.RGBA);
+		}
+		public Sprite GetImage(Sheet2D s)
+		{
+			rect.X += OffsetLeft;
+			rect.Y += OffsetTop;
 			return new Sprite(s, rect, TextureChannel.RGBA);
 		}
 		public Sprite GetImage(Sheet s, Rectangle r)

@@ -38,6 +38,7 @@ namespace OpenRA.Graphics
 			p2 = Game.ModData.Manifest.FontsMSDFBaseFolders[fontname].Second;
 
 			Texture = Game.Renderer.Context.CreateTexture2DArray();
+			Texture.scaleFilter = TextureScaleFilter.Linear;
 			Texture.SetEmpty(Size, Size, 127); // просто заготовка gjl 127 слойный массив, каждый слой 96 на 96 пикселей.
 
 

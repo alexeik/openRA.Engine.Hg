@@ -22,10 +22,14 @@ namespace OpenRA.Graphics
 
 		readonly Vertex[] vertices;
 		public readonly Sheet[] sheets = new Sheet[7];
+		public readonly Sheet2D[] sheets2d = new Sheet2D[7];
 
 		BlendMode currentBlend = BlendMode.None;
 		int nv = 0;
 		int ns = 0;
+
+		int ns2d = 0;
+
 		readonly string rendererID;
 		public SpriteRenderer(string rendereID, Renderer renderer, Shader shader)
 		{
@@ -61,12 +65,18 @@ namespace OpenRA.Graphics
 					shader.SetTexture("Texture{0}".F(i), sheets[i].AssignOrGetOrSetDataGLTexture());
 					sheets[i] = null;
 				}
+				for (var i = 0; i < ns2d; i++)
+				{
+					shader.SetTexture("Texture2D{0}".F(i), sheets2d[i].AssignOrGetOrSetDataGLTexture());
+					sheets2d[i] = null;
+				}
 				renderer.Context.SetBlendMode(currentBlend);
 				shader.PrepareRender();
 				renderer.DrawBatchForVertexesSpriteRendererClasses(vertices, nv, PrimitiveType.TriangleList);
 				renderer.Context.SetBlendMode(BlendMode.None);
 				nv = 0;
 				ns = 0;
+				ns2d = 0;
 			}
 
 		}
@@ -76,7 +86,7 @@ namespace OpenRA.Graphics
 		/// </summary>
 		/// <param name="s">Спрайт, который записывается в VBO.</param>
 		/// <returns>Возвращает индекс Sheet куда попал спрайт  и канал внутри Sheet,так как 1 байтные(только R канал) может быть в R,G,B,A канале текстуры.</returns>
-		public int2 SetRenderStateForSprite(Sprite s)
+		public SamplerPointer SetRenderStateForSprite(Sprite s)
 		{
 			if (rendererID == "WordlSprireRenderer")
 			{
@@ -90,47 +100,99 @@ namespace OpenRA.Graphics
 			currentBlend = s.BlendMode;
 
 			// Check if the sheet (or secondary data sheet) have already been mapped
-			var sheet = s.Sheet;
-			var sheetIndex = 0;
-			for (; sheetIndex < ns; sheetIndex++)
-				if (sheets[sheetIndex] == sheet)
-					break;
+			Sheet sheet;
+			Sheet2D sheet2d;
 
-			var secondarySheetIndex = 0;
-			var ss = s as SpriteWithSecondaryData;
-			if (ss != null)
+			if (s.Sheet == null)
 			{
-				var secondarySheet = ss.SecondarySheet;
-				for (; secondarySheetIndex < ns; secondarySheetIndex++)
-					if (sheets[secondarySheetIndex] == secondarySheet)
+				sheet2d = s.Sheet2D;
+				var sheetIndex = 0;
+				for (; sheetIndex < ns2d; sheetIndex++)
+					if (sheets2d[sheetIndex] == sheet2d)
 						break;
-			}
 
-			// Make sure that we have enough free samplers to map both if needed, otherwise flush
-			var needSamplers = (sheetIndex == ns ? 1 : 0) + (secondarySheetIndex == ns ? 1 : 0);
-			if (ns + needSamplers >= sheets.Length)
-			{
-				Flush();
-				sheetIndex = 0;
+				var secondarySheetIndex = 0;
+				var ss = s as SpriteWithSecondaryData;
 				if (ss != null)
-					secondarySheetIndex = 1;
-			}
+				{
+					var secondarySheet2D = ss.SecondarySheet2D;
+					for (; secondarySheetIndex < ns2d; secondarySheetIndex++)
+						if (sheets2d[secondarySheetIndex] == secondarySheet2D)
+							break;
+				}
 
-			if (sheetIndex >= ns)
+				// Make sure that we have enough free samplers to map both if needed, otherwise flush
+				var needSamplers = (sheetIndex == ns2d ? 1 : 0) + (secondarySheetIndex == ns2d ? 1 : 0);
+				if (ns2d + needSamplers >= sheets2d.Length)
+				{
+					Flush();
+					sheetIndex = 0;
+					if (ss != null)
+						secondarySheetIndex = 1;
+				}
+
+				if (sheetIndex >= ns2d)
+				{
+					sheets2d[sheetIndex] = sheet2d;
+					ns2d += 1;
+				}
+
+				if (secondarySheetIndex >= ns2d && ss != null)
+				{
+					sheets[secondarySheetIndex] = ss.SecondarySheet;
+					ns2d += 1;
+				}
+
+
+
+				return new SamplerPointer() { Stype1 = SamplerType.Sampler2d, num1 = sheetIndex, StypeSec = SamplerType.Sampler2d, numSec = secondarySheetIndex};
+				//new int2(sheetIndex, secondarySheetIndex);
+			}
+			else
 			{
-				sheets[sheetIndex] = sheet;
-				ns += 1;
+				sheet = s.Sheet;
+				var sheetIndex = 0;
+				for (; sheetIndex < ns; sheetIndex++)
+					if (sheets[sheetIndex] == sheet)
+						break;
+
+				var secondarySheetIndex = 0;
+				var ss = s as SpriteWithSecondaryData;
+				if (ss != null)
+				{
+					var secondarySheet = ss.SecondarySheet;
+					for (; secondarySheetIndex < ns; secondarySheetIndex++)
+						if (sheets[secondarySheetIndex] == secondarySheet)
+							break;
+				}
+
+				// Make sure that we have enough free samplers to map both if needed, otherwise flush
+				var needSamplers = (sheetIndex == ns ? 1 : 0) + (secondarySheetIndex == ns ? 1 : 0);
+				if (ns + needSamplers >= sheets.Length)
+				{
+					Flush();
+					sheetIndex = 0;
+					if (ss != null)
+						secondarySheetIndex = 1;
+				}
+
+				if (sheetIndex >= ns)
+				{
+					sheets[sheetIndex] = sheet;
+					ns += 1;
+				}
+
+				if (secondarySheetIndex >= ns && ss != null)
+				{
+					sheets[secondarySheetIndex] = ss.SecondarySheet;
+					ns += 1;
+				}
+
+
+
+				return new SamplerPointer() { Stype1 = SamplerType.Sampler, num1 = sheetIndex, StypeSec = SamplerType.Sampler, numSec = secondarySheetIndex };
 			}
-
-			if (secondarySheetIndex >= ns && ss != null)
-			{
-				sheets[secondarySheetIndex] = ss.SecondarySheet;
-				ns += 1;
-			}
-
-		
-
-			return new int2(sheetIndex, secondarySheetIndex);
+			
 		}
 
 
@@ -157,6 +219,7 @@ namespace OpenRA.Graphics
 			Util.FastCreateQuad(vertices, a, b, c, d, s, samplers, 0, nv);
 			nv += 6;
 		}
+
 		/// <summary>
 		/// Используется для отрисовки вертексного буфера внешнего класса, например TerrainSpriteLayer
 		/// </summary>

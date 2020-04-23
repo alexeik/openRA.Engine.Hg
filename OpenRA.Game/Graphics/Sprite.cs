@@ -33,6 +33,7 @@ namespace OpenRA.Graphics
 		public int SpriteArrayNum;
 		public int Rotate;
 		public bool Stretched;
+		public int TextureArrayIndex=-1;
 
 		public Sprite(Sheet sheet, Rectangle bounds, TextureChannel channel)
 			: this(sheet, bounds, 0, float2.Zero, channel) { }
@@ -59,6 +60,7 @@ namespace OpenRA.Graphics
 
 		public Sprite(Sheet2D sheet, Rectangle bounds, float zRamp, float3 offset, TextureChannel channel, BlendMode blendMode = BlendMode.Alpha)
 		{
+			TextureArrayIndex = sheet.textureArrayIndex;
 			Sheet2D = sheet;
 			Bounds = bounds;
 			Offset = offset;
@@ -79,6 +81,7 @@ namespace OpenRA.Graphics
 	public class SpriteWithSecondaryData : Sprite
 	{
 		public readonly Sheet SecondarySheet;
+		public readonly Sheet2D SecondarySheet2D;
 		public readonly Rectangle SecondaryBounds;
 		public readonly TextureChannel SecondaryChannel;
 		public readonly float SecondaryTop, SecondaryLeft, SecondaryBottom, SecondaryRight;

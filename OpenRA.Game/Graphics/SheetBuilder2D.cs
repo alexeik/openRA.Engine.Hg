@@ -191,9 +191,10 @@ namespace OpenRA.Graphics
 				//}
 				//else
 				//	channel = next.Value;
-
-				NextSheet();
+				textureArray = currentSheet2D.texture; // присваиваем текстуру от первого sheet ,так как текстуры имеютс вязь sheet<->texture
 				currentSheet2D.ReleaseBuffer();
+				NextSheet();
+			
 				currentSheet2D = CreateNewSheet(SheetStoreType, Game.Settings.Graphics.SheetSize); //унаследует TextureArrayIndex в новый Sheet2D
 				sheetsOnCpu.Add(currentSheet2D);
 				channel = SheetStoreType == SheetType.Indexed ? TextureChannel.Red : TextureChannel.RGBA; // пишем теперь всегда в канал Red

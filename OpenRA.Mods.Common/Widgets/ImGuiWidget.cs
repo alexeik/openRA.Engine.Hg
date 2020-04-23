@@ -22,7 +22,7 @@ namespace OpenRA.Mods.Common.Widgets
 			ImGuiSetup();
 			fpsTimer = Stopwatch.StartNew();
 		}
-		int2 imguifonttextureLocation;
+		SamplerPointer imguifonttextureLocation;
 
 		public void ImGuiSetup()
 		{
@@ -209,7 +209,7 @@ namespace OpenRA.Mods.Common.Widgets
 							// worldtoIGposl = worldtoIGposl + new float3(this.Bounds.X+100, this.Bounds.Y+100, 0) ;
 							// var xy = wr.ScreenPxPosition(pos) + wr.ScreenPxOffset(offset) - (0.5f * scale * sprite.Size.XY).ToInt2();
 							// Console.WriteLine("x: " + xy.X + " y: " + xy.Y + " | offX:" + sre.sprite.Offset.X + " offY:" + sre.sprite.Offset.Y +" |SpriteRenderable " + this.Actor.Info.Name + " owner:" + this.Actor.Owner);
-							int2 spritelocation = Game.Renderer.ImguiSpriteRenderer.SetRenderStateForSprite(sre.sprite);
+							SamplerPointer spritelocation = Game.Renderer.ImguiSpriteRenderer.SetRenderStateForSprite(sre.sprite);
 							// OpenRA.Graphics.Util.FastCreateQuadImGui(tempve, new float3(this.Bounds.X+ 16 * sre.Offset.X / 1024  + sre.sprite.Offset.X, this.Bounds.Y + 16 * sre.Offset.Y  / 1024  + sre.sprite.Offset.Y, 0) + sre.sprite.FractionalOffset * sre.sprite.Size, sre.sprite, new int2(4, 0), pr.TextureIndex, nv, sre.sprite.Size);
 
 							OpenRA.Graphics.Util.FastCreateQuadImGui(tempve, new float3(16 + vertbuf[y].pos.X + 16 * sre.Offset.X / 1024 + sre.sprite.Offset.X, 16 + vertbuf[y].pos.Y + 16 * sre.Offset.Y / 1024 + sre.sprite.Offset.Y, 0), sre.sprite, spritelocation, pr.TextureIndex, nv, sre.sprite.Size);
@@ -244,7 +244,7 @@ namespace OpenRA.Mods.Common.Widgets
 					else
 					{
 						imguifonttextureLocation = Game.Renderer.ImguiSpriteRenderer.SetRenderStateForSprite(sp);
-						ve[i] = new Vertex(vertbuf[y].pos.X, vertbuf[y].pos.Y, 0, vertbuf[y].uv.X, vertbuf[y].uv.Y, 0f, 0f, imguifonttextureLocation.X, 0f , 4f, 0, c.R / 255f, c.G / 255f, c.B / 255f, c.A / 255f);
+						ve[i] = new Vertex(vertbuf[y].pos.X, vertbuf[y].pos.Y, 0, vertbuf[y].uv.X, vertbuf[y].uv.Y, 0f, 0f, imguifonttextureLocation.num1, 0f , 4f, 0, c.R / 255f, c.G / 255f, c.B / 255f, c.A / 255f);
 					}
 				}
 

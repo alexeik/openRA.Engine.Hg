@@ -10,7 +10,12 @@ uniform sampler2D Texture4;
 uniform sampler2D Texture5;
 uniform sampler2D Texture6;
 uniform sampler2D Palette;
+
 uniform sampler2DArray TextureFontMSDF;
+
+uniform sampler2DArray Texture2D0;
+uniform sampler2DArray Texture2D1;
+uniform sampler2DArray Texture2D2;
 
 uniform bool EnableDepthPreview;
 uniform float DepthTextureScale;
@@ -30,6 +35,8 @@ in vec4 vPalettedFraction;
 in vec2 fragXY;
 in vec2 StartUV;
 in vec2 EndUV;
+in float VertexTexMetadataOption2;
+in float TextureArrayIndex;
 in float DrawMode;
 in float PaletteIndex;
 
@@ -77,18 +84,41 @@ void main()
 		
 	if (DrawMode==0.0) // рисует пиксели из RGBA текстуры
 	{
-	 vec4 x = Sample(vTexSampler.t, vTexCoord.st); //возвращает структуру (R,G,B,A) из текстуры
+		vec4 x;
+		if (VertexTexMetadataOption2==0)
+		{
+			x = Sample(vTexSampler.t, vTexCoord.st); //пишет в bgra порядке в текстуру
+		}
+		else
+		{
+			x = texture(Texture2D0,vec3(vTexCoord.st,TextureArrayIndex));
+		}
+		
+	 //vec4 x = Sample(vTexSampler.t, vTexCoord.st); //возвращает структуру (R,G,B,A) из текстуры
 	//vec4 c = vRGBAFraction * x ;
-	 c =  x ; // vRGBAFraction всегда 1,1,1,1
+		c =  x ; // vRGBAFraction всегда 1,1,1,1
 
 	}
 	
 	if (DrawMode==1.0) // рисует пиксели из палитры
 	{
-		vec4 x = Sample(vTexSampler.t, vTexCoord.st);
+		vec4 x;
+		vec2 p;
+		if (VertexTexMetadataOption2==0)
+		{
+			x = Sample(vTexSampler.t, vTexCoord.st);
+			p = vec2(dot(x, vChannelMask), PaletteIndex);  
+			
+		}
+		else
+		{
+			x = texture(Texture2D0,vec3(vTexCoord.st,TextureArrayIndex));
+			p = vec2(x.r, PaletteIndex);  
+		}
+		//vec4 x = Sample(vTexSampler.t, vTexCoord.st);
 		
 		//vTexMetadata.s вертикальный индекс палитры содержит. 
-		vec2 p = vec2(dot(x, vChannelMask), PaletteIndex);  
+		//vec2 p = vec2(dot(x, vChannelMask), PaletteIndex);  
 		
 		//vec2 p = vec2(dot(x, vec4(1,0,0,0)), vTexMetadata.s); //статичное определение маски, всегда в R канале
 		// c = vec4(1,1,1,1) * texture2D(Palette, p) ;
@@ -117,7 +147,7 @@ void main()
 		//vec4 c = vColorFraction * vTexCoord; 
 		 vec4 x = Sample(vTexSampler.t, vTexCoord.st);
 		 //vec4 x = texture2D(Texture1,vTexCoord.st); // vColorFraction всегда 1,1,1,1
-		 vec2 p = vec2(dot(x, vChannelMask), PaletteIndex);
+		 vec2 p = vec2(x.r, PaletteIndex);
 		 c = vec4(1,1,1,1) * texture2D(Palette, p) ;
 	}
 	
@@ -127,7 +157,8 @@ void main()
 	
 	 vec2 uv = StartUV + fract(vTexCoord.st) * spriteRange;
 	 
-	 vec4 x = Sample(vTexSampler.t,uv);
+	 //vec4 x = Sample(vTexSampler.t,uv);
+	 vec4 x = texture(Texture2D0,vec3(uv,TextureArrayIndex)); //переставляет тут, так как в FastCopyIntoChannel r=b , b=r
 
 	 c =  x ; 
 
@@ -142,8 +173,9 @@ void main()
 	
 	  vec4 x;
 
-	 x = Sample(vTexSampler.t, uv); //забираем 4 байта из текстуры
-	 vec2 p = vec2(dot(x, vChannelMask), PaletteIndex);   // определяем байт в котором указатель на цвет, через vChannelMask - укажет единичкой, какой байт использовать)
+	 //x = Sample(vTexSampler.t, uv); //забираем 4 байта из текстуры
+	 x=texture(Texture2D0,vec3(uv,TextureArrayIndex));
+	 vec2 p = vec2(x.r, PaletteIndex);   // определяем байт в котором указатель на цвет, через vChannelMask - укажет единичкой, какой байт использовать)
 	
 	
 	 c =  texture2D(Palette, p) ;//запрос цвета в палитер; 
@@ -163,9 +195,10 @@ void main()
 	}
 	
 		
-	if (DrawMode==9.0)
+	if (DrawMode==9.0) //dump texture to png
 	{
-		c=texture2D(Texture0, vTexCoord);
+		 c=texture(Texture2D0,vec3(vTexCoord,TextureArrayIndex));
+		//c=texture2D(Texture0, vTexCoord);
 		//c=vec4(1,1,1,1);
 	}	
 	

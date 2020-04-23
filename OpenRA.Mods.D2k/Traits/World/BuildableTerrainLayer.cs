@@ -51,7 +51,7 @@ namespace OpenRA.Mods.D2k.Traits
 		{
 			theater = wr.Theater;
 			bi = w.WorldActor.Trait<BuildingInfluence>();
-			Sheet sh;
+			Sheet2D sh;
 			if (string.IsNullOrEmpty(theater.tileset.MegaTexture))
 			{
 				sh = theater.Sheet;

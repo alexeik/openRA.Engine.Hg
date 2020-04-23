@@ -20,9 +20,11 @@ namespace OpenRA.Graphics
 	public sealed class TerrainSpriteLayer : IDisposable
 	{
 		public readonly Sheet[] sheets=new Sheet[7];
+		public readonly Sheet2D[] sheets2d = new Sheet2D[7];
+		
 		public readonly BlendMode BlendMode;
 
-		readonly Sprite emptySprite;
+		Sprite emptySprite;
 
 		readonly VertexBuffer<Vertex> vertexBuffer;
 		readonly Vertex[] vertices;
@@ -35,7 +37,7 @@ namespace OpenRA.Graphics
 
 		readonly PaletteReference palette;
 		public string ownername;
-		public TerrainSpriteLayer(World world, WorldRenderer wr, Sheet sheet, BlendMode blendMode, PaletteReference palette, bool restrictToBounds, string ownername)
+		public TerrainSpriteLayer(World world, WorldRenderer wr, Sheet2D sheet, BlendMode blendMode, PaletteReference palette, bool restrictToBounds, string ownername)
 		{
 			// Так как все вертексы хранятся плоским списком, то приходится отправлять в рендер всю ширину карты. Так как нельзя вырезать регион из плоского списка по Ширине
 			// Поэтому отрезается только по высоте. А ширина учитывается полностью.
@@ -50,14 +52,115 @@ namespace OpenRA.Graphics
 
 			vertices = new Vertex[TerrainFullRowLenInVertexRowsNums * map.MapSize.Y];
 			vertexBuffer = Game.Renderer.Context.CreateVertexBuffer(vertices.Length, "TerrainSpriteLayer");
-			emptySprite = new Sprite(sheet, Rectangle.Empty, TextureChannel.Alpha);
+			if (emptySprite == null)
+			{
+				emptySprite = new Sprite(sheet, Rectangle.Empty, TextureChannel.Alpha);
+			}
 			vertexBuffer.ownername += "->" + ownername;
 			wr.PaletteInvalidated += UpdatePaletteIndices;
 		}
 
 		public int ns;
+		public int ns2d;
 
-		public int2 SetRenderStateForSprite(Sprite s)
+		public SamplerPointer SetRenderStateForSprite(Sprite s)
+		{
+
+			// Check if the sheet (or secondary data sheet) have already been mapped
+			Sheet sheet;
+			Sheet2D sheet2d;
+
+			if (s.Sheet == null)
+			{
+				sheet2d = s.Sheet2D;
+				var sheetIndex = 0;
+				for (; sheetIndex < ns2d; sheetIndex++)
+					if (sheets2d[sheetIndex] == sheet2d)
+						break;
+
+				var secondarySheetIndex = 0;
+				var ss = s as SpriteWithSecondaryData;
+				if (ss != null)
+				{
+					var secondarySheet2D = ss.SecondarySheet2D;
+					for (; secondarySheetIndex < ns2d; secondarySheetIndex++)
+						if (sheets2d[secondarySheetIndex] == secondarySheet2D)
+							break;
+				}
+
+				// Make sure that we have enough free samplers to map both if needed, otherwise flush
+				var needSamplers = (sheetIndex == ns2d ? 1 : 0) + (secondarySheetIndex == ns2d ? 1 : 0);
+				if (ns2d + needSamplers >= sheets.Length)
+				{
+				
+					sheetIndex = 0;
+					if (ss != null)
+						secondarySheetIndex = 1;
+				}
+
+				if (sheetIndex >= ns2d)
+				{
+					sheets2d[sheetIndex] = sheet2d;
+					ns2d += 1;
+				}
+
+				if (secondarySheetIndex >= ns2d && ss != null)
+				{
+					sheets[secondarySheetIndex] = ss.SecondarySheet;
+					ns2d += 1;
+				}
+
+
+
+				return new SamplerPointer() { Stype1 = SamplerType.Sampler2d, num1 = sheetIndex, StypeSec = SamplerType.Sampler2d, numSec = secondarySheetIndex };
+				//new int2(sheetIndex, secondarySheetIndex);
+			}
+			else
+			{
+				sheet = s.Sheet;
+				var sheetIndex = 0;
+				for (; sheetIndex < ns; sheetIndex++)
+					if (sheets[sheetIndex] == sheet)
+						break;
+
+				var secondarySheetIndex = 0;
+				var ss = s as SpriteWithSecondaryData;
+				if (ss != null)
+				{
+					var secondarySheet = ss.SecondarySheet;
+					for (; secondarySheetIndex < ns; secondarySheetIndex++)
+						if (sheets[secondarySheetIndex] == secondarySheet)
+							break;
+				}
+
+				// Make sure that we have enough free samplers to map both if needed, otherwise flush
+				var needSamplers = (sheetIndex == ns ? 1 : 0) + (secondarySheetIndex == ns ? 1 : 0);
+				if (ns + needSamplers >= sheets.Length)
+				{
+					sheetIndex = 0;
+					if (ss != null)
+						secondarySheetIndex = 1;
+				}
+
+				if (sheetIndex >= ns)
+				{
+					sheets[sheetIndex] = sheet;
+					ns += 1;
+				}
+
+				if (secondarySheetIndex >= ns && ss != null)
+				{
+					sheets[secondarySheetIndex] = ss.SecondarySheet;
+					ns += 1;
+				}
+
+
+
+				return new SamplerPointer() { Stype1 = SamplerType.Sampler, num1 = sheetIndex, StypeSec = SamplerType.Sampler, numSec = secondarySheetIndex };
+			}
+
+		}
+		public int2 SetRenderStateForSprite2(Sprite s)
 		{
 
 			// Check if the sheet (or secondary data sheet) have already been mapped
@@ -136,13 +239,16 @@ namespace OpenRA.Graphics
 					throw new InvalidDataException("Attempted to add sprite with a different blend mode");
 			}
 			else
-				sprite = emptySprite;
+			{
+				
 
+				sprite = emptySprite;
+			}
 
 			// The vertex buffer does not have geometry for cells outside the map
 			if (!map.Tiles.Contains(uv))
 				return;
-			int2 textslot;
+			SamplerPointer textslot;
 			
 
 			var offset = TerrainFullRowLenInVertexRowsNums * uv.V + 6 * uv.U;

@@ -20,6 +20,7 @@ namespace OpenRA.Graphics
 	public class SpriteCache
 	{
 		public readonly SheetBuilder SheetBuilder;
+		public readonly SheetBuilder2D SheetBuilder2D;
 		readonly SpriteLoaderBase[] loaders;
 		readonly IReadOnlyFileSystem fileSystem;
 
@@ -30,6 +31,12 @@ namespace OpenRA.Graphics
 		public SpriteCache(IReadOnlyFileSystem fileSystem, SpriteLoaderBase[] loaders, SheetBuilder sheetBuilder)
 		{
 			SheetBuilder = sheetBuilder;
+			this.fileSystem = fileSystem;
+			this.loaders = loaders;
+		}
+		public SpriteCache(IReadOnlyFileSystem fileSystem, SpriteLoaderBase[] loaders, SheetBuilder2D sheetBuilder)
+		{
+			SheetBuilder2D = sheetBuilder;
 			this.fileSystem = fileSystem;
 			this.loaders = loaders;
 		}
@@ -76,7 +83,8 @@ namespace OpenRA.Graphics
 					{
 						if (framesCandidates[i] != null)
 						{
-							sprite[i] = SheetBuilder.Add(framesCandidates[i]);
+							//sprite[i] = SheetBuilder.Add(framesCandidates[i]);
+							sprite[i] = SheetBuilder2D.Add(framesCandidates[i]);
 							framesCandidates[i] = null;
 						}
 					}

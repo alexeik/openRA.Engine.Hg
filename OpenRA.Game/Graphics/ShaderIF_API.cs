@@ -19,7 +19,7 @@ namespace OpenRA.Graphics
 
 		int nv = 0;
 		int ni = 0;
-		Sheet shtInputSlot1;
+		Sheet2D shtInputSlot1;
 
 		public void AddCommand(int ShaderID, int CurrentFrame, int TotalFrames, int CurrentTime, int TotalTime, int2 iResolutionXY, 
 			float3 TopLeftXYrect, float3 SpriteSize, Sprite SpriteUVCoords,PaletteReference PaletteIndex)
@@ -38,8 +38,8 @@ namespace OpenRA.Graphics
 
 			if (SpriteUVCoords != null)
 			{
-				shtInputSlot1 = SpriteUVCoords.Sheet;
-				this.SetTexture("Texture0", shtInputSlot1.AssignOrGetOrSetDataGLTexture()); // заполняем текстуру0 для аргумента шейдера
+				shtInputSlot1 = SpriteUVCoords.Sheet2D;
+				this.SetTexture("Texture2D0", shtInputSlot1.AssignOrGetOrSetDataGLTexture()); // заполняем текстуру0 для аргумента шейдера
 
 				ni = 0;
 				//Vertex mapping xyz,ShaderID,CurrentFrame,TotalFrames, iTime, TotalTime,iResolutionXY, TextureInputSlot , TextureStoreChannel,SpriteUVCoords
@@ -55,6 +55,7 @@ namespace OpenRA.Graphics
 				{
 					TextureStoreChannel = (byte)SpriteUVCoords.Channel;
 				}
+				TextureStoreChannel = SpriteUVCoords.TextureArrayIndex;
 			}
 
 			if (SpriteUVCoords == null)

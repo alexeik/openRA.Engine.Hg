@@ -11,6 +11,9 @@ uniform sampler2D Texture5;
 uniform sampler2D Texture6;
 uniform sampler2D Palette;
 uniform sampler2DArray TextureFontMSDF;
+uniform sampler2DArray Texture2D0;
+uniform sampler2DArray Texture2D1;
+uniform sampler2DArray Texture2D2;
 
 uniform bool EnableDepthPreview;
 uniform float DepthTextureScale;
@@ -24,7 +27,7 @@ in float TotalTime;
  
 in vec2 iResolutionXY;
 in float TextureInputSlot;
-in vec4 TextureStoreChannel;
+in float TextureStoreChannel;
 in vec2 SpriteUVCoords;
 in float PaletteIndex;
 in vec2 fragXY;
@@ -57,7 +60,8 @@ void main()
 	{
 		
 		vec4 pixel_palette_shortcut=Sample(TextureInputSlot,SpriteUVCoords);
-		vec4 pixel_from_palette=texture(Palette,vec2(dot(pixel_palette_shortcut,TextureStoreChannel),PaletteIndex));
+		pixel_palette_shortcut = texture(Texture2D0,vec3(SpriteUVCoords,TextureStoreChannel));
+		vec4 pixel_from_palette=texture(Palette,vec2(pixel_palette_shortcut.r,PaletteIndex));
 		//pixel_palette_shortcut.r компоненту нужно регулировать, так как пиксели храняться
 		//в разных каналах r g b a.
 		vec2 uv = fragXY;
@@ -84,7 +88,8 @@ void main()
 	if (ShaderID==4)
 	{
 		vec4 pixel_palette_shortcut=Sample(TextureInputSlot,SpriteUVCoords);
-		vec4 pixel_from_palette=texture(Palette,vec2(dot(pixel_palette_shortcut,TextureStoreChannel),PaletteIndex));
+		pixel_palette_shortcut = texture(Texture2D0,vec3(SpriteUVCoords,TextureStoreChannel));
+		vec4 pixel_from_palette=texture(Palette,vec2(pixel_palette_shortcut.r,PaletteIndex));
 		//pixel_palette_shortcut.r компоненту нужно регулировать, так как пиксели храняться
 		//в разных каналах r g b a.
 		vec2 uv = fragXY;

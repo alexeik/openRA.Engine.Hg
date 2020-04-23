@@ -28,7 +28,7 @@ out float TotalTime;
  
 out vec2 iResolutionXY;
 out float TextureInputSlot;
-out vec4 TextureStoreChannel;
+out float TextureStoreChannel;
 out vec2 SpriteUVCoords;
 out float PaletteIndex;
 out vec2 fragXY;
@@ -75,7 +75,7 @@ void main()
 	TotalTime=vTotalTime;
 	iResolutionXY=viResolutionXY;
 	TextureInputSlot=vTextureInputSlot;
-	TextureStoreChannel=SelectStoreChannel(vTextureStoreChannel);
+	TextureStoreChannel=vTextureStoreChannel;
 	SpriteUVCoords=vSpriteUVCoords;
 	PaletteIndex=vPaletteIndex;
 
