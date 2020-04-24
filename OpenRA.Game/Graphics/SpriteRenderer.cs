@@ -50,14 +50,6 @@ namespace OpenRA.Graphics
 
 		public void Flush()
 		{
-			if (Game.Renderer.PauseRender)
-			{
-				return;
-			}
-			if (rendererID == "WorldSpriteRenderer")
-			{
-
-			}
 			if (nv > 0)
 			{
 				for (var i = 0; i < ns; i++)
