@@ -16,8 +16,8 @@ using OpenRA.Primitives;
 
 namespace OpenRA.Graphics
 {
-	using Sequences = IReadOnlyDictionary<string, Lazy<IReadOnlyDictionary<string, ISpriteSequence>>>;
-	using UnitSequences = Lazy<IReadOnlyDictionary<string, ISpriteSequence>>;
+	using Sequences = IReadOnlyDictionary<string, IReadOnlyDictionary<string, ISpriteSequence>>;
+	using UnitSequences = IReadOnlyDictionary<string, ISpriteSequence>;
 
 	public interface ISpriteSequence
 	{
@@ -88,7 +88,7 @@ namespace OpenRA.Graphics
 				throw new InvalidOperationException("Unit `{0}` does not have any sequences defined in sequences\\*.yaml".F(unitName));
 
 			ISpriteSequence seq;
-			if (!unitSeq.Value.TryGetValue(sequenceName, out seq))
+			if (!unitSeq.TryGetValue(sequenceName, out seq))
 				throw new InvalidOperationException("Unit `{0}` does not have a sequence named `{1}` in sequences\\*.yaml".F(unitName, sequenceName));
 
 			return seq;
@@ -105,7 +105,7 @@ namespace OpenRA.Graphics
 			if (!sequences.TryGetValue(unitName, out unitSeq))
 				throw new InvalidOperationException("Unit `{0}` does not have any sequences defined.".F(unitName));
 
-			return unitSeq.Value.ContainsKey(sequenceName);
+			return unitSeq.ContainsKey(sequenceName);
 		}
 
 		public IEnumerable<string> Sequences(string unitName)
@@ -114,7 +114,7 @@ namespace OpenRA.Graphics
 			if (!sequences.TryGetValue(unitName, out unitSeq))
 				throw new InvalidOperationException("Unit `{0}` does not have any sequences defined.".F(unitName));
 
-			return unitSeq.Value.Keys;
+			return unitSeq.Keys;
 		}
 
 		Sequences Load(IReadOnlyFileSystem fileSystem, MiniYaml additionalSequences)
@@ -134,7 +134,7 @@ namespace OpenRA.Graphics
 				else
 				{
 					//SpriteCache будет подготовлен в конструкторе класса.
-					t = Exts.Lazy(() => modData.SpriteSequenceLoader.ParseSequences(modData, tileSet, SpriteCache, node));
+					t =  modData.SpriteSequenceLoader.ParseSequences(modData, tileSet, SpriteCache, node);
 					// modData.SpriteSequenceLoader.ParseSequences(modData, tileSet, SpriteCache, node);
 					sequenceCache.Add(key, t);
 					items.Add(node.Key, t);
@@ -163,12 +163,12 @@ namespace OpenRA.Graphics
 				sequences = Load(filesystembounded, yamlBounded);
 			}
 
-			foreach (var unitSeq in sequences.Values)
-			{
-				foreach (var seq in unitSeq.Value.Values)
-				{
-				}
-			}
+			//foreach (var unitSeq in sequences.Values)
+			//{
+			//	foreach (var seq in unitSeq.Value.Values)
+			//	{
+			//	}
+			//}
 		}
 
 		public void Dispose()
