@@ -64,7 +64,7 @@ namespace OpenRA.Graphics
 				if (sprite == null)
 				{
 					TypeDictionary fileMetadata = null;
-					framesCandidates = FrameLoader.GetFrames(fileSystem, filename, loaders, out fileMetadata);
+					framesCandidates = FrameLoader.GetFrames(fileSystem, filename, loaders, out fileMetadata); //загрузит все спрайты из shp,wsa,... файлов в память
 					framesCandidatesStorage[filename] = framesCandidates;
 					metadata[filename] = fileMetadata;
 
