@@ -32,10 +32,16 @@ namespace OpenRA.Mods.Common.Widgets
 			Game.Renderer.SpriteRenderer.DrawSprite(s, pos, p);
 		}
 
+		public static void DrawRGBAShaderFill(Sprite s, float2 pos, PaletteReference p,  float3 rectSize)
+		{
+			Game.Renderer.SpriteRenderer.DrawSprite(s, pos, p, rectSize);
+		}
+
 		public static void DrawRGBAShaderFill(Sprite s, float2 pos, float3 rectSize)
 		{
-			Game.Renderer.SpriteRenderer.DrawSprite(s, pos, 0, rectSize);
+			Game.Renderer.SpriteRenderer.DrawSprite(s, pos, 0,  rectSize);
 		}
+
 
 		public static void DrawSHPCentered(Sprite s, float2 pos, PaletteReference p, int2 iconSize)
 		{
@@ -60,17 +66,19 @@ namespace OpenRA.Mods.Common.Widgets
 		public static void FillRectWithSprite(Rectangle r, Sprite s)
 		{
 
-			if (s.SpriteType == 3) //fill rect with palette sprite
+			if (s.SpriteType == 3) //fill rect with palette sprite 
 			{
-
+				DrawRGBAShaderFill(s, r.Location,  new float3(r.Width, r.Height, 0));
 			}
 			else
 
 			{
 				s.SpriteType = 2; // 2-fill rect with rgba sprite
+				DrawRGBAShaderFill(s, r.Location, new float3(r.Width, r.Height, 0)); // для RGBA
+				
 			}
 
-			DrawRGBAShaderFill(s, r.Location, new float3(r.Width, r.Height, 0));
+			
 
 
 			//Game.Renderer.Flush(); //turn on for debug if any
@@ -96,22 +104,23 @@ namespace OpenRA.Mods.Common.Widgets
 		}
 		public static void FillRectWithSprite(Rectangle r, Sprite s, PaletteReference p)
 		{
-			for (var x = r.Left; x < r.Right; x += (int)s.Size.X)
-				for (var y = r.Top; y < r.Bottom; y += (int)s.Size.Y)
-				{
-					var ss = s;
-					var left = new int2(r.Right - x, r.Bottom - y);
-					if (left.X < (int)s.Size.X || left.Y < (int)s.Size.Y)
-					{
-						var rr = new Rectangle(s.Bounds.Left,
-							s.Bounds.Top,
-							Math.Min(left.X, (int)s.Size.X),
-							Math.Min(left.Y, (int)s.Size.Y));
-						ss = new Sprite(s.Sheet, rr, s.Channel);
-					}
+			DrawRGBAShaderFill(s, r.Location, p,  new float3(r.Width, r.Height, 0));
+			//for (var x = r.Left; x < r.Right; x += (int)s.Size.X)
+			//	for (var y = r.Top; y < r.Bottom; y += (int)s.Size.Y)
+			//	{
+			//		var ss = s;
+			//		var left = new int2(r.Right - x, r.Bottom - y);
+			//		if (left.X < (int)s.Size.X || left.Y < (int)s.Size.Y)
+			//		{
+			//			var rr = new Rectangle(s.Bounds.Left,
+			//				s.Bounds.Top,
+			//				Math.Min(left.X, (int)s.Size.X),
+			//				Math.Min(left.Y, (int)s.Size.Y));
+			//			ss = new Sprite(s.Sheet, rr, s.Channel);
+			//		}
 
-					DrawRGBA(ss, new float2(x, y), p);
-				}
+			//		DrawRGBA(ss, new float2(x, y), p);
+			//	}
 		}
 		public static void FillRectWithColor(Rectangle r, Color c)
 		{
