@@ -66,7 +66,7 @@ namespace OpenRA.Graphics
 			if (cachedSheets != null)
 				foreach (var sheet in cachedSheets.Values)
 					sheet.Dispose();
-
+			cachedSheets2d = null;
 			collections = null;
 			cachedSheets = null;
 			cachedSprites = null;
@@ -221,6 +221,10 @@ namespace OpenRA.Graphics
 			// Cached sprite
 			Dictionary<string, Sprite> cachedCollection;
 			Sprite sprite;
+			if (collectionName=="dropdown")
+			{
+
+			}
 			if (cachedSprites.TryGetValue(collectionName, out cachedCollection) && cachedCollection.TryGetValue(imageName, out sprite))
 				return sprite; //нашли в кешах, возвращаем Sprite
 
@@ -323,7 +327,7 @@ namespace OpenRA.Graphics
 
 				mi.OffsetTop = sheet2d.OffsetY;
 				mi.OffsetLeft = sheet2d.OffsetX;
-				image = mi.GetImage(seqprov.SpriteCache.SheetBuilder2D.Current);
+				image = mi.GetImage(sheet2d.sheet);
 				cachedCollection.Add(imageName, image);
 			}
 			return image;
