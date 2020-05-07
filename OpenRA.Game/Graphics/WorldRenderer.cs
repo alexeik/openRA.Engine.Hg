@@ -20,8 +20,7 @@ namespace OpenRA.Graphics
 {
 	public sealed class WorldRenderer : IDisposable
 	{
-		public static readonly Func<IRenderable, int> RenderableScreenZPositionComparisonKey =
-			r => ZPosition(r.Pos, r.ZOffset);
+		public readonly Func<IRenderable, int> RenderableScreenZPositionComparisonKey;
 
 		public readonly Size TileSize;
 		public readonly int TileScale;
@@ -49,7 +48,7 @@ namespace OpenRA.Graphics
 			Viewport = new Viewport(this, world.Map);
 
 			createPaletteReference = CreatePaletteReference;
-
+			RenderableScreenZPositionComparisonKey = r=> ZPosition(r.Pos, r.ZOffset, World.Map.Grid.Type);
 			var mapGrid = modData.Manifest.Get<MapGrid>();
 			enableDepthBuffer = mapGrid.EnableDepthBuffer;
 
@@ -176,6 +175,7 @@ namespace OpenRA.Graphics
 			onScreenActors.UnionWith(World.ScreenMap.RenderableActorsInBox(Viewport.TopLeft, Viewport.BottomRight));
 			var renderables = GenerateRenderables();
 			var bounds = Viewport.GetScissorBounds(World.Type != WorldType.Editor);
+			
 			Game.Renderer.EnableScissor(bounds);
 
 			if (enableDepthBuffer)
@@ -187,8 +187,8 @@ namespace OpenRA.Graphics
 			Game.Renderer.Flush();
 
 			for (var i = 0; i < renderables.Count; i++)
-				renderables[i].Render(this);
-
+				renderables[i].Render(this); //пишет в WorldSpriteRenderer инфу о каждом renderables
+			Game.Renderer.Flush();
 			if (enableDepthBuffer)
 				Game.Renderer.ClearDepthBuffer();
 
@@ -264,7 +264,7 @@ namespace OpenRA.Graphics
 
 		public float3 Screen3DPosition(WPos pos)
 		{
-			var z = ZPosition(pos, 0) * (float)TileSize.Height / TileScale;
+			var z = ZPosition(pos, 0, World.Map.Grid.Type) * (float)TileSize.Height / TileScale;
 			return new float3((float)TileSize.Width * pos.X / TileScale, (float)TileSize.Height * (pos.Y - pos.Z) / TileScale, z);
 		}
 
@@ -307,11 +307,15 @@ namespace OpenRA.Graphics
 
 		public float ScreenZPosition(WPos pos, int offset)
 		{
-			return ZPosition(pos, offset) * (float)TileSize.Height / TileScale;
+			return ZPosition(pos, offset, World.Map.Grid.Type) * (float)TileSize.Height / TileScale;
 		}
 
-		static int ZPosition(WPos pos, int offset)
+		public int ZPosition(WPos pos, int offset, MapGridType gridtype)
 		{
+			if (gridtype == MapGridType.Rectangular)
+			{
+				return pos.Z + offset; //убираем зависимость Z координаты от ряда в котором рендерится спрайт.
+			}
 			return pos.Y + pos.Z + offset;
 		}
 
