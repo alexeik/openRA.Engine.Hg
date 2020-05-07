@@ -27,8 +27,8 @@ namespace OpenRA.Mods.Common.Orders
 		}
 
 		void IOrderGenerator.Tick(World world) { Tick(world); }
-		IEnumerable<IRenderable> IOrderGenerator.Render(WorldRenderer wr, World world) { return Render(wr, world); }
-		IEnumerable<IRenderable> IOrderGenerator.RenderAboveShroud(WorldRenderer wr, World world) { return RenderAboveShroud(wr, world); }
+		IEnumerable<IRenderable> IOrderGenerator.Render(WorldRenderer wr, World world) { return Render(wr, world); } // используется в WorldRenederer.GenerateRenderables
+		IEnumerable<IRenderable> IOrderGenerator.RenderAboveShroud(WorldRenderer wr, World world) { return RenderAboveShroud(wr, world); }  // используется в WorldRenederer.GenerateOverlayRenderables
 		string IOrderGenerator.GetCursor(World world, CPos cell, int2 worldPixel, MouseInput mi) { return GetCursor(world, cell, worldPixel, mi); }
 		void IOrderGenerator.Deactivate() { }
 
