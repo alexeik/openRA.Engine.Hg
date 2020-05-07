@@ -45,7 +45,14 @@ namespace OpenRA.Mods.Common.Activities
 				if (ChildActivity != null)
 					return this;
 			}
+			
 
+			if (isDocking)
+			{
+				var proc2 = harv.LastLinkedProc;
+				foreach (var n in proc2.TraitsImplementing<INotifyHarvesterAction>())
+					n.Docked();
+			}
 			if (IsCanceling || isDocking)
 				return NextActivity;
 
@@ -68,6 +75,9 @@ namespace OpenRA.Mods.Common.Activities
 			{
 				foreach (var n in self.TraitsImplementing<INotifyHarvesterAction>())
 					n.MovingToRefinery(self, proc, new FindAndDeliverResources(self));
+				var n2 = proc.TraitsImplementing<INotifyHarvesterAction>();
+				foreach (var n in n2)
+					n.MovingToRefinery(self, proc, null);
 
 				QueueChild(self, movement.MoveTo(proc.Location + iao.DeliveryOffset, 0), true);
 				return this;
@@ -80,6 +90,7 @@ namespace OpenRA.Mods.Common.Activities
 				iao.OnDock(self, this);
 				return this;
 			}
+			
 
 			return NextActivity;
 		}
