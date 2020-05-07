@@ -25,7 +25,7 @@ namespace OpenRA.Graphics
 		readonly IReadOnlyFileSystem fileSystem;
 
 		readonly Dictionary<string, List<Sprite[]>> sprites = new Dictionary<string, List<Sprite[]>>();
-		readonly Dictionary<string, ISpriteFrame[]> framesCandidatesStorage = new Dictionary<string, ISpriteFrame[]>();
+		readonly Dictionary<string, ISpriteFrame[]> ParsedFramesStorage = new Dictionary<string, ISpriteFrame[]>();
 		readonly Dictionary<string, TypeDictionary> metadata = new Dictionary<string, TypeDictionary>();
 
 		public SpriteCache(IReadOnlyFileSystem fileSystem, SpriteLoaderBase[] loaders, SheetBuilder sheetBuilder)
@@ -54,9 +54,9 @@ namespace OpenRA.Graphics
 				var allSprites = sprites.GetOrAdd(filename);
 				var sprite = allSprites.FirstOrDefault();
 
-				ISpriteFrame[] framesCandidates;
-				if (!framesCandidatesStorage.TryGetValue(filename, out framesCandidates))
-					framesCandidates = null;
+				ISpriteFrame[] newFramesFromFile;
+				if (!ParsedFramesStorage.TryGetValue(filename, out newFramesFromFile))
+					newFramesFromFile = null;
 
 				// This is the first time that the file has been requested
 				// Load all of the frames into the unused buffer and initialize
@@ -64,11 +64,11 @@ namespace OpenRA.Graphics
 				if (sprite == null)
 				{
 					TypeDictionary fileMetadata = null;
-					framesCandidates = FrameLoader.GetFrames(fileSystem, filename, loaders, out fileMetadata); //загрузит все спрайты из shp,wsa,... файлов в память
-					framesCandidatesStorage[filename] = framesCandidates;
+					newFramesFromFile = FrameLoader.GetFrames(fileSystem, filename, loaders, out fileMetadata); //загрузит все спрайты из shp,wsa,... файлов в память
+					ParsedFramesStorage[filename] = newFramesFromFile;
 					metadata[filename] = fileMetadata;
 
-					sprite = new Sprite[framesCandidates.Length];
+					sprite = new Sprite[newFramesFromFile.Length];
 					allSprites.Add(sprite);
 				}
 
@@ -77,21 +77,21 @@ namespace OpenRA.Graphics
 					Enumerable.Range(0, sprite.Length);
 
 				// Load any unused frames into the SheetBuilder
-				if (framesCandidates != null)
+				if (newFramesFromFile != null)
 				{
 					foreach (var i in indices)
 					{
-						if (framesCandidates[i] != null)
+						if (newFramesFromFile[i] != null)
 						{
 							//sprite[i] = SheetBuilder.Add(framesCandidates[i]);
-							sprite[i] = SheetBuilder2D.Add(framesCandidates[i]);
-							framesCandidates[i] = null;
+							sprite[i] = SheetBuilder2D.Add(newFramesFromFile[i]);
+							newFramesFromFile[i] = null;
 						}
 					}
 
 					// All frames have been loaded
-					if (framesCandidates.All(f => f == null))
-						framesCandidatesStorage.Remove(filename);
+					if (newFramesFromFile.All(f => f == null))
+						ParsedFramesStorage.Remove(filename);
 				}
 
 				return sprite;
