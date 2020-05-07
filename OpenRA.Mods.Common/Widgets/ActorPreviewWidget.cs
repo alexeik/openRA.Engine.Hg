@@ -74,7 +74,7 @@ namespace OpenRA.Mods.Common.Widgets
 		{
 			renderables = preview
 				.SelectMany(p => p.Render(worldRenderer, WPos.Zero))
-				.OrderBy(WorldRenderer.RenderableScreenZPositionComparisonKey)
+				.OrderBy(worldRenderer.RenderableScreenZPositionComparisonKey)
 				.Select(r => r.PrepareRender(worldRenderer))
 				.ToArray();
 		}
