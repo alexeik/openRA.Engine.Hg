@@ -191,8 +191,9 @@ namespace OpenRA.Graphics
 				//}
 				//else
 				//	channel = next.Value;
-				textureArray = currentSheet2D.texture; // присваиваем текстуру от первого sheet ,так как текстуры имеютс вязь sheet<->texture
+			
 				currentSheet2D.ReleaseBuffer();
+				textureArray = currentSheet2D.texture; // присваиваем текстуру от первого sheet ,так как текстуры имеютс вязь sheet<->texture
 				NextSheet();
 			
 				currentSheet2D = CreateNewSheet(SheetStoreType, Game.Settings.Graphics.SheetSize); //унаследует TextureArrayIndex в новый Sheet2D
