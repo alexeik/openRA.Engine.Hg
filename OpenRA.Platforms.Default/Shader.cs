@@ -272,6 +272,7 @@ namespace OpenRA.Platforms.Default
 			{
 				if ((kv.Value as Texture).disposed)
 				{
+					Console.WriteLine("Shader" + sharerfilename + " has Disposed texture! Error. Needs check.");
 					continue; // on world restart some Textures can be Disposed. But assigned to Shader.
 					// TODO: On Dispose Texture from Sheets need to add Clear textures on Shaders
 				}
@@ -315,7 +316,11 @@ namespace OpenRA.Platforms.Default
 
 		public void ClearTextures()
 		{
-			textures.Clear();
+			foreach (var kv in textures)
+			{
+
+			}
+				textures.Clear();
 		}
 
 		public override void SetBool(string name, bool value)

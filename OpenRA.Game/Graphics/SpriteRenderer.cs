@@ -46,6 +46,20 @@ namespace OpenRA.Graphics
 		public void ClearTexturesShader()
 		{
 			shader.ClearTextures();
+			//foreach ( Sheet s in sheets)
+			//{
+			//	if (s != null)
+			//	{
+			//		s.Dispose();
+			//	}
+			//}
+			//foreach (Sheet2D s in sheets2d)
+			//{
+			//	if (s != null)
+			//	{
+			//		s.Dispose();
+			//	}
+			//}
 		}
 
 		public void Flush()

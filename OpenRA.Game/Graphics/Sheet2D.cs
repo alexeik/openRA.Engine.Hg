@@ -127,7 +127,7 @@ namespace OpenRA.Graphics
 			if (texture == null)
 				data = new byte[4 * Size.Width * Size.Height];
 			else
-				data = texture.GetData();
+				data = texture.GetData(textureArrayIndex);
 			releaseBufferOnCommit = false;
 		}
 
@@ -157,7 +157,10 @@ namespace OpenRA.Graphics
 		public void Dispose()
 		{
 			if (texture != null)
+			{
 				texture.Dispose();
+				texture = null;
+			}
 		}
 	}
 }

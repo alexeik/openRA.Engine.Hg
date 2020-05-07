@@ -93,19 +93,19 @@ namespace OpenRA.Platforms.Default
 			OpenGL.glBindTexture(OpenGL.GL_TEXTURE_2D_ARRAY, 0);
 		}
 
-		public override byte[] GetData()
+		public  byte[] GetData(int slice)
 		{
 			VerifyThreadAffinity();
-			var data = new byte[4 * Size.Width * Size.Height];
+			var data = new byte[(CapacityReserved+1) * 4 * Size.Width * Size.Height];
 
 			OpenGL.CheckGLError();
-			OpenGL.glBindTexture(OpenGL.GL_TEXTURE_2D, texture);
+			OpenGL.glBindTexture(OpenGL.GL_TEXTURE_2D_ARRAY, texture);
 			unsafe
 			{
 				fixed (byte* ptr = &data[0])
 				{
 					var intPtr = new IntPtr((void*)ptr);
-					OpenGL.glGetTexImage(OpenGL.GL_TEXTURE_2D, 0, OpenGL.GL_BGRA,
+					OpenGL.glGetTexImage(OpenGL.GL_TEXTURE_2D, slice, OpenGL.GL_BGRA,
 						OpenGL.GL_UNSIGNED_BYTE, intPtr);
 				}
 			}

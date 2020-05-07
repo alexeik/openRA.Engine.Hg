@@ -131,6 +131,7 @@ namespace OpenRA.Graphics
 		public void Dispose()
 		{
 			Texture.Dispose();
+			Texture = null;
 		}
 	}
 }
