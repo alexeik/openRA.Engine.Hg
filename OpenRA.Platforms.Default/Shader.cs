@@ -318,9 +318,13 @@ namespace OpenRA.Platforms.Default
 		{
 			foreach (var kv in textures)
 			{
+				if ((kv.Value as Texture).disposed)
+				{
 
+				}
+				
 			}
-				textures.Clear();
+			textures.Clear();
 		}
 
 		public override void SetBool(string name, bool value)

@@ -64,6 +64,10 @@ namespace OpenRA.Graphics
 
 		public void Flush()
 		{
+			if (rendererID=="WorldSpriteRenedrer")
+			{
+
+			}
 			if (nv > 0)
 			{
 				for (var i = 0; i < ns; i++)
@@ -247,6 +251,10 @@ namespace OpenRA.Graphics
 		}
 		public void DrawVertexBuffer(VertexBuffer<Vertex> buffer, int start, int length, PrimitiveType type, Sheet[] sheets, BlendMode blendMode)
 		{
+			if (rendererID == "WorldSpriteRenderer")
+			{
+
+			}
 			for (var i = 0; i < sheets.Length; i++)
 			{
 				if (sheets[i] == null)

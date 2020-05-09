@@ -102,7 +102,14 @@ namespace OpenRA
 			var resolved = source.Where(s => !s.Dependencies.Any()).ToList();
 			var unresolved = source.Except(resolved);
 
-			var testResolve = new Func<Type, Type, bool>((a, b) => a == b || a.IsAssignableFrom(b));
+			var testResolve = new Func<Type, Type, bool>((a, b) =>
+			{
+				if (a.Name.Contains("D2Resource")) 
+				{
+				}
+				return a == b || a.IsAssignableFrom(b);
+			}
+			);
 
 			// This query detects which unresolved traits can be immediately resolved as all their direct dependencies are met.
 			var more = unresolved.Where(u =>
