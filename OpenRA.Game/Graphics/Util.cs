@@ -61,6 +61,10 @@ namespace OpenRA.Graphics
 
 			if (samplers.Stype1 == SamplerType.Sampler2d)
 			{
+				if (r.TextureArrayIndex == 5 )
+				{
+
+				}
 				TextureStoreChannel = r.TextureArrayIndex;
 				samplerType = 1;
 			}
@@ -125,6 +129,14 @@ namespace OpenRA.Graphics
 				r1 = (int)((b.X - a.X) / r.Size.X);
 				//b1 = r.Bottom + (b.X - a.X) / r.Size.X;
 				t1 = (int)((c.Y - a.Y) / r.Size.Y);
+				if (t1 == 0)
+				{
+					t1 = 1;
+				}
+				if (r1 == 0)
+				{
+					r1 = 1;
+				}
 
 				vertices[nv] = new Vertex(a, 0, 0, sl, st, paletteTextureIndex, 0, drawmode, 0, TextureStoreChannel, TextureSlot, SecTextureStoreChannel, SecTextureSlot, r.Left, r.Top, r.Right, r.Bottom);
 				vertices[nv + 1] = new Vertex(b, r1, 0, sr, st, paletteTextureIndex, 0, drawmode, 0, TextureStoreChannel, TextureSlot, SecTextureStoreChannel, SecTextureSlot, r.Left, r.Top, r.Right, r.Bottom);
