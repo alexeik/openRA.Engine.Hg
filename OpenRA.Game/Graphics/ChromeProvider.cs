@@ -238,8 +238,14 @@ namespace OpenRA.Graphics
 			MappedImage mi;
 			if (!collection.Regions.TryGetValue(imageName, out mi))
 				return null;
+			if (World == null)
+			{
 
-			seqprov = World.Map.Rules.Sequences;
+			}
+			else
+			{
+				seqprov = World.Map.Rules.Sequences;
+			}
 			// по идее, можно написать в chrome.yaml разные ресурсы игры cps и т.п. , они будут загружаться , только при обращении в этот метод.
 			// при обращении за cps , переменная wolrd уже будет заполнена.
 			bool switch2Seq = false;
