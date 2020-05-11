@@ -50,8 +50,11 @@ namespace OpenRA.Mods.Common.Activities
 			if (isDocking)
 			{
 				var proc2 = harv.LastLinkedProc;
-				foreach (var n in proc2.TraitsImplementing<INotifyHarvesterAction>())
-					n.Docked();
+				if (proc2 != null)
+				{
+					foreach (var n in proc2.TraitsImplementing<INotifyHarvesterAction>())
+						n.Docked();
+				}
 			}
 			if (IsCanceling || isDocking)
 				return NextActivity;
