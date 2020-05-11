@@ -68,7 +68,10 @@ namespace OpenRA
 		public Download(string url, Action<DownloadProgressChangedEventArgs> onProgress, Action<DownloadDataCompletedEventArgs> onComplete)
 		{
 			EnableTLS12OnWindows();
-
+			if (!url.Contains("http://"))
+			{
+				return;
+			}
 			lock (syncObject)
 			{
 				wc = new WebClient { Proxy = null };

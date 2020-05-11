@@ -393,8 +393,10 @@ namespace OpenRA.Mods.Common.Widgets.Logic
 				Uri.EscapeUriString(Game.EngineVersion),
 				Uri.EscapeUriString(Game.ModData.Manifest.Id),
 				Uri.EscapeUriString(Game.ModData.Manifest.Metadata.Version));
-
-			currentQuery = new Download(queryURL, _ => { }, onComplete);
+			if (queryURL != null)
+			{
+				currentQuery = new Download(queryURL, _ => { }, onComplete);
+			}
 		}
 
 		int GroupSortOrder(GameServer testEntry)
