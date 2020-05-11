@@ -55,15 +55,15 @@
     </Reference>
     <Reference Include="Eluant">
       <HintPath>..\thirdparty\download\Eluant.dll</HintPath>
-      <Private>False</Private>
+      <Private>true</Private>
     </Reference>
     <Reference Include="ICSharpCode.SharpZipLib">
       <HintPath>..\thirdparty\download\ICSharpCode.SharpZipLib.dll</HintPath>
-      <Private>False</Private>
+      <Private>true</Private>
     </Reference>
     <Reference Include="MaxMind.Db">
       <HintPath>..\thirdparty\download\MaxMind.Db.dll</HintPath>
-      <Private>False</Private>
+      <Private>true</Private>
     </Reference>
     <ProjectReference Include="..\OpenRA.BaseTypes\OpenRA.BaseTypes.csproj" />
     <ProjectReference Include="..\OpenRA.Platforms.Default\OpenRA.Platforms.Default.csproj" />
