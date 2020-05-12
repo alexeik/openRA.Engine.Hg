@@ -12,6 +12,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using OpenRA.FileFormats;
 using OpenRA.FileSystem;
 using OpenRA.Primitives;
 
@@ -64,7 +65,10 @@ namespace OpenRA.Graphics
 				if (sprite == null)
 				{
 					TypeDictionary fileMetadata = null;
-					newFramesFromFile = FrameLoader.GetFrames(fileSystem, filename, loaders, out fileMetadata); //загрузит все спрайты из shp,wsa,... файлов в память
+					using (var stream = fileSystem.Open(filename))
+					{
+						newFramesFromFile = FrameLoader.GetFrames(stream, filename, loaders, out fileMetadata); //загрузит все спрайты из shp,wsa,... файлов в память
+					}
 					ParsedFramesStorage[filename] = newFramesFromFile;
 					metadata[filename] = fileMetadata;
 
@@ -84,7 +88,18 @@ namespace OpenRA.Graphics
 						if (newFramesFromFile[i] != null)
 						{
 							//sprite[i] = SheetBuilder.Add(framesCandidates[i]);
-							sprite[i] = SheetBuilder2D.Add(newFramesFromFile[i]);
+							
+							if (filename.Contains("png")) //for Loaders with 4bytes per pixel
+							{
+								using (var stream = fileSystem.Open(filename))
+								{
+									sprite[i] = SheetBuilder2D.Add(new Png(stream));
+								}
+							}
+							else
+							{
+								sprite[i] = SheetBuilder2D.Add(newFramesFromFile[i]);
+							}
 							newFramesFromFile[i] = null;
 						}
 					}

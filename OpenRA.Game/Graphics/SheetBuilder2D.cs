@@ -113,7 +113,7 @@ namespace OpenRA.Graphics
 		}
 		public Sprite Add(Png src)
 		{
-			var rect = Allocate(new Size(src.Width, src.Height));
+			var rect = Allocate(new Size(src.Width, src.Height), TextureChannel.RGBA);
 			Util.FastCopyIntoSprite(rect, src);
 			currentSheet2D.CommitBufferedData();
 			return rect;
@@ -148,6 +148,10 @@ namespace OpenRA.Graphics
 		{ 
 			return Allocate(imageSize, 0, float3.Zero);
 		}
+		public Sprite Allocate(Size imageSize,TextureChannel channel)
+		{
+			return Allocate(imageSize, 0, float3.Zero,channel);
+		}
 
 		/// <summary>
 		/// Резервирует место под SPrite в текстуре opengl
@@ -157,9 +161,17 @@ namespace OpenRA.Graphics
 		/// <param name="zRamp"></param>
 		/// <param name="spriteOffset"></param>
 		/// <returns></returns>
-		public Sprite Allocate(Size imageSize, float zRamp, float3 spriteOffset)
+		public Sprite Allocate(Size imageSize, float zRamp, float3 spriteOffset, TextureChannel overrideChannel = TextureChannel.Red)
 		{
 
+			if (overrideChannel == TextureChannel.RGBA)
+			{
+				channel = TextureChannel.RGBA; //сделано, для случаев, когда спрайты в sequences будут 4 байтовые, то есть из PNG идти.
+			}
+			else
+			{
+				channel = SheetStoreType == SheetType.Indexed ? TextureChannel.Red : TextureChannel.RGBA; // пишем теперь всегда в канал Red
+			}
 			//используется одномерный массив. Поэтому все разбито по Height(row) и смещение внутри row.
 			if (imageSize.Width + p.X > currentSheet2D.Size.Width) //если дошли до смещения равного ширине картинки, то сбрасываем смещение до 0 и делаем переход на высоту равную предыдущей высоте.
 			{
@@ -191,14 +203,14 @@ namespace OpenRA.Graphics
 				//}
 				//else
 				//	channel = next.Value;
-			
+
 				currentSheet2D.ReleaseBuffer();
 				textureArray = currentSheet2D.texture; // присваиваем текстуру от первого sheet ,так как текстуры имеютс вязь sheet<->texture
 				NextSheet();
-			
+
 				currentSheet2D = CreateNewSheet(SheetStoreType, Game.Settings.Graphics.SheetSize); //унаследует TextureArrayIndex в новый Sheet2D
 				sheetsOnCpu.Add(currentSheet2D);
-				channel = SheetStoreType == SheetType.Indexed ? TextureChannel.Red : TextureChannel.RGBA; // пишем теперь всегда в канал Red
+			
 
 
 				rowHeight = imageSize.Height;

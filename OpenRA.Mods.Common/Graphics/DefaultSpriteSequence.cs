@@ -145,7 +145,7 @@ namespace OpenRA.Mods.Common.Graphics
 			Name = animation;
 			Loader = loader;
 			var d = info.ToDictionary();
-			if (sequence=="video1")
+			if (sequence == "video1")
 			{
 
 			}
@@ -475,7 +475,7 @@ namespace OpenRA.Mods.Common.Graphics
 		public int ShadowStart { get; private set; }
 		public int ShadowZOffset { get; private set; }
 		public int[] Frames { get; private set; }
-		public Rectangle Background { get; private set; }
+		//public Rectangle Background { get; private set; }
 		public Rectangle Bounds { get; private set; }
 
 		public readonly uint[] EmbeddedPalette;
@@ -526,9 +526,9 @@ namespace OpenRA.Mods.Common.Graphics
 				Frames = LoadField<int[]>(d, "Frames", null);
 				useClassicFacingFudge = LoadField(d, "UseClassicFacingFudge", false);
 				if (d.ContainsKey("Background"))
-				{ 
+				{
 				}
-				Background = LoadField(d, "Background", new Rectangle(0, 0, 0, 0));
+				Rectangle background = LoadField(d, "Background", new Rectangle(0, 0, 0, 0));
 				var flipX = LoadField(d, "FlipX", false);
 				var flipY = LoadField(d, "FlipY", false);
 
@@ -653,16 +653,46 @@ namespace OpenRA.Mods.Common.Graphics
 					// Apply offset to each sprite in the sequence
 					// Different sequences may apply different offsets to the same frame
 					var src = GetSpriteSrc(modData, tileSet, sequence, animation, info.Value, d);
+					if (sequence.Contains("editor-overlay"))
+					{
+
+					}
 					//sprites = cache[src, getUsedFrames].Select(
 					//	s => s != null ? new Sprite(s.Sheet,
 					//		FlipRectangle(s.Bounds, flipX, flipY), ZRamp,
 					//		new float3(flipX ? -s.Offset.X : s.Offset.X, flipY ? -s.Offset.Y : s.Offset.Y, s.Offset.Z) + offset,
 					//		s.Channel, blendMode) : null).ToArray();
-					sprites = cache[src, getUsedFrames].Select(
-						s => s != null ? new Sprite(s.Sheet2D,
-							FlipRectangle(s.Bounds, flipX, flipY), ZRamp,
-							new float3(flipX ? -s.Offset.X : s.Offset.X, flipY ? -s.Offset.Y : s.Offset.Y, s.Offset.Z) + offset,
-							s.Channel, blendMode) : null).ToArray();
+					if (background.IsEmpty)
+					{
+						sprites = cache[src, getUsedFrames].Select(
+							s => s != null ? new Sprite(s.Sheet2D,
+								FlipRectangle(s.Bounds, flipX, flipY), ZRamp,
+								new float3(flipX ? -s.Offset.X : s.Offset.X, flipY ? -s.Offset.Y : s.Offset.Y, s.Offset.Z) + offset,
+								s.Channel, blendMode) : null).ToArray();
+					}
+					else
+					{
+
+						sprites = cache[src, getUsedFrames].Select(
+							s =>
+							{
+								if (s != null)
+								{
+									background.X += s.Bounds.Location.X;
+									background.Y += s.Bounds.Location.Y;
+									return new Sprite(s.Sheet2D,
+								  FlipRectangle(background, flipX, flipY), ZRamp,
+								  new float3(flipX ? -s.Offset.X : s.Offset.X, flipY ? -s.Offset.Y : s.Offset.Y, s.Offset.Z) + offset,
+								  s.Channel, blendMode);
+								}
+								else
+								{
+									return null;
+								}
+								
+							}).ToArray();
+
+					}
 				}
 
 				var depthSprite = LoadField<string>(d, "DepthSprite", null);
