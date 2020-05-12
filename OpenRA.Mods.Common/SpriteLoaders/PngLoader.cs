@@ -369,10 +369,10 @@ namespace OpenRA.FileFormats
 		public override bool TryParseSprite(Stream s, out ISpriteFrame[] frames, out TypeDictionary metadata)
 		{
 			PngFrame isf = new PngFrame();
-			Png p = new Png(s);
-			isf.Data = p.Data;
-			isf.Size = new Size(p.Width, p.Height);
-			isf.FrameSize= new Size(p.Width, p.Height);
+			//Png p = new Png(s);
+			//isf.Data = p.Data;
+			//isf.Size = new Size(p.Width, p.Height);
+			//isf.FrameSize= new Size(p.Width, p.Height);
 			frames = new ISpriteFrame[1];
 			frames[0] = isf;
 			metadata = null;
@@ -383,10 +383,8 @@ namespace OpenRA.FileFormats
 		{
 			if (filename.Contains("png"))
 			{
-				frames = null;
-				metadata = null;
-				return false;
-				//return TryParseSprite(s, out frames, out metadata); не нужно парсить, выше весь stream уйдет в sheetbuilder .
+			
+				return TryParseSprite(s, out frames, out metadata); 
 			}
 			else
 			{
