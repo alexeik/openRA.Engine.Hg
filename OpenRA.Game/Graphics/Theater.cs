@@ -216,7 +216,7 @@ namespace OpenRA.Graphics
 
 		public void Dispose()
 		{
-			sheetBuilder2d.Dispose();
+			//sheetBuilder2d.Dispose();
 		}
 	}
 }
