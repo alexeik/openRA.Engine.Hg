@@ -249,7 +249,7 @@ namespace OpenRA.Graphics
 			buffer.CloseVAO();
 			renderer.Context.SetBlendMode(BlendMode.None);
 		}
-		public void DrawVertexBuffer(VertexBuffer<Vertex> buffer, int start, int length, PrimitiveType type, Sheet[] sheets, BlendMode blendMode)
+		public void DrawVertexBuffer(VertexBuffer<Vertex> buffer, int start, int length, PrimitiveType type, Sheet2D[] sheets, BlendMode blendMode)
 		{
 			if (rendererID == "WorldSpriteRenderer")
 			{
@@ -261,8 +261,9 @@ namespace OpenRA.Graphics
 				{
 					continue;
 				}
-				shader.SetTexture("Texture{0}".F(i), sheets[i].AssignOrGetOrSetDataGLTexture());
+				shader.SetTexture("Texture2D{0}".F(i), sheets[i].AssignOrGetOrSetDataGLTexture());
 			}
+
 			renderer.Context.SetBlendMode(blendMode);
 			shader.PrepareRender();
 			buffer.ActivateVAO();
