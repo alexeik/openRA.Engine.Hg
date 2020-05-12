@@ -59,11 +59,12 @@ namespace OpenRA.Graphics
 			//	return new Sheet2D(SheetType.Indexed, shb., shb.TextureArrayIndex);
 			//};
 			
-			SheetBuilder2D shb = Game.OrderManager.World.Map.Rules.Sequences.SpriteCache.SheetBuilder2D;
+			//SheetBuilder2D shb = Game.OrderManager.World.Map.Rules.Sequences.SpriteCache.SheetBuilder2D;
 
-			sheetBuilder2d = Game.OrderManager.World.Map.Rules.Sequences.SpriteCache.SheetBuilder2D;
+			//sheetBuilder2d = Game.OrderManager.World.Map.Rules.Sequences.SpriteCache.SheetBuilder2D;
+			sheetBuilder2d = Game.SheetBuilder2D;
 
-			
+
 
 			if (!string.IsNullOrEmpty(tileset.MegaTexture))
 			{

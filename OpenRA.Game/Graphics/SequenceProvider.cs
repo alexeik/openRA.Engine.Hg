@@ -146,17 +146,17 @@ namespace OpenRA.Graphics
 
 		public void Preload()
 		{
-			SheetBuilder shb = new SheetBuilder(SheetType.Indexed);
-			SheetBuilder2D shb2d = new SheetBuilder2D(SheetType.Indexed);
-			shb.Current.CreateBuffer();
-			shb2d.Current.CreateBuffer();
+			//SheetBuilder shb = new SheetBuilder(SheetType.Indexed);
+			//SheetBuilder2D shb2d = new SheetBuilder2D(SheetType.Indexed);
+			//shb.Current.CreateBuffer();
+			//shb2d.Current.CreateBuffer();
 			//SpriteCache = new SpriteCache(filesystembounded, modData.SpriteLoaders, shb);
-			SpriteCache = new SpriteCache(filesystembounded, modData.SpriteLoaders, shb2d);
+			SpriteCache = new SpriteCache(filesystembounded, modData.SpriteLoaders, Game.SheetBuilder2D);
 
 
-			shb.Current.ReleaseBuffer();
+			//shb.Current.ReleaseBuffer();
 
-			shb2d.Current.ReleaseBuffer();
+			//shb2d.Current.ReleaseBuffer();
 
 			using (new Support.PerfTimer("LoadSequences"))
 			{
@@ -175,8 +175,8 @@ namespace OpenRA.Graphics
 		{
 			if (SpriteCache != null)
 			{
-				SpriteCache.SheetBuilder2D.Dispose();
-				SpriteCache.SheetBuilder.Dispose();
+				//SpriteCache.SheetBuilder2D.Dispose();
+				//SpriteCache.SheetBuilder.Dispose();
 			}
 		}
 	}

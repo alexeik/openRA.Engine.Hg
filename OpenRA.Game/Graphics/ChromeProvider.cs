@@ -317,12 +317,13 @@ namespace OpenRA.Graphics
 					using (var stream = fileSystem.Open(mi.Src))
 					{
 
-						currentPngSprite = seqprov.SpriteCache.SheetBuilder2D.Add(new Png(stream));
+						//currentPngSprite = seqprov.SpriteCache.SheetBuilder2D.Add(new Png(stream));
+						currentPngSprite = Game.SheetBuilder2D.Add(new Png(stream));
 						//sheet2d = new Sheet2D(SheetType.BGRA, stream);
 					}
 
 					sheet2d = new SheetCache();
-					sheet2d.sheet = seqprov.SpriteCache.SheetBuilder2D.Current;
+					sheet2d.sheet = Game.SheetBuilder2D.Current;
 					sheet2d.OffsetX = currentPngSprite.Bounds.Location.X; //так как теперь png внутри большой текстуры, то теперь нужно запоминать ее смещение и прибавлять к коориданатам в chrome.yaml
 					sheet2d.OffsetY = currentPngSprite.Bounds.Location.Y;
 					cachedSheets2d.Add(mi.Src, sheet2d);

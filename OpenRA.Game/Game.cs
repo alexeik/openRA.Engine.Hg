@@ -259,7 +259,18 @@ namespace OpenRA
 			GC.Collect();
 			return Run();
 		}
+		private static SheetBuilder2D _GameSB2d;
 
+		public static SheetBuilder2D SheetBuilder2D
+		{
+			get 
+			{ 
+				return _GameSB2d; 
+			}
+			set 
+			{ 
+			}
+		}
 		static void Initialize(Arguments args)
 		{
 			var supportDirArg = args.GetValue("Engine.SupportDir", null);
@@ -372,6 +383,9 @@ namespace OpenRA
 			Console.WriteLine("External mods:");
 			foreach (var mod in ExternalMods)
 				Console.WriteLine("\t{0}: {1} ({2})", mod.Key, mod.Value.Title, mod.Value.Version);
+
+			_GameSB2d = new SheetBuilder2D(SheetType.Indexed);
+			SheetBuilder2D.Current.CreateBuffer();
 
 			InitializeMod(modID, args);
 		}
