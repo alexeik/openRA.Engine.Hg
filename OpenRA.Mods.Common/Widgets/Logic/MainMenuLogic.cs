@@ -180,17 +180,26 @@ namespace OpenRA.Mods.Common.Widgets.Logic
 			// Loading into the map editor
 			Game.BeforeGameStart += RemoveShellmapUI;
 
-			var onSelect = new Action<string>(uid => LoadMapIntoEditor(modData.MapCache[uid].Uid));
+			//var onSelect = new Action<string>(uid => LoadMapIntoEditor(modData.MapCache[uid].Uid));
+			var onSelect = new Action<string>(uid => SwitchMenu(MenuType.MapEditor));
 
 			var newMapButton = widget.Get<ButtonWidget>("NEW_MAP_BUTTON");
 			newMapButton.OnClick = () =>
 			{
 				SwitchMenu(MenuType.None);
+				//Game.OpenWindow("NEW_MAP_BG", new WidgetArgs()
+				//{
+				//	{ "onSelect", onSelect },
+				//	{ "onExit", () => SwitchMenu(MenuType.MapEditor) }
+				//});
+
 				Game.OpenWindow("NEW_MAP_BG", new WidgetArgs()
 				{
-					{ "onSelect", onSelect },
-					{ "onExit", () => SwitchMenu(MenuType.MapEditor) }
+					{ "onSelect", onSelect},
+					{ "onExit", () => { } }
+
 				});
+
 			};
 
 			var loadMapButton = widget.Get<ButtonWidget>("LOAD_MAP_BUTTON");
