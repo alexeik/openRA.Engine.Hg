@@ -41,10 +41,14 @@ namespace OpenRA.Graphics
 		public static World World;
 		static SequenceProvider seqprov;
 		static Sprite currentPngSprite;
+		static bool Initialized = false;
 
 
 		public static void Initialize(ModData modData)
 		{
+			if (Initialized)
+			{ return; }
+
 			Deinitialize();
 
 			fileSystem = modData.DefaultFileSystem;
@@ -59,6 +63,7 @@ namespace OpenRA.Graphics
 
 			foreach (var c in chrome)
 				LoadCollection(c.Key, c.Value);
+			Initialized = true;
 		}
 
 		public static void Deinitialize()
