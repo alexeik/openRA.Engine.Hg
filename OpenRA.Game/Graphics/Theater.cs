@@ -64,7 +64,7 @@ namespace OpenRA.Graphics
 			//sheetBuilder2d = Game.OrderManager.World.Map.Rules.Sequences.SpriteCache.SheetBuilder2D;
 			sheetBuilder2d = Game.SheetBuilder2D;
 
-
+			
 
 			if (!string.IsNullOrEmpty(tileset.MegaTexture))
 			{
@@ -74,6 +74,7 @@ namespace OpenRA.Graphics
 			random = new MersenneTwister();
 
 			var frameCache = new FrameCache(Game.ModData.DefaultFileSystem, Game.ModData.SpriteLoaders);
+			//для каждого templates есть своя коллекция Sprites , это заполняется в цикле по tileset.Templates ниже
 			foreach (var t in tileset.Templates)
 			{
 				var variants = new List<Sprite[]>();
