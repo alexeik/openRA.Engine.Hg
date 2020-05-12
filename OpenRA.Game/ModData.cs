@@ -121,6 +121,7 @@ namespace OpenRA
 
 		public void ResetSequenceProviders()
 		{
+			return;
 			var tilesetseqprovPair = DefaultTileSets.ToDictionary(t => t.Key, t => new SequenceProvider(DefaultFileSystem, this, t.Value, null));
 			DefaultSequences = new ReadOnlyDictionary<string, SequenceProvider>(tilesetseqprovPair);
 		}
