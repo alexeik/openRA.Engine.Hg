@@ -104,9 +104,9 @@ namespace OpenRA
 
 			var testResolve = new Func<Type, Type, bool>((a, b) =>
 			{
-				if (a.Name.Contains("D2Resource")) 
-				{
-				}
+				//if (a.Name.Contains("D2Resource")) 
+				//{
+				//}
 				return a == b || a.IsAssignableFrom(b);
 			}
 			);
