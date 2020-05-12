@@ -85,6 +85,10 @@ namespace OpenRA
 
 		internal Actor(World world, string name, TypeDictionary initDict)
 		{
+			if (name=="spicebloom")
+			{
+
+			}
 			var init = new ActorInitializer(this, initDict);
 
 			World = world;
