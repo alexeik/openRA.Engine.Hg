@@ -208,12 +208,13 @@ namespace OpenRA.Graphics
 
 		void UpdatePaletteIndices()
 		{
+			return;
 			// Everything in the layer uses the same palette,
 			// so we can fix the indices in one pass
 			for (var i = 0; i < vertices.Length; i++)
 			{
 				var v = vertices[i];
-				vertices[i] = new Vertex(v.X, v.Y, v.Z, v.S, v.T, v.U, v.V, palette.TextureIndex, 0, v.Drawmode, 0, 0, 0, 0, 0);
+				vertices[i] = new Vertex(v.X, v.Y, v.Z, v.S, v.T, v.U, v.V, palette.TextureIndex, 0, v.Drawmode, v.Option, 0, 0, 0, 0);
 			}
 
 			for (var row = 0; row < map.MapSize.Y; row++)
@@ -252,7 +253,7 @@ namespace OpenRA.Graphics
 			
 
 			var offset = TerrainFullRowLenInVertexRowsNums * uv.V + 6 * uv.U;
-			if (sprite.SpriteType == 4)
+			if (sprite.SpriteType == 4) //megaTexture
 			{
 				Sprite tmpsp = new Sprite(sprite.Sheet, new Rectangle((int)pos.X, (int)pos.Y, 16, 16), TextureChannel.RGBA);
 				tmpsp.SpriteType = 4;
@@ -303,7 +304,7 @@ namespace OpenRA.Graphics
 			// Поэтому отрезается только по высоте. А ширина учитывается полностью.
 			Game.Renderer.WorldSpriteRenderer.DrawVertexBuffer(
 				vertexBuffer, TerrainFullRowLenInVertexRowsNums * firstRow, TerrainFullRowLenInVertexRowsNums * (lastRow - firstRow),
-				PrimitiveType.TriangleList, sheets, BlendMode);
+				PrimitiveType.TriangleList, sheets2d, BlendMode);
 			
 			Game.Renderer.Flush();
 		}
