@@ -206,6 +206,7 @@ namespace OpenRA.Platforms.Default
 			disposed = true;
 			OpenGL.glDeleteBuffers(1, ref buffer);
 			OpenGL.CheckGLError();
+			GraphicsContext.VAOReserveStack -= 1; //помечаем, что резерв уменьшился.
 		}
 
 	}
