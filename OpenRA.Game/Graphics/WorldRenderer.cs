@@ -314,7 +314,7 @@ namespace OpenRA.Graphics
 		{
 			if (gridtype == MapGridType.Rectangular)
 			{
-				return pos.Z + offset; //убираем зависимость Z координаты от ряда в котором рендерится спрайт.
+				return pos.Z + offset; //убираем зависимость Y координаты от ряда в котором рендерится спрайт.
 			}
 			return pos.Y + pos.Z + offset;
 		}
