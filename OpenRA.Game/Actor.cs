@@ -146,7 +146,10 @@ namespace OpenRA
 		{
 			var wasIdle = IsIdle;
 			CurrentActivity = ActivityUtils.RunActivityTick(this, CurrentActivity);
+			if (this.Info.Name=="asteroid")
+			{
 
+			}
 			if (!wasIdle && IsIdle)
 			{
 				foreach (var n in becomingIdles)
