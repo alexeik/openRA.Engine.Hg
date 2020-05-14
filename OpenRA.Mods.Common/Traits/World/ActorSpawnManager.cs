@@ -25,6 +25,9 @@ namespace OpenRA.Mods.Common.Traits
 		[Desc("Maximum number of actors.")]
 		public readonly int Maximum = 4;
 
+		[Desc("Maximum number of actors.")]
+		public readonly bool RemoveActorBeforeSpawn = false;
+
 		[Desc("Time (in ticks) between actor spawn.")]
 		public readonly int SpawnInterval = 6000;
 
@@ -44,7 +47,7 @@ namespace OpenRA.Mods.Common.Traits
 	public class ActorSpawnManager : ConditionalTrait<ActorSpawnManagerInfo>, ITick, INotifyCreated
 	{
 		readonly ActorSpawnManagerInfo info;
-
+		List<Actor> CreatedActors=new List<Actor>();
 		bool enabled;
 		int spawnCountdown;
 		int actorsPresent;
@@ -61,11 +64,16 @@ namespace OpenRA.Mods.Common.Traits
 
 		void ITick.Tick(Actor self)
 		{
+		
+
 			if (IsTraitDisabled || !enabled)
 				return;
 
 			if (info.Maximum < 1 || actorsPresent >= info.Maximum)
-				return;
+			{
+				return;	
+			}
+				
 
 			if (--spawnCountdown > 0 && actorsPresent >= info.Minimum)
 				return;
@@ -81,21 +89,46 @@ namespace OpenRA.Mods.Common.Traits
 			{
 				// Always spawn at least one actor, plus
 				// however many needed to reach the minimum.
+				if (Info.RemoveActorBeforeSpawn)
+				{
+					RemoveActor(self);
+				}
+				
 				SpawnActor(self, spawnPoint);
 			} while (actorsPresent < info.Minimum);
 		}
 
 		WPos SpawnActor(Actor self, Actor spawnPoint)
 		{
-			self.World.AddFrameEndTask(w => w.CreateActor(info.Actors.Random(self.World.SharedRandom), new TypeDictionary
+			self.World.AddFrameEndTask(w => CreatedActors.Add (w.CreateActor(info.Actors.Random(self.World.SharedRandom), new TypeDictionary
 			{
 				new OwnerInit(w.Players.First(x => x.PlayerName == info.Owner)),
 				new LocationInit(spawnPoint.Location)
-			}));
+			})));
 
 			actorsPresent++;
 
 			return spawnPoint.CenterPosition;
+		}
+		public void RemoveActor(Actor self)
+		{
+			if (CreatedActors.Count > 0)
+			{
+				foreach(Actor a in CreatedActors)
+				{
+					if (a.IsInWorld)
+					{
+						self.World.Remove(a);
+						DecreaseActorCount();
+					}
+					else
+
+					{
+						
+					}
+				}
+				
+			}
 		}
 
 		Actor GetRandomSpawnPoint(World world, MersenneTwister random)
