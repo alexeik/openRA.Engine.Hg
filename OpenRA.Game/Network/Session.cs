@@ -125,7 +125,7 @@ namespace OpenRA.Network
 			public bool IsReady { get { return State == ClientState.Ready; } }
 			public bool IsInvalid { get { return State == ClientState.Invalid; } }
 			public bool IsObserver { get { return Slot == null; } }
-
+			public int StartCash;
 			// Linked to the online player database
 			public string Fingerprint;
 

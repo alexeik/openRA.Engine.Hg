@@ -45,8 +45,25 @@ namespace OpenRA.Mods.Common.Server
 			{ "team", Team },
 			{ "spawn", Spawn },
 			{ "color", PlayerColor },
-			{ "sync_lobby", SyncLobby }
+			{ "sync_lobby", SyncLobby },
+			{ "startcash", StartCash }
 		};
+
+		private static bool StartCash(S server, Connection conn, Session.Client client, string s)
+		{
+			int sanitizedStartCash;
+			var split = s.Split(' ');
+			Exts.TryParseIntegerInvariant(split[0], out sanitizedStartCash);
+			if (sanitizedStartCash == client.StartCash)
+				return true;
+
+			Log.Write("server", "Player@{0} has StartCash = {1}.", conn.Socket.RemoteEndPoint, sanitizedStartCash);
+			server.SendMessage("Player@{0} changed StartCash to {1}.".F(conn.Socket.RemoteEndPoint, sanitizedStartCash));
+			client.StartCash = sanitizedStartCash;
+			server.SyncLobbyClients();
+
+			return true;
+		}
 
 		static bool ValidateSlotCommand(S server, Connection conn, Session.Client client, string arg, bool requiresHost)
 		{

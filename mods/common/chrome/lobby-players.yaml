@@ -14,43 +14,50 @@ Container@LOBBY_PLAYER_BIN:
 					Text: Name
 					Align: Center
 					Font: Bold
-				Label@LABEL_LOBBY_COLOR:
+                Label@LABEL_LOBBY_COLOR:
 					X: 190
+					Width: 50
+					Height: 25
+					Text: Start Cash
+					Align: Center
+					Font: Bold
+				Label@LABEL_LOBBY_COLOR:
+					X: 190+70
 					Width: 70
 					Height: 25
 					Text: Color
 					Align: Center
 					Font: Bold
 				Label@LABEL_LOBBY_FACTION:
-					X: 270
+					X: 270+70
 					Width: 130
 					Height: 25
 					Text: Faction
 					Align: Center
 					Font: Bold
 				Label@LABEL_LOBBY_TEAM:
-					X: 410
+					X: 410+70
 					Width: 48
 					Height: 25
 					Text: Team
 					Align: Center
 					Font: Bold
 				Label@LABEL_LOBBY_SPAWN:
-					X: 468
+					X: 468+70
 					Width: 48
 					Height: 25
 					Text: Spawn
 					Align: Center
 					Font: Bold
 				Label@LABEL_LOBBY_STATUS:
-					X: 525
+					X: 525+70
 					Width: 20
 					Height: 25
 					Text: Ready
 					Align: Left
 					Font: Bold
 		ScrollPanel@LOBBY_PLAYERS:
-			Width: PARENT_RIGHT
+			Width: PARENT_RIGHT+60
 			Height: PARENT_BOTTOM
 			TopBottomSpacing: 5
 			ItemSpacing: 5
@@ -98,6 +105,14 @@ Container@LOBBY_PLAYER_BIN:
 									Height: 16
 									TooltipContainer: TOOLTIP_CONTAINER
 									Template: ANONYMOUS_PLAYER_TOOLTIP
+                        TextField@STARTCASH:
+							X: 15+175
+							Width: 60
+							Height: 25
+							Text: StartCash
+							LeftMargin: 4
+							MaxLength: 16
+							Visible: true
 						DropDownButton@SLOT_OPTIONS:
 							X: 15
 							Width: 165
@@ -106,7 +121,7 @@ Container@LOBBY_PLAYER_BIN:
 							Font: Regular
 							Visible: false
 						DropDownButton@COLOR:
-							X: 190
+							X: 190+75
 							Width: 70
 							Height: 25
 							IgnoreChildMouseOver: true
@@ -117,7 +132,7 @@ Container@LOBBY_PLAYER_BIN:
 									Width: PARENT_RIGHT - 35
 									Height: PARENT_BOTTOM - 12
 						DropDownButton@FACTION:
-							X: 270
+							X: 270+75
 							Width: 130
 							Height: 25
 							IgnoreChildMouseOver: true
@@ -135,23 +150,23 @@ Container@LOBBY_PLAYER_BIN:
 									Height: 25
 									Text: Faction
 						DropDownButton@TEAM_DROPDOWN:
-							X: 410
+							X: 410+75
 							Width: 48
 							Height: 25
 							Text: Team
 						DropDownButton@SPAWN_DROPDOWN:
-							X: 468
+							X: 468+75
 							Width: 48
 							Height: 25
 							Text: Spawn
 						Checkbox@STATUS_CHECKBOX:
-							X: 525
+							X: 525+75
 							Y: 2
 							Width: 20
 							Height: 20
 							Visible: false
 						Image@STATUS_IMAGE:
-							X: 527
+							X: 527+75
 							Y: 4
 							Width: 20
 							Height: 20

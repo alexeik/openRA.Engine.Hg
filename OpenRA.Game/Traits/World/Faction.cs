@@ -28,6 +28,9 @@ namespace OpenRA.Traits
 		[Desc("The side that the faction belongs to. For example, England belongs to the 'Allies' side.")]
 		public readonly string Side = null;
 
+		[Desc("Start Cash")]
+		public readonly int StartCash = 1001;
+
 		[Translate]
 		public readonly string Description = null;
 

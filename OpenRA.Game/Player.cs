@@ -46,6 +46,7 @@ namespace OpenRA
 		public readonly Actor PlayerActor;
 		public readonly Color Color;
 
+		public readonly int StartCash;
 		public readonly string PlayerName;
 		public readonly string InternalName;
 		public readonly FactionInfo Faction;
@@ -134,7 +135,7 @@ namespace OpenRA
 				}
 				else
 					PlayerName = client.Name;
-
+				StartCash = client.StartCash;
 				BotType = client.Bot;
 				Faction = ChooseFaction(world, client.Faction, !pr.LockFaction);
 				DisplayFaction = ChooseDisplayFaction(world, client.Faction);

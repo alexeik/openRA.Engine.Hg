@@ -393,6 +393,56 @@ namespace OpenRA.Mods.Common.Widgets.Logic
 
 			SetupProfileWidget(parent, c, orderManager, worldRenderer);
 		}
+		public static void SetupEditableStartCashWidget(Widget parent, Session.Slot s, Session.Client c, OrderManager orderManager, WorldRenderer worldRenderer, Dictionary<string, LobbyFaction> factions)
+		{
+			var name = parent.Get<TextFieldWidget>("STARTCASH");
+			LobbyFaction fact = factions[c.Faction];
+			name.IsVisible = () => true;
+
+			name.IsDisabled = () => orderManager.LocalClient.IsReady;
+
+			//name.Text = c.StartCash.ToString();
+			if (c.StartCash==0)
+			{
+				c.StartCash = fact.StartCash;
+				//orderManager.IssueOrder(Order.Command("startcash " + name.Text));
+			}
+			name.Text = c.StartCash.ToString();
+			var escPressed = false;
+			name.OnLoseFocus = () =>
+			{
+				if (escPressed)
+				{
+					escPressed = false;
+					return;
+				}
+
+				name.Text = name.Text.Trim();
+				if (name.Text.Length == 0)
+					name.Text = c.StartCash.ToString();
+				else if (name.Text != c.StartCash.ToString())
+				{
+					//name.Text = Settings.SanitizedPlayerName(name.Text);
+					//добавить позже проверку на валидность
+					orderManager.IssueOrder(Order.Command("startcash " + name.Text));
+					//Game.Settings.Player. = name.Text;
+					//Game.Settings.Save();
+				}
+			};
+
+			name.OnEnterKey = () => { name.YieldKeyboardFocus(); return true; };
+			name.OnEscKey = () =>
+			{
+				name.Text = c.StartCash.ToString();
+				escPressed = true;
+				name.YieldKeyboardFocus();
+				return true;
+			};
+
+			SetupProfileWidget(name, c, orderManager, worldRenderer);
+
+			//HideChildWidget(parent, "SLOT_OPTIONS");
+		}
 
 		public static void SetupEditableSlotWidget(Widget parent, Session.Slot s, Session.Client c,
 			OrderManager orderManager, WorldRenderer worldRenderer, MapPreview map)
@@ -606,6 +656,8 @@ namespace OpenRA.Mods.Common.Widgets.Logic
 
 			playerName.GetColor = () => player.Color;
 		}
+
+
 
 		public static string GetExternalIP(Session.Client client, OrderManager orderManager)
 		{

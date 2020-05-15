@@ -80,8 +80,16 @@ namespace OpenRA.Mods.Common.Traits
 			Info = info;
 			owner = self.Owner;
 
-			var startingCash = self.World.LobbyInfo.GlobalSettings
+			string startingCash;
+			if (owner.StartCash == 0)
+			{
+				startingCash = self.World.LobbyInfo.GlobalSettings
 				.OptionOrDefault("startingcash", info.DefaultCash.ToString());
+			}
+			else
+			{
+				startingCash = owner.StartCash.ToString();
+			}
 
 			if (!int.TryParse(startingCash, out Cash))
 				Cash = info.DefaultCash;

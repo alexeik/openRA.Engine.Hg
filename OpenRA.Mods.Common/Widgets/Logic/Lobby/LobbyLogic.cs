@@ -152,7 +152,7 @@ namespace OpenRA.Mods.Common.Widgets.Logic
 			colorPreview.Color = Game.Settings.Player.Color;
 
 			foreach (var f in modRules.Actors["world"].TraitInfos<FactionInfo>())
-				factions.Add(f.InternalName, new LobbyFaction { Selectable = f.Selectable, Name = f.Name, Side = f.Side, Description = f.Description });
+				factions.Add(f.InternalName, new LobbyFaction { Selectable = f.Selectable, Name = f.Name, Side = f.Side, Description = f.Description, StartCash=f.StartCash });
 
 			var gameStarting = false;
 			Func<bool> configurationDisabled = () => !Game.IsHost || gameStarting ||
@@ -610,6 +610,7 @@ namespace OpenRA.Mods.Common.Widgets.Logic
 					else
 						LobbyUtils.SetupEditableNameWidget(template, slot, client, orderManager, worldRenderer);
 
+					LobbyUtils.SetupEditableStartCashWidget(template, slot, client, orderManager, worldRenderer, factions);
 					LobbyUtils.SetupEditableColorWidget(template, slot, client, orderManager, shellmapWorld, colorPreview);
 					LobbyUtils.SetupEditableFactionWidget(template, slot, client, orderManager, factions);
 					LobbyUtils.SetupEditableTeamWidget(template, slot, client, orderManager, map);
@@ -752,6 +753,7 @@ namespace OpenRA.Mods.Common.Widgets.Logic
 		public string Name;
 		public string Description;
 		public string Side;
+		public int StartCash;
 	}
 
 	class DropDownOption
