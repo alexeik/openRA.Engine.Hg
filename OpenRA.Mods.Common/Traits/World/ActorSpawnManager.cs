@@ -25,8 +25,11 @@ namespace OpenRA.Mods.Common.Traits
 		[Desc("Maximum number of actors.")]
 		public readonly int Maximum = 4;
 
-		[Desc("Maximum number of actors.")]
+		[Desc("RemoveActorBeforeSpawn.")]
 		public readonly bool RemoveActorBeforeSpawn = false;
+
+		[Desc("NeedsActorSpawner.")]
+		public readonly bool NeedsActorSpawner = true;
 
 		[Desc("Time (in ticks) between actor spawn.")]
 		public readonly int SpawnInterval = 6000;
@@ -47,7 +50,7 @@ namespace OpenRA.Mods.Common.Traits
 	public class ActorSpawnManager : ConditionalTrait<ActorSpawnManagerInfo>, ITick, INotifyCreated
 	{
 		readonly ActorSpawnManagerInfo info;
-		List<Actor> CreatedActors=new List<Actor>();
+		List<Actor> CreatedActors = new List<Actor>();
 		bool enabled;
 		int spawnCountdown;
 		int actorsPresent;
@@ -64,25 +67,27 @@ namespace OpenRA.Mods.Common.Traits
 
 		void ITick.Tick(Actor self)
 		{
-		
+
 
 			if (IsTraitDisabled || !enabled)
 				return;
 
 			if (info.Maximum < 1 || actorsPresent >= info.Maximum)
 			{
-				return;	
+				return;
 			}
-				
+
 
 			if (--spawnCountdown > 0 && actorsPresent >= info.Minimum)
 				return;
+			Actor spawnPoint=null;
+			if (info.NeedsActorSpawner)
+			{
+				spawnPoint = GetRandomSpawnPoint(self.World, self.World.SharedRandom);
 
-			var spawnPoint = GetRandomSpawnPoint(self.World, self.World.SharedRandom);
-
-			if (spawnPoint == null)
-				return;
-
+				if (spawnPoint == null)
+					return;
+			}
 			spawnCountdown = info.SpawnInterval;
 
 			do
@@ -93,28 +98,56 @@ namespace OpenRA.Mods.Common.Traits
 				{
 					RemoveActor(self);
 				}
-				
-				SpawnActor(self, spawnPoint);
+				if (info.NeedsActorSpawner)
+				{
+					SpawnActor(self, spawnPoint);
+				}
+				else
+
+				{
+					SpawnActor(self, null);
+				}
 			} while (actorsPresent < info.Minimum);
 		}
 
 		WPos SpawnActor(Actor self, Actor spawnPoint)
 		{
-			self.World.AddFrameEndTask(w => CreatedActors.Add (w.CreateActor(info.Actors.Random(self.World.SharedRandom), new TypeDictionary
+			self.World.AddFrameEndTask(w =>
+			{
+				if (info.NeedsActorSpawner)
+				{
+					CreatedActors.Add(w.CreateActor(info.Actors.Random(self.World.SharedRandom), new TypeDictionary
 			{
 				new OwnerInit(w.Players.First(x => x.PlayerName == info.Owner)),
 				new LocationInit(spawnPoint.Location)
-			})));
+			}));
+				}
+				else
+				{
+					CreatedActors.Add(w.CreateActor(info.Actors.Random(self.World.SharedRandom), new TypeDictionary
+			{
+				new OwnerInit(w.Players.First(x => x.PlayerName == info.Owner)),
+				new LocationInit(new CPos(20,50))
+			}));
+				}
+			});
 
 			actorsPresent++;
 
-			return spawnPoint.CenterPosition;
+			if (info.NeedsActorSpawner)
+			{
+				return spawnPoint.CenterPosition;
+			}
+			else
+			{
+				return new WPos();
+			}
 		}
 		public void RemoveActor(Actor self)
 		{
 			if (CreatedActors.Count > 0)
 			{
-				foreach(Actor a in CreatedActors)
+				foreach (Actor a in CreatedActors)
 				{
 					if (a.IsInWorld)
 					{
@@ -124,20 +157,22 @@ namespace OpenRA.Mods.Common.Traits
 					else
 
 					{
-						
+
 					}
 				}
-				
+
 			}
 		}
 
 		Actor GetRandomSpawnPoint(World world, MersenneTwister random)
 		{
+
 			var spawnPointActors = world.ActorsWithTrait<ActorSpawner>()
 				.Where(x => !x.Trait.IsTraitDisabled && (info.Types.Overlaps(x.Trait.Types) || !x.Trait.Types.Any()))
 				.ToArray();
 
 			return spawnPointActors.Any() ? spawnPointActors.Random(random).Actor : null;
+
 		}
 
 		public void DecreaseActorCount()
