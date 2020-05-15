@@ -180,7 +180,7 @@ namespace OpenRA.Mods.Common.Widgets.Logic
 			// Loading into the map editor
 			Game.BeforeGameStart += RemoveShellmapUI;
 
-			//var onSelect = new Action<string>(uid => LoadMapIntoEditor(modData.MapCache[uid].Uid));
+			var onSelectLoadToEditor = new Action<string>(uid => LoadMapIntoEditor(modData.MapCache[uid].Uid));
 			var onSelect = new Action<string>(uid => SwitchMenu(MenuType.MapEditor));
 
 			var newMapButton = widget.Get<ButtonWidget>("NEW_MAP_BUTTON");
@@ -211,7 +211,7 @@ namespace OpenRA.Mods.Common.Widgets.Logic
 					{ "initialMap", null },
 					{ "initialTab", MapClassification.User },
 					{ "onExit", () => SwitchMenu(MenuType.MapEditor) },
-					{ "onSelect", onSelect },
+					{ "onSelect", onSelectLoadToEditor },
 					{ "filter", MapVisibility.Lobby | MapVisibility.Shellmap | MapVisibility.MissionSelector },
 				});
 			};
