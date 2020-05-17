@@ -609,6 +609,7 @@ namespace OpenRA.Mods.Common.Graphics
 				if (d.TryGetValue("Combine", out combine))
 				{
 					var combined = Enumerable.Empty<Sprite>();
+
 					foreach (var sub in combine.Nodes)
 					{
 						var sd = sub.Value.ToDictionary();
@@ -637,11 +638,39 @@ namespace OpenRA.Mods.Common.Graphics
 						//		FlipRectangle(s.Bounds, subFlipX, subFlipY), ZRamp,
 						//		new float3(subFlipX ? -s.Offset.X : s.Offset.X, subFlipY ? -s.Offset.Y : s.Offset.Y, s.Offset.Z) + subOffset + offset,
 						//		s.Channel, blendMode) : null);
-						var subSprites = cache[subSrc, subGetUsedFrames].Select(
+						Sprite[] subSprites=null;
+
+						if (background.IsEmpty)
+						{
+
+							subSprites = cache[subSrc, subGetUsedFrames].Select(
 							s => s != null ? new Sprite(s.Sheet2D,
 								FlipRectangle(s.Bounds, subFlipX, subFlipY), ZRamp,
 								new float3(subFlipX ? -s.Offset.X : s.Offset.X, subFlipY ? -s.Offset.Y : s.Offset.Y, s.Offset.Z) + subOffset + offset,
-								s.Channel, blendMode) : null);
+								s.Channel, blendMode) : null).ToArray();
+						}
+						else
+						{
+							sprites = cache[subSrc, getUsedFrames].Select(
+							s =>
+							{
+								if (s != null)
+								{
+									background.X += s.Bounds.Location.X;
+									background.Y += s.Bounds.Location.Y;
+									return new Sprite(s.Sheet2D,
+								  FlipRectangle(background, flipX, flipY), ZRamp,
+								  new float3(flipX ? -s.Offset.X : s.Offset.X, flipY ? -s.Offset.Y : s.Offset.Y, s.Offset.Z) + offset,
+								  s.Channel, blendMode);
+								}
+								else
+								{
+									return null;
+								}
+
+							}).ToArray();
+						}
+
 						combined = combined.Concat(subSprites.Skip(subStart).Take(subLength));
 					}
 
