@@ -89,7 +89,7 @@ namespace OpenRA.Graphics
 						{
 							//sprite[i] = SheetBuilder.Add(framesCandidates[i]);
 							
-							if (filename.Contains("png")) //for Loaders with 4bytes per pixel
+							if (filename.Contains("png1")) //for Loaders with 4bytes per pixel
 							{
 								using (var stream = fileSystem.Open(filename))
 								{
