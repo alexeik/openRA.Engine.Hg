@@ -90,7 +90,7 @@ namespace OpenRA.Graphics
 		{
 			UnitSequences unitSeq;
 			if (!sequences.TryGetValue(unitName, out unitSeq))
-				5throw new InvalidOperationException("Unit `{0}` does not have any sequences defined in sequences\\*.yaml".F(unitName));
+				throw new InvalidOperationException("Unit `{0}` does not have any sequences defined in sequences\\*.yaml".F(unitName));
 
 			ISpriteSequence seq;
 			if (!unitSeq.TryGetValue(sequenceName, out seq))
