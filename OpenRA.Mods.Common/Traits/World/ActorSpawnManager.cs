@@ -34,6 +34,12 @@ namespace OpenRA.Mods.Common.Traits
 		[Desc("Time (in ticks) between actor spawn.")]
 		public readonly int SpawnInterval = 6000;
 
+		[Desc("LocationInit.")]
+		public readonly CPos LocationInit;
+
+		[Desc("Altitude.")]
+		public readonly int Altitude=0;
+
 		[FieldLoader.Require]
 		[ActorReference]
 		[Desc("Name of the actor that will be randomly picked to spawn.")]
@@ -80,7 +86,7 @@ namespace OpenRA.Mods.Common.Traits
 
 			if (--spawnCountdown > 0 && actorsPresent >= info.Minimum)
 				return;
-			Actor spawnPoint=null;
+			Actor spawnPoint = null;
 			if (info.NeedsActorSpawner)
 			{
 				spawnPoint = GetRandomSpawnPoint(self.World, self.World.SharedRandom);
@@ -96,7 +102,7 @@ namespace OpenRA.Mods.Common.Traits
 				// however many needed to reach the minimum.
 				if (Info.RemoveActorBeforeSpawn)
 				{
-					RemoveActor(self);
+					RemoveActor(self); // самоудаление у астероида, так как он стреляет через warhead
 				}
 				if (info.NeedsActorSpawner)
 				{
@@ -124,11 +130,9 @@ namespace OpenRA.Mods.Common.Traits
 				}
 				else
 				{
+
 					CreatedActors.Add(w.CreateActor(info.Actors.Random(self.World.SharedRandom), new TypeDictionary
-			{
-				new OwnerInit(w.Players.First(x => x.PlayerName == info.Owner)),
-				new LocationInit(new CPos(20,50))
-			}));
+			{   new OwnerInit(w.Players.First(x => x.PlayerName == info.Owner)),new LocationInit(info.LocationInit), new CenterPositionInit(self.World.Map.CenterOfCell(info.LocationInit) + new WVec(0, 0, info.Altitude)) }));
 				}
 			});
 
@@ -145,6 +149,9 @@ namespace OpenRA.Mods.Common.Traits
 		}
 		public void RemoveActor(Actor self)
 		{
+			CreatedActors.Clear();
+			DecreaseActorCount();
+			return;
 			if (CreatedActors.Count > 0)
 			{
 				foreach (Actor a in CreatedActors)
@@ -157,11 +164,13 @@ namespace OpenRA.Mods.Common.Traits
 					else
 
 					{
-
+						
+						DecreaseActorCount();
 					}
 				}
-
+				//CreatedActors.Remove(a);
 			}
+
 		}
 
 		Actor GetRandomSpawnPoint(World world, MersenneTwister random)
@@ -177,6 +186,7 @@ namespace OpenRA.Mods.Common.Traits
 
 		public void DecreaseActorCount()
 		{
+			
 			actorsPresent--;
 		}
 	}
