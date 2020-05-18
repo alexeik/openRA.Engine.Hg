@@ -113,7 +113,7 @@ namespace OpenRA.Mods.Common.Graphics
 		public int[] Frames { get; private set; }
 		public Rectangle Bounds { get; private set; }
 
-		public readonly uint[] EmbeddedPalette;
+		public uint[] EmbeddedPalette { get; set; }
 
 		protected virtual string GetSpriteSrc(ModData modData, TileSet tileSet, string sequence, string animation, string sprite, Dictionary<string, MiniYaml> d)
 		{
@@ -328,8 +328,15 @@ namespace OpenRA.Mods.Common.Graphics
 					var metadata = cache.FrameMetadata(src);
 					var i = Frames != null ? Frames[0] : Start;
 					var palettes = metadata != null ? metadata.GetOrDefault<EmbeddedSpritePalette>() : null;
-					if (palettes == null || !palettes.TryGetPaletteForFrame(i, out EmbeddedPalette))
+					uint[] temppal;
+					if (palettes == null || !palettes.TryGetPaletteForFrame(i, out temppal))
+					{
 						throw new YamlException("Cannot export palettes from {0}: frame {1} does not define an embedded palette".F(src, i));
+					}
+					else
+					{
+						EmbeddedPalette = temppal;
+					}
 				}
 
 				var boundSprites = SpriteBounds(sprites, Frames, Start, Facings, Length, Stride, transpose);
@@ -478,7 +485,7 @@ namespace OpenRA.Mods.Common.Graphics
 		//public Rectangle Background { get; private set; }
 		public Rectangle Bounds { get; private set; }
 
-		public readonly uint[] EmbeddedPalette;
+		public uint[] EmbeddedPalette { get; set; }
 
 		protected virtual string GetSpriteSrc(ModData modData, TileSet tileSet, string sequence, string animation, string sprite, Dictionary<string, MiniYaml> d)
 		{
@@ -633,11 +640,7 @@ namespace OpenRA.Mods.Common.Graphics
 						};
 
 						var subSrc = GetSpriteSrc(modData, tileSet, sequence, animation, sub.Key, sd);
-						//var subSprites = cache[subSrc, subGetUsedFrames].Select(
-						//	s => s != null ? new Sprite(s.Sheet,
-						//		FlipRectangle(s.Bounds, subFlipX, subFlipY), ZRamp,
-						//		new float3(subFlipX ? -s.Offset.X : s.Offset.X, subFlipY ? -s.Offset.Y : s.Offset.Y, s.Offset.Z) + subOffset + offset,
-						//		s.Channel, blendMode) : null);
+
 						Sprite[] subSprites=null;
 
 						if (background.IsEmpty)
@@ -672,6 +675,26 @@ namespace OpenRA.Mods.Common.Graphics
 						}
 
 						combined = combined.Concat(subSprites.Skip(subStart).Take(subLength));
+
+						var exportPalette = LoadField<string>(d, "EmbeddedPalette", null);
+						if (exportPalette != null)
+						{
+							
+
+							var metadata = cache.FrameMetadata(subSrc);
+							var i = Frames != null ? Frames[0] : Start;
+							var palettes = metadata != null ? metadata.GetOrDefault<EmbeddedSpritePalette>() : null;
+							 uint[] temppal;
+							if (palettes == null || !palettes.TryGetPaletteForFrame(i, out temppal))
+							{
+								throw new YamlException("Cannot export palettes from {0}: frame {1} does not define an embedded palette".F(subSrc, i));
+							}
+							else
+							{
+								EmbeddedPalette = temppal; 
+							}
+						}
+
 					}
 
 					sprites = combined.ToArray();
@@ -686,11 +709,7 @@ namespace OpenRA.Mods.Common.Graphics
 					{
 
 					}
-					//sprites = cache[src, getUsedFrames].Select(
-					//	s => s != null ? new Sprite(s.Sheet,
-					//		FlipRectangle(s.Bounds, flipX, flipY), ZRamp,
-					//		new float3(flipX ? -s.Offset.X : s.Offset.X, flipY ? -s.Offset.Y : s.Offset.Y, s.Offset.Z) + offset,
-					//		s.Channel, blendMode) : null).ToArray();
+
 					if (background.IsEmpty)
 					{
 						sprites = cache[src, getUsedFrames].Select(
@@ -722,6 +741,25 @@ namespace OpenRA.Mods.Common.Graphics
 							}).ToArray();
 
 					}
+
+					var exportPalette = LoadField<string>(d, "EmbeddedPalette", null);
+					if (exportPalette != null)
+					{
+						
+
+						var metadata = cache.FrameMetadata(src);
+						var i = Frames != null ? Frames[0] : Start;
+						var palettes = metadata != null ? metadata.GetOrDefault<EmbeddedSpritePalette>() : null;
+						uint[] temppal;
+						if (palettes == null || !palettes.TryGetPaletteForFrame(i, out temppal))
+						{
+							throw new YamlException("Cannot export palettes from {0}: frame {1} does not define an embedded palette".F(src, i));
+						}
+						else
+						{
+							EmbeddedPalette = temppal;
+						}
+					}
 				}
 
 				var depthSprite = LoadField<string>(d, "DepthSprite", null);
@@ -747,17 +785,17 @@ namespace OpenRA.Mods.Common.Graphics
 					}).ToArray();
 				}
 
-				var exportPalette = LoadField<string>(d, "EmbeddedPalette", null);
-				if (exportPalette != null)
-				{
-					var src = GetSpriteSrc(modData, tileSet, sequence, animation, info.Value, d);
+				//var exportPalette = LoadField<string>(d, "EmbeddedPalette", null);
+				//if (exportPalette != null)
+				//{
+				//	var src = GetSpriteSrc(modData, tileSet, sequence, animation, info.Value, d);
 
-					var metadata = cache.FrameMetadata(src);
-					var i = Frames != null ? Frames[0] : Start;
-					var palettes = metadata != null ? metadata.GetOrDefault<EmbeddedSpritePalette>() : null;
-					if (palettes == null || !palettes.TryGetPaletteForFrame(i, out EmbeddedPalette))
-						throw new YamlException("Cannot export palettes from {0}: frame {1} does not define an embedded palette".F(src, i));
-				}
+				//	var metadata = cache.FrameMetadata(src);
+				//	var i = Frames != null ? Frames[0] : Start;
+				//	var palettes = metadata != null ? metadata.GetOrDefault<EmbeddedSpritePalette>() : null;
+				//	if (palettes == null || !palettes.TryGetPaletteForFrame(i, out EmbeddedPalette))
+				//		throw new YamlException("Cannot export palettes from {0}: frame {1} does not define an embedded palette".F(src, i));
+				//}
 
 				var boundSprites = SpriteBounds(sprites, Frames, Start, Facings, Length, Stride, transpose);
 				if (ShadowStart > 0)

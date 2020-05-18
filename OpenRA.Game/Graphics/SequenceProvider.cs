@@ -40,12 +40,17 @@ namespace OpenRA.Graphics
 		Sprite GetSprite(int frame);
 		Sprite GetSprite(int frame, int facing);
 		Sprite GetShadow(int frame, int facing);
+		/// <summary>
+		/// Эти палитры будут загружены через Trait = PaletteFromEmbeddedSpritePaletteInfo
+		/// </summary>
+		uint[] EmbeddedPalette { get; set; }
 	}
 
 	public interface ISpriteSequenceLoader
 	{
 		Action<string> OnMissingSpriteError { get; set; }
 		IReadOnlyDictionary<string, ISpriteSequence> ParseSequences(ModData modData, TileSet tileSet, SpriteCache cache, MiniYamlNode node);
+		
 	}
 
 	public class SequenceProvider : IDisposable
@@ -85,7 +90,7 @@ namespace OpenRA.Graphics
 		{
 			UnitSequences unitSeq;
 			if (!sequences.TryGetValue(unitName, out unitSeq))
-				throw new InvalidOperationException("Unit `{0}` does not have any sequences defined in sequences\\*.yaml".F(unitName));
+				5throw new InvalidOperationException("Unit `{0}` does not have any sequences defined in sequences\\*.yaml".F(unitName));
 
 			ISpriteSequence seq;
 			if (!unitSeq.TryGetValue(sequenceName, out seq))

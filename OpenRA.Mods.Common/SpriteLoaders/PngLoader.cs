@@ -18,6 +18,8 @@ using System.Text;
 using ICSharpCode.SharpZipLib.Checksum;
 using ICSharpCode.SharpZipLib.Zip.Compression.Streams;
 using OpenRA.Graphics;
+using OpenRA.Mods.Common.Graphics;
+using OpenRA.Mods.Common.SpriteLoaders;
 using OpenRA.Primitives;
 
 namespace OpenRA.FileFormats
@@ -369,13 +371,20 @@ namespace OpenRA.FileFormats
 		public override bool TryParseSprite(Stream s, out ISpriteFrame[] frames, out TypeDictionary metadata)
 		{
 			PngFrame isf = new PngFrame();
-			//Png p = new Png(s);
-			//isf.Data = p.Data;
-			//isf.Size = new Size(p.Width, p.Height);
-			//isf.FrameSize= new Size(p.Width, p.Height);
+			Png p = new Png(s);
+			isf.Data = p.Data;
+			isf.Size = new Size(p.Width, p.Height);
+			isf.FrameSize = new Size(p.Width, p.Height);
 			frames = new ISpriteFrame[1];
 			frames[0] = isf;
-			metadata = null;
+
+			metadata = new TypeDictionary
+			{
+				new PngSheetMetadata(p.EmbeddedData),
+				new EmbeddedSpritePalette(p.Palette.Select(x => (uint)x.ToArgb()).ToArray())
+			};
+
+			//metadata = null;
 			return true;
 		}
 
