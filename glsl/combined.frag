@@ -19,6 +19,7 @@ uniform sampler2DArray Texture2D2;
 
 uniform bool EnableDepthPreview;
 uniform float DepthTextureScale;
+uniform vec2 MouseLocation;
 
 in vec2 vTexCoord;
 in vec2 vTexCoordSecond;
@@ -112,6 +113,7 @@ void main()
 		}
 		else
 		{
+
 			x = texture(Texture2D0,vec3(vTexCoord.st,TextureArrayIndex));
 			p = vec2(x.r, PaletteIndex);  
 		}
@@ -202,6 +204,33 @@ void main()
 		//c=vec4(1,1,1,1);
 	}	
 	
+	if (DrawMode==10.0) //framebuffer texture flipped
+	{
+			if (MouseLocation.x!=0.0)
+			{
+				//Texture1 хранит текстуру фреймбуфера
+				//Texture0 хранит текстуру карты
+				vec4 highlightcolor = texture(Texture0,vec2(MouseLocation));//перевернули уже в openra по вертикали
+				vec4 highlightcolor2 = texture(Texture0,vec2(vTexCoord.s,1-vTexCoord.t));
+				
+				c= texture(Texture1,vec2(vTexCoord.s,1-vTexCoord.t));
+				
+				if (highlightcolor2==highlightcolor)
+				{
+					c=highlightcolor2; // vec4(1.0,1.0,1.0,1);
+				}
+				
+			}
+			else
+			{
+				c= texture(Texture1,vec2(vTexCoord.s,1-vTexCoord.t));
+				//c = texture(Texture2D0,vec3(vTexCoord.st,TextureArrayIndex));
+		} 
+			
+		 //c=texture(Texture2D0,vec3(vTexCoord,TextureArrayIndex));
+		//c=texture2D(Texture0, vTexCoord);
+		//c=vec4(1,1,1,1);
+	}
 	
 	if (c.a == 0.0)
 		discard;

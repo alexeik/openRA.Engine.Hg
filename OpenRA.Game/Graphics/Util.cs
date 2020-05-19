@@ -233,6 +233,12 @@ namespace OpenRA.Graphics
 			{
 				drawmode = 9;
 			}
+
+			if (r.SpriteType == 6) //highlight
+			{
+				drawmode = 10;
+			}
+
 			// var fAttribC = (float)attribC;
 			vertices[nv] = new Vertex(a, r.Left, r.Top, sl, st, paletteTextureIndex, 0, drawmode, samplerType, TextureStoreChannel, TextureSlot, SecTextureStoreChannel, SecTextureSlot);
 			vertices[nv + 1] = new Vertex(b, r.Right, r.Top, sr, st, paletteTextureIndex, 0, drawmode, samplerType, TextureStoreChannel, TextureSlot, SecTextureStoreChannel, SecTextureSlot);
