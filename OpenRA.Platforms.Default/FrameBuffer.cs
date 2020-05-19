@@ -10,6 +10,7 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using OpenRA.Primitives;
@@ -18,8 +19,8 @@ namespace OpenRA.Platforms.Default
 {
 	public sealed class FrameBuffer : ThreadAffine, IFrameBuffer
 	{
-		readonly ITexture texture;
-		readonly Size size;
+		List<ITexture> texture=new List<ITexture>();
+		public readonly Size size;
 		uint framebuffer, depth;
 		bool disposed;
 
@@ -35,7 +36,7 @@ namespace OpenRA.Platforms.Default
 			OpenGL.CheckGLError();
 
 			// Color
-			this.texture = texture;
+			this.texture.Add(texture);
 			texture.SetEmpty(size.Width, size.Height);
 			OpenGL.glFramebufferTexture2D(OpenGL.FRAMEBUFFER_EXT, OpenGL.COLOR_ATTACHMENT0_EXT, OpenGL.GL_TEXTURE_2D, texture.ID, 0);
 			OpenGL.CheckGLError();
@@ -94,7 +95,37 @@ namespace OpenRA.Platforms.Default
 			OpenGL.CheckGLError();
 			OpenGL.glViewport(0, 0, size.Width, size.Height);
 			OpenGL.CheckGLError();
-			OpenGL.glClearColor(1, 1, 1, 1);
+			OpenGL.glClearColor(0, 0, 0, 0);
+			OpenGL.CheckGLError();
+			OpenGL.glClear(OpenGL.GL_COLOR_BUFFER_BIT | OpenGL.GL_DEPTH_BUFFER_BIT);
+			OpenGL.CheckGLError();
+		}
+		public void Bind(bool CreateNewTexture,Size size)
+		{
+			VerifyThreadAffinity();
+
+			// Cache viewport rect to restore when unbinding
+			cv = ViewportRectangle();
+
+			OpenGL.glFlush();
+			OpenGL.CheckGLError();
+			OpenGL.glBindFramebuffer(OpenGL.FRAMEBUFFER_EXT, framebuffer);
+			OpenGL.CheckGLError();
+			ITextureInternal tex=null;
+			if (CreateNewTexture)
+			{
+				tex = new Texture();
+			}
+
+			this.texture.Add(tex);
+			tex.SetEmpty(size.Width, size.Height);
+
+			OpenGL.glFramebufferTexture2D(OpenGL.FRAMEBUFFER_EXT, OpenGL.COLOR_ATTACHMENT0_EXT, OpenGL.GL_TEXTURE_2D, tex.ID, 0);
+			OpenGL.CheckGLError();
+
+			OpenGL.glViewport(0, 0, size.Width, size.Height);
+			OpenGL.CheckGLError();
+			OpenGL.glClearColor(0, 0, 0, 0);
 			OpenGL.CheckGLError();
 			OpenGL.glClear(OpenGL.GL_COLOR_BUFFER_BIT | OpenGL.GL_DEPTH_BUFFER_BIT);
 			OpenGL.CheckGLError();
@@ -111,7 +142,7 @@ namespace OpenRA.Platforms.Default
 			OpenGL.CheckGLError();
 		}
 
-		public ITexture Texture
+		public List<ITexture> Texture
 		{
 			get
 			{
@@ -132,7 +163,10 @@ namespace OpenRA.Platforms.Default
 				return;
 			disposed = true;
 			if (disposing)
-				texture.Dispose();
+				foreach (Texture t in texture)
+				{
+					t.Dispose();
+				}
 
 			OpenGL.glDeleteFramebuffers(1, ref framebuffer);
 			OpenGL.CheckGLError();
