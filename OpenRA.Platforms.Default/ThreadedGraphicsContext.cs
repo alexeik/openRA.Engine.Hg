@@ -451,7 +451,7 @@ namespace OpenRA.Platforms.Default
 	class ThreadedFrameBuffer : IFrameBuffer
 	{
 		readonly ThreadedGraphicsContext device;
-		readonly Func<ITexture> getTexture;
+		readonly Func<List<ITexture>> getTexture;
 		readonly Action bind;
 		readonly Action unbind;
 		readonly Action dispose;
@@ -465,7 +465,7 @@ namespace OpenRA.Platforms.Default
 			dispose = frameBuffer.Dispose;
 		}
 
-		public ITexture Texture
+		public List<ITexture> Texture
 		{
 			get
 			{

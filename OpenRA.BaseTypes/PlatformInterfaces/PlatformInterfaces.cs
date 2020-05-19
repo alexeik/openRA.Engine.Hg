@@ -10,6 +10,7 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using OpenRA.Graphics;
 using OpenRA.Primitives;
 
@@ -111,7 +112,7 @@ namespace OpenRA
 	{
 		void Bind();
 		void Unbind();
-		ITexture Texture { get; }
+		List<ITexture> Texture { get; }
 	}
 
 	public enum PrimitiveType

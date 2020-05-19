@@ -21,7 +21,8 @@ namespace OpenRA.Graphics
 		string defaultpalette = "";
 		public PaletteReference pr;
 		public FrameBuffer fb;
-		bool fbcreated = false;
+		public bool fbcreated = false;
+	
 
 		public PixelDumpRenderer(string renderID, Renderer r, Shader sh ) : base("", r, sh)
 		{
@@ -39,13 +40,25 @@ namespace OpenRA.Graphics
 			fbcreated = true;
 			SetViewportParams(new Size(2048, 2048), 0f, 0f, 1f, int2.Zero);
 		}
+		public void Setup(Size s)
+		{
+
+			if (fbcreated)
+			{
+				return;
+			}
+		
+			fb = Game.Renderer.Context.CreateFrameBuffer(new Size(s.Width, s.Height));
+			fbcreated = true;
+			SetViewportParams(new Size(s.Width, s.Height), 0f, 0f, 1f, int2.Zero);
+		}
 
 		public void DrawSprite(Sprite s, float3 location, float3 size)
 		{
-			if (s.Channel != TextureChannel.RGBA)
-				throw new InvalidOperationException("DrawRGBASprite requires a RGBA sprite.");
+			//if (s.Channel != TextureChannel.RGBA)
+			//	throw new InvalidOperationException("DrawRGBASprite requires a RGBA sprite.");
 
-			parent.DrawSprite(s, location, 0, size);
+			base.DrawSprite(s, location, 0, size);
 		}
 
 		public void DrawSprite(Sprite s, float3 location)

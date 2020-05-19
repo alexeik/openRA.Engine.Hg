@@ -68,7 +68,7 @@ namespace OpenRA.Mods.Common.Widgets
 
 			if (s.SpriteType == 3) //fill rect with palette sprite 
 			{
-				DrawRGBAShaderFill(s, r.Location,  new float3(r.Width, r.Height, 0));
+				DrawRGBAShaderFill(s, r.Location, Game.Renderer.RgbaSpriteRenderer.pr, new float3(r.Width, r.Height, 0));
 			}
 			else
 

@@ -317,5 +317,9 @@ namespace OpenRA.Graphics
 		{
 			shader.SetBool("EnableDepthPreview", enabled);
 		}
+		public void SetMouseLocation(float2 mloc)
+		{
+			shader.SetVec("MouseLocation", mloc.X, mloc.Y);
+		}
 	}
 }
