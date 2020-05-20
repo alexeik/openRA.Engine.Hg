@@ -321,5 +321,23 @@ namespace OpenRA.Graphics
 		{
 			shader.SetVec("MouseLocation", mloc.X, mloc.Y);
 		}
+
+		public void SetAlphaConstantRegion(float r, float g, float b, float a)
+		{
+			shader.SetVec("AlphaConstantRegion", r/255, g/255, b/255);
+		}
+		public void SetAlphaInit(float r, float g, float b, float a)
+		{
+			shader.SetVec("AlphaInit", r/255, g/255, b/255);
+		}
+		public void SetAlphaFlag(bool c)
+		{
+			shader.SetBool("AlphaFlag", c);
+		}
+		public void SetFrameBufferMaskMode(bool c)
+		{
+			shader.SetBool("FrameBufferMaskMode", c);
+		}
+		
 	}
 }
