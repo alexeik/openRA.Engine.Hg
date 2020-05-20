@@ -53,6 +53,13 @@ namespace OpenRA.Graphics
 			SetViewportParams(new Size(s.Width, s.Height), 0f, 0f, 1f, int2.Zero);
 		}
 
+		public void DrawSprite(Sprite s, float3 location, float3 size,PaletteReference p)
+		{
+			//if (s.Channel != TextureChannel.RGBA)
+			//	throw new InvalidOperationException("DrawRGBASprite requires a RGBA sprite.");
+
+			base.DrawSprite(s, location, p, size);
+		}
 		public void DrawSprite(Sprite s, float3 location, float3 size)
 		{
 			//if (s.Channel != TextureChannel.RGBA)
