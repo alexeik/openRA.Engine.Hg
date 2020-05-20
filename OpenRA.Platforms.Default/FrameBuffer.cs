@@ -27,8 +27,8 @@ namespace OpenRA.Platforms.Default
 		public FrameBuffer(Size size, ITextureInternal texture)
 		{
 			this.size = size;
-			if (!Exts.IsPowerOf2(size.Width) || !Exts.IsPowerOf2(size.Height))
-				throw new InvalidDataException("Frame buffer size ({0}x{1}) must be a power of two".F(size.Width, size.Height));
+			//if (!Exts.IsPowerOf2(size.Width) || !Exts.IsPowerOf2(size.Height))
+			//	throw new InvalidDataException("Frame buffer size ({0}x{1}) must be a power of two".F(size.Width, size.Height));
 
 			OpenGL.glGenFramebuffers(1, out framebuffer);
 			OpenGL.CheckGLError();
@@ -130,7 +130,29 @@ namespace OpenRA.Platforms.Default
 			OpenGL.glClear(OpenGL.GL_COLOR_BUFFER_BIT | OpenGL.GL_DEPTH_BUFFER_BIT);
 			OpenGL.CheckGLError();
 		}
+		public void ReBind(ITextureInternal t)
+		{
+			VerifyThreadAffinity();
 
+			// Cache viewport rect to restore when unbinding
+			cv = ViewportRectangle();
+
+			OpenGL.glFlush();
+			OpenGL.CheckGLError();
+			OpenGL.glBindFramebuffer(OpenGL.FRAMEBUFFER_EXT, framebuffer);
+			OpenGL.CheckGLError();
+			
+
+			OpenGL.glFramebufferTexture2D(OpenGL.FRAMEBUFFER_EXT, OpenGL.COLOR_ATTACHMENT0_EXT, OpenGL.GL_TEXTURE_2D, t.ID, 0);
+			OpenGL.CheckGLError();
+
+			OpenGL.glViewport(0, 0, size.Width, size.Height);
+			OpenGL.CheckGLError();
+			OpenGL.glClearColor(0, 0, 0, 0);
+			OpenGL.CheckGLError();
+			OpenGL.glClear(OpenGL.GL_COLOR_BUFFER_BIT | OpenGL.GL_DEPTH_BUFFER_BIT);
+			OpenGL.CheckGLError();
+		}
 		public void Unbind()
 		{
 			VerifyThreadAffinity();

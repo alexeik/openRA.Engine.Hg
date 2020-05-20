@@ -150,8 +150,8 @@ namespace OpenRA.Platforms.Default
 		public virtual void SetEmpty(int width, int height)
 		{
 			VerifyThreadAffinity();
-			if (!Exts.IsPowerOf2(width) || !Exts.IsPowerOf2(height))
-				throw new InvalidDataException("Non-power-of-two array {0}x{1}".F(width, height));
+			//if (!Exts.IsPowerOf2(width) || !Exts.IsPowerOf2(height))
+			//	throw new InvalidDataException("Non-power-of-two array {0}x{1}".F(width, height));
 
 			Size = new Size(width, height);
 			PrepareTexture();
