@@ -220,29 +220,11 @@ void main()
 				vec4 excludecolor=vec4(0,0,0,0);
 				
 				hlcolor= texture(Texture1,vec2(vTexCoord.s,1-vTexCoord.t));
-				if (AlphaFlag)
-				{
-					hlcolor= vec4(hlcolor.rgb, 0.5); //если альфа режим, то нужно взять из оригинала пиксель с заданной альфой.
-				}
 				
 				//if (highlightcolor2==highlightcolor && highlightcolor!=excludecolor )
 				if (highlightcolor2==highlightcolor && highlightcolor!=excludecolor && highlightcolor!=vec4(AlphaConstantRegion,1))
 				{
 
-					if (AlphaFlag)
-					{
-						if (FrameBufferMaskMode)
-						{
-							c=highlightcolor;
-						}
-						else
-						{
-							c= vec4(hlcolor.rgb, 1); //для режима выбора домов
-						}
-					}
-					else
-					
-					{
 						if (FrameBufferMaskMode)
 						{
 							c=highlightcolor;
@@ -252,7 +234,7 @@ void main()
 							c= mix(hlcolor, vec4(0.6,0,0,1), 0.6); // для режима выбора областей наступления
 							//c=highlightcolor; для дебага можно отключить и увидеть цвета подсветки в выборе регионов
 						}
-					}
+					
 					
 				
 				}
@@ -260,8 +242,54 @@ void main()
 				{
 					c= texture(Texture1,vec2(vTexCoord.s,1-vTexCoord.t));
 					
-					if (AlphaFlag)
-					{
+					
+				}
+
+				
+				
+			}
+
+			
+		 //c=texture(Texture2D0,vec3(vTexCoord,TextureArrayIndex));
+		//c=texture2D(Texture0, vTexCoord);
+		//c=vec4(1,1,1,1);
+	}
+	if (DrawMode==11.0) //для текстуры+маски алгоритм.
+	{
+			vec4 hlcolor;
+			if (MouseLocation.x!=-1)
+			{
+				//Texture1 хранит текстуру фреймбуфера
+				//Texture0 хранит текстуру карту масок
+				vec4 highlightcolor = texture(Texture0,vec2(MouseLocation));//перевернули уже в openra по вертикали
+				vec4 highlightcolor2 = texture(Texture0,vec2(vTexCoord.s,1-vTexCoord.t));
+				vec4 excludecolor=vec4(0,0,0,0);
+				
+				hlcolor= texture(Texture1,vec2(vTexCoord.s,1-vTexCoord.t));
+				hlcolor= vec4(hlcolor.rgb, 0.5); //если альфа режим, то нужно взять из оригинала пиксель с заданной альфой.
+
+				
+				//if (highlightcolor2==highlightcolor && highlightcolor!=excludecolor )
+				if (highlightcolor2==highlightcolor && highlightcolor!=vec4(AlphaConstantRegion,1))
+				{
+
+
+						if (FrameBufferMaskMode)
+						{
+							c=highlightcolor;
+						}
+						else
+						{
+							c= vec4(hlcolor.rgb, 1); //для режима выбора домов
+						}
+
+				
+				}
+				else
+				{
+					c= texture(Texture1,vec2(vTexCoord.s,1-vTexCoord.t));
+					
+					
 						vec4 hl=texture(Texture0,vec2(vTexCoord.s,1-vTexCoord.t));
 						if (hl==vec4(AlphaConstantRegion,1))
 						{
@@ -273,8 +301,7 @@ void main()
 							
 							//c=vec4(c.r,c.g,c.b,0); //AlphaInit.r содержит значение для альфы.
 						}
-						
-					}
+
 				}
 
 				
@@ -288,13 +315,10 @@ void main()
 			
 			//c=hlcolor;
 			
-		} 
+			} 
 			
-		 //c=texture(Texture2D0,vec3(vTexCoord,TextureArrayIndex));
-		//c=texture2D(Texture0, vTexCoord);
-		//c=vec4(1,1,1,1);
+
 	}
-	
 	if (c.a == 0.0)
 		discard;
 
