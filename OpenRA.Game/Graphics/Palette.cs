@@ -87,10 +87,10 @@ namespace OpenRA.Graphics
 					var b = (byte)(reader.ReadByte() << 2);
 
 					// Replicate high bits into the (currently zero) low bits.
-					r |= (byte)(r >> 6);
+					r |= (byte)(r >> 6); //Компенсация, того, что палитры в этих играх от 0 до 252. а это расширяет их до 255.
 					g |= (byte)(g >> 6);
 					b |= (byte)(b >> 6);
-
+					
 					colors[i] = (uint)((255 << 24) | (r << 16) | (g << 8) | b);
 				}
 
