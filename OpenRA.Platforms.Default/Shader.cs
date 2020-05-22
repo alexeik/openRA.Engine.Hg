@@ -395,6 +395,37 @@ namespace OpenRA.Platforms.Default
 			OpenGL.CheckGLError();
 		}
 
+		/// <summary>
+		/// параметр в шейдере типа uniform float var[2], массив плоский из float, длина массива, veclen шаг массива - сколько элементов приходиться на 1 элемент var[]
+		/// </summary>
+		/// <param name="name"></param>
+		/// <param name="vec"></param>
+		/// <param name="length"> разрядность vecX,vec4</param>
+		/// <param name="veclen"></param>
+		public  void SetVec(string name, float[] vec, int length, int veclen)
+		{
+			VerifyThreadAffinity();
+			var param = OpenGL.glGetUniformLocation(program, name);
+			OpenGL.CheckGLError();
+			unsafe
+			{
+				fixed (float* pVec = vec)
+				{
+					var ptr = new IntPtr(pVec);
+					switch (length)
+					{
+						case 1: OpenGL.glUniform1fv(param, veclen, ptr); break;
+						case 2: OpenGL.glUniform2fv(param, veclen, ptr); break;
+						case 3: OpenGL.glUniform3fv(param, veclen, ptr); break;
+						case 4: OpenGL.glUniform4fv(param, veclen, ptr); break;
+						default: throw new InvalidDataException("Invalid vector length");
+					}
+				}
+			}
+
+			OpenGL.CheckGLError();
+		}
+
 		public override void SetMatrix(string name, float[] mtx)
 		{
 			VerifyThreadAffinity();

@@ -25,6 +25,14 @@ uniform vec3 AlphaInit;
 uniform bool AlphaFlag;
 uniform bool FrameBufferMaskMode;
 
+uniform vec4 Layer1KeyColor[10];
+uniform vec4 Layer2KeyColor[10];
+uniform vec4 Layer3KeyColor[10];
+
+uniform vec4 Layer1Color[1];
+uniform vec4 Layer2Color[1];
+uniform vec4 Layer3Color[1];
+
 in vec2 vTexCoord;
 in vec2 vTexCoordSecond;
 
@@ -210,19 +218,20 @@ void main()
 	
 	if (DrawMode==10.0) //для текстуры+маски алгоритм.
 	{
-			vec4 hlcolor;
+			vec4 usercolor;
 			if (MouseLocation.x!=-1)
 			{
-				//Texture1 хранит текстуру фреймбуфера
 				//Texture0 хранит текстуру карту масок
+				//Texture1 хранит текстуру фреймбуфера - то , что видит игрок
+				
 				vec4 highlightcolor = texture(Texture0,vec2(MouseLocation));//перевернули уже в openra по вертикали
 				vec4 highlightcolor2 = texture(Texture0,vec2(vTexCoord.s,1-vTexCoord.t));
 				vec4 excludecolor=vec4(0,0,0,0);
 				
-				hlcolor= texture(Texture1,vec2(vTexCoord.s,1-vTexCoord.t));
+				usercolor= texture(Texture1,vec2(vTexCoord.s,1-vTexCoord.t));
 				
 				//if (highlightcolor2==highlightcolor && highlightcolor!=excludecolor )
-				if (highlightcolor2==highlightcolor && highlightcolor!=excludecolor && highlightcolor!=vec4(AlphaConstantRegion,1))
+				if (highlightcolor2==highlightcolor && highlightcolor!=excludecolor )
 				{
 
 						if (FrameBufferMaskMode)
@@ -231,7 +240,7 @@ void main()
 						}
 						else
 						{
-							c= mix(hlcolor, vec4(0.6,0,0,1), 0.6); // для режима выбора областей наступления
+							c= mix(usercolor, vec4(0.6,0,0,1), 0.7); // для режима выбора областей наступления
 							//c=highlightcolor; для дебага можно отключить и увидеть цвета подсветки в выборе регионов
 						}
 					
@@ -240,8 +249,42 @@ void main()
 				}
 				else
 				{
-					c= texture(Texture1,vec2(vTexCoord.s,1-vTexCoord.t));
-					
+					c=usercolor ;// texture(Texture1,vec2(vTexCoord.s,1-vTexCoord.t));
+					for(int i=0;i<10;++i)
+					{
+						//free layers for map. because 3 fraction
+						if (Layer1KeyColor[i]==vec4(0,0,0,0))
+							continue;
+						if (highlightcolor2==Layer1KeyColor[i])
+						{
+							c = Layer1Color[0];
+						}
+						if (Layer2KeyColor[i]==vec4(0,0,0,0))
+							continue;
+						if (highlightcolor2==Layer2KeyColor[i])
+						{
+							c = Layer2Color[0];
+						}
+						if (Layer3KeyColor[i]==vec4(0,0,0,0))
+							continue;
+						if (highlightcolor2==Layer3KeyColor[i])
+						{
+							c = Layer3Color[0];
+						}
+					}
+					/* if (highlightcolor2==Layer1KeyColor[0]) //vec4(0.66666669,0,0,1)
+					{
+						c=Layer1KeyColor;
+					}
+					if (highlightcolor2==Layer1KeyColor[1]) //vec4(0.66666669,0,0,1)
+					{
+						c=Layer2KeyColor;
+					} */
+					/* if (highlightcolor2==vec4(0.66666669,0,0.66666669,1))
+					{
+						c=vec4(1,1,1,1);
+					} */
+					//c=highlightcolor2;
 					
 				}
 
@@ -263,7 +306,7 @@ void main()
 				//Texture0 хранит текстуру карту масок
 				vec4 highlightcolor = texture(Texture0,vec2(MouseLocation));//перевернули уже в openra по вертикали
 				vec4 highlightcolor2 = texture(Texture0,vec2(vTexCoord.s,1-vTexCoord.t));
-				vec4 excludecolor=vec4(0,0,0,0);
+			
 				
 				hlcolor= texture(Texture1,vec2(vTexCoord.s,1-vTexCoord.t));
 				hlcolor= vec4(hlcolor.rgb, 0.5); //если альфа режим, то нужно взять из оригинала пиксель с заданной альфой.

@@ -338,6 +338,10 @@ namespace OpenRA.Graphics
 		{
 			shader.SetBool("FrameBufferMaskMode", c);
 		}
-		
+		public void SetLayer1KeyColor(float r, float g, float b, float a)
+		{
+			shader.SetVec("Layer1KeyColor", r / 255, g / 255, b / 255);
+		}
+
 	}
 }
