@@ -36,7 +36,7 @@ namespace OpenRA.Graphics
 		static Dictionary<string, Collection> collections;
 		static Dictionary<string, Sheet> cachedSheets;
 		static Dictionary<string, SheetCache> cachedSheets2d;
-		static Dictionary<string, Dictionary<string, Sprite>> cachedSprites;
+		public static Dictionary<string, Dictionary<string, Sprite>> cachedSprites;
 		static IReadOnlyFileSystem fileSystem;
 		public static World World;
 		static SequenceProvider seqprov;

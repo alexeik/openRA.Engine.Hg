@@ -72,15 +72,73 @@ namespace OpenRA.Graphics
 		/// </summary>
 		/// <param name="frame"></param>
 		/// <returns></returns>
-		public Sprite Add(ISpriteFrame frame) 
-		{ 
-			return Add(frame.Data, frame.Size, 0, frame.Offset); 
+		public Sprite Add(ISpriteFrame frame)
+		{
+			return Add(frame.Data, frame.Size, 0, frame.Offset);
 		}
-		public Sprite Add(byte[] src, Size size) 
-		{ 
-			return Add(src, size, 0, float3.Zero); 
+		public Sprite Add(byte[] src, Size size)
+		{
+			return Add(src, size, 0, float3.Zero);
 		}
 
+		public Sprite AddSprite(Sprite sprite)
+		{
+			Sprite rect = Allocate(new Size(Convert.ToInt32(sprite.Size.X), Convert.ToInt32(sprite.Size.Y)), sprite.ZRamp, sprite.Offset, TextureChannel.RGBA);
+
+			byte[] spritedata = sprite.Sheet.GetData();
+			byte[] src = new byte[rect.Bounds.Height * rect.Bounds.Width * 4]; //4byte sprite
+
+		
+			var destskip = (sprite.Sheet.Size.Width - sprite.Bounds.Width) * 4;
+			//destskip = 0;
+			// +0 так как перевертывание только по Y оси. Поэтому смещаться от левой оси не нужно.
+			// тут умножается на sprite.Sheet.Size.Width,но это дает всегда 0 смещение от левого края.
+			//var srcOffset = sprite.Sheet.Size.Width * (sprite.Sheet.Size.Height - sprite.Bounds.Height) * 4  + 0; 
+			var srcOffset = sprite.Sheet.Size.Width * (sprite.Sheet.Size.Height-1 ) * 4 + sprite.Bounds.Width*4;
+			//srcOffset = 0;
+
+			var destOffset = 0;
+
+			for (var j = 0; j < rect.Bounds.Height; j++)
+			{
+				for (var i = 0; i < rect.Bounds.Width ; i++) // после прогона в количестве равному ширине в пикселях
+				{
+					//нужно записывать в ARGB, так как FastCopyIntoSprite2 работает в ARGB -1=A,-2=R,-3=G,0=B
+					src[destOffset+3] = spritedata[srcOffset];
+					src[destOffset+2] = spritedata[srcOffset-3];
+					src[destOffset+1] = spritedata[srcOffset-2];
+					src[destOffset] = spritedata[srcOffset-1];
+
+					destOffset += 4 ;
+					srcOffset -= 4;
+				}
+				srcOffset -= destskip;
+			}
+
+			int current=0, flipped = 0;
+			int w = rect.Bounds.Width;
+			//перевертываем вокруг Y оси
+			byte[] src2 = new byte[rect.Bounds.Height * rect.Bounds.Width * 4];
+			for (int y = 0; y < rect.Bounds.Height; y++)
+			{
+				for (int x = 0; x < rect.Bounds.Width; x++)
+				{
+					current = y * rect.Bounds.Width * 4 + x * 4;
+					flipped = y * rect.Bounds.Width * 4 + (w - x) * 4 -4 ; //начало flipper падает на конец 4ки, нужно добавить -4 , чтобы на начало
+					for (int i = 0; i < 4; i++)
+					{
+						src2[flipped + i] = src[current + i];
+					}
+				
+				}
+				//current += destskip; ненужен, так как src массив включает только картинку 
+			}
+
+			//нужно скопировать из spritedata по правильному смещению в src
+			Util.FastCopyIntoSprite2(rect, src2);
+			currentSheet2D.CommitBufferedData();
+			return rect;
+		}
 		/// <summary>
 		/// Добавляет байты в массив байтов текстуры, которая привязан к данному SheetBuilder.
 		/// </summary>
@@ -145,12 +203,12 @@ namespace OpenRA.Graphics
 		}
 
 		public Sprite Allocate(Size imageSize)
-		{ 
+		{
 			return Allocate(imageSize, 0, float3.Zero);
 		}
-		public Sprite Allocate(Size imageSize,TextureChannel channel)
+		public Sprite Allocate(Size imageSize, TextureChannel channel)
 		{
-			return Allocate(imageSize, 0, float3.Zero,channel);
+			return Allocate(imageSize, 0, float3.Zero, channel);
 		}
 
 		/// <summary>
@@ -210,7 +268,7 @@ namespace OpenRA.Graphics
 
 				currentSheet2D = CreateNewSheet(SheetStoreType, Game.Settings.Graphics.SheetSize); //унаследует TextureArrayIndex в новый Sheet2D
 				sheetsOnCpu.Add(currentSheet2D);
-			
+
 
 
 				rowHeight = imageSize.Height;
