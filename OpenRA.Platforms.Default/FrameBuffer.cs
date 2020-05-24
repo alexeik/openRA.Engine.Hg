@@ -100,7 +100,28 @@ namespace OpenRA.Platforms.Default
 			OpenGL.glClear(OpenGL.GL_COLOR_BUFFER_BIT | OpenGL.GL_DEPTH_BUFFER_BIT);
 			OpenGL.CheckGLError();
 		}
-		public void Bind(bool CreateNewTexture,Size size)
+
+		public ITexture Bind(bool returnTexture)
+		{
+			VerifyThreadAffinity();
+
+			// Cache viewport rect to restore when unbinding
+			cv = ViewportRectangle();
+
+			OpenGL.glFlush();
+			OpenGL.CheckGLError();
+			OpenGL.glBindFramebuffer(OpenGL.FRAMEBUFFER_EXT, framebuffer);
+			OpenGL.CheckGLError();
+			OpenGL.glViewport(0, 0, size.Width, size.Height);
+			OpenGL.CheckGLError();
+			OpenGL.glClearColor(0, 0, 0, 0);
+			OpenGL.CheckGLError();
+			OpenGL.glClear(OpenGL.GL_COLOR_BUFFER_BIT | OpenGL.GL_DEPTH_BUFFER_BIT);
+			OpenGL.CheckGLError();
+			return this.Texture[0]; //возвращем самую первую текстуру из коллекции
+		}
+
+		public ITexture Bind(bool CreateNewTexture,Size size)
 		{
 			VerifyThreadAffinity();
 
@@ -129,6 +150,7 @@ namespace OpenRA.Platforms.Default
 			OpenGL.CheckGLError();
 			OpenGL.glClear(OpenGL.GL_COLOR_BUFFER_BIT | OpenGL.GL_DEPTH_BUFFER_BIT);
 			OpenGL.CheckGLError();
+			return tex;
 		}
 		public void ReBind(ITextureInternal t)
 		{

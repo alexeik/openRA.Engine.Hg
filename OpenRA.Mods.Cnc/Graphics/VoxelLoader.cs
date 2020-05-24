@@ -90,12 +90,12 @@ namespace OpenRA.Mods.Cnc.Graphics
 			int drawmode = 1;
 			return new Vertex[6]
 			{
-				new Vertex(coord(0, 0), s.Left, s.Top, t.Left, t.Top, channelP, channelC, drawmode, 0, 0, 0, 0, 0),
-				new Vertex(coord(su, 0), s.Right, s.Top, t.Right, t.Top, channelP, channelC, drawmode, 0, 0, 0, 0, 0),
-				new Vertex(coord(su, sv), s.Right, s.Bottom, t.Right, t.Bottom, channelP, channelC, drawmode, 0, 0, 0, 0, 0),
-				new Vertex(coord(su, sv), s.Right, s.Bottom, t.Right, t.Bottom, channelP, channelC, drawmode, 0, 0, 0, 0, 0),
-				new Vertex(coord(0, sv), s.Left, s.Bottom, t.Left, t.Bottom, channelP, channelC, drawmode, 0, 0, 0, 0, 0),
-				new Vertex(coord(0, 0), s.Left, s.Top, t.Left, t.Top, channelP, channelC, drawmode, 0, 0, 0, 0, 0)
+				new Vertex(coord(0, 0), s.Left, s.Top, t.Left, t.Top, channelP, channelC, drawmode, 0, 0, 0, 0, 0, 0, 0),
+				new Vertex(coord(su, 0), s.Right, s.Top, t.Right, t.Top, channelP, channelC, drawmode, 0, 0, 0, 0, 0, 0, 0),
+				new Vertex(coord(su, sv), s.Right, s.Bottom, t.Right, t.Bottom, channelP, channelC, drawmode, 0, 0, 0, 0, 0, 0, 0),
+				new Vertex(coord(su, sv), s.Right, s.Bottom, t.Right, t.Bottom, channelP, channelC, drawmode, 0, 0, 0, 0, 0, 0, 0),
+				new Vertex(coord(0, sv), s.Left, s.Bottom, t.Left, t.Bottom, channelP, channelC, drawmode, 0, 0, 0, 0, 0, 0, 0),
+				new Vertex(coord(0, 0), s.Left, s.Top, t.Left, t.Top, channelP, channelC, drawmode, 0, 0, 0, 0, 0, 0, 0)
 			};
 		}
 

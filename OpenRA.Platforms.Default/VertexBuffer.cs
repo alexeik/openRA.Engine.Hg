@@ -165,7 +165,10 @@ namespace OpenRA.Platforms.Default
 			vl.Add(new VertexLayout() { SlotCount = 1, SlotDataType = OpenGL.GL_FLOAT }); //aVertexTexMetadata2
 			vl.Add(new VertexLayout() { SlotCount = 4, SlotDataType = OpenGL.GL_FLOAT }); //aVertexColorInfo
 			vl.Add(new VertexLayout() { SlotCount = 4, SlotDataType = OpenGL.GL_FLOAT }); //aVertexUVFillRect
+			vl.Add(new VertexLayout() { SlotCount = 1, SlotDataType = OpenGL.GL_FLOAT }); //aFlipX
+			vl.Add(new VertexLayout() { SlotCount = 1, SlotDataType = OpenGL.GL_FLOAT }); //aFlipY
 
+			//SlotCount байтов в слоте 4=vec4 float=1 - ед.измерения слота в байтах
 			int slotbytesize = 4;
 			int offset = 0;
 			for ( int i=0;i<vl.Count;i++)
@@ -176,14 +179,7 @@ namespace OpenRA.Platforms.Default
 				offset += vl[i].SlotCount * slotbytesize;
 			}
 
-			//OpenGL.glVertexAttribPointer(Shader.VertexPosAttributeIndex, 3, OpenGL.GL_FLOAT, false, VertexSize, IntPtr.Zero);
-			//OpenGL.glEnableVertexAttribArray(Shader.VertexPosAttributeIndex);
-			//OpenGL.glVertexAttribPointer(Shader.TexCoordAttributeIndex, 4, OpenGL.GL_FLOAT, false, VertexSize, new IntPtr(12));
-			//OpenGL.glEnableVertexAttribArray(Shader.TexCoordAttributeIndex);
-			//OpenGL.glVertexAttribPointer(Shader.TexMetadataAttributeIndex, 4, OpenGL.GL_FLOAT, false, VertexSize, new IntPtr(28));  // последний аргумнет, это смещение измеряющиеся в байтах , которые указывают на начало столбика данных
-			//OpenGL.glEnableVertexAttribArray(Shader.TexMetadataAttributeIndex);
-			//OpenGL.glVertexAttribPointer(Shader.VertexColorInfo, 4, OpenGL.GL_FLOAT, false, VertexSize, new IntPtr(44));  // последний аргумнет, это смещение измеряющиеся в байтах , которые указывают на начало столбика данных
-			//OpenGL.glEnableVertexAttribArray(Shader.VertexColorInfo);
+
 		}
 		public void BindOnceClose()
 		{

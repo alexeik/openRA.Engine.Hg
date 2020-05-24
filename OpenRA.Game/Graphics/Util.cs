@@ -43,25 +43,25 @@ namespace OpenRA.Graphics
 
 			// See shp.vert for documentation on the channel attribute format
 			float TextureStoreChannel = 0, TextureSlot = 0, SecTextureStoreChannel = 0, SecTextureSlot = 0;
-			float samplerType=0;
+			float samplerType = 0;
 
 			// тут r трактуется как класс Sprite
 			if (r.Channel == TextureChannel.RGBA)
 			{
 				TextureStoreChannel = 4f; // тут нужно указать, в каком канале текстуры R,G,B зашиты данные о цвете. для RGBA текстуры нужно цифру 2, это в шейдере 
-						  // укажет на использование 1.1.1.1 маски
+										  // укажет на использование 1.1.1.1 маски
 			}
 			else
 			{
 				TextureStoreChannel = (byte)r.Channel; // тут нужно понять, в каком канале лежат данные о цвете, так как SheetBiulder распределяет данные картинок
-									   // по R,G,B группам. Это сделано для картинок с палитрами. Так как их цвет занимает лишь 1 байт, вместо 4 байт.
-									   // 1 в шейдере это R канал, 2 это RGBA, 3 = G , 5=B, 7=A
-									   // R=0,G=1,B=2,A=3,RGBA=4 в r.Channel . В шейдере передалана функция связки масок, на точное соотвествие.
+													   // по R,G,B группам. Это сделано для картинок с палитрами. Так как их цвет занимает лишь 1 байт, вместо 4 байт.
+													   // 1 в шейдере это R канал, 2 это RGBA, 3 = G , 5=B, 7=A
+													   // R=0,G=1,B=2,A=3,RGBA=4 в r.Channel . В шейдере передалана функция связки масок, на точное соотвествие.
 			}
 
 			if (samplers.Stype1 == SamplerType.Sampler2d)
 			{
-				if (r.TextureArrayIndex == 5 )
+				if (r.TextureArrayIndex == 5)
 				{
 
 				}
@@ -101,7 +101,9 @@ namespace OpenRA.Graphics
 			}
 
 			int drawmode = 0;
-
+			float flipx, flipy;
+			flipx = r.FlipX;
+			flipy = r.FlipY;
 			// Как то передать режим в котором будет рисование.
 			if (r.Channel == TextureChannel.RGBA)
 			{
@@ -138,12 +140,18 @@ namespace OpenRA.Graphics
 					r1 = 1;
 				}
 
-				vertices[nv] = new Vertex(a, 0, 0, sl, st, paletteTextureIndex, 0, drawmode, 0, TextureStoreChannel, TextureSlot, SecTextureStoreChannel, SecTextureSlot, r.Left, r.Top, r.Right, r.Bottom);
-				vertices[nv + 1] = new Vertex(b, r1, 0, sr, st, paletteTextureIndex, 0, drawmode, 0, TextureStoreChannel, TextureSlot, SecTextureStoreChannel, SecTextureSlot, r.Left, r.Top, r.Right, r.Bottom);
-				vertices[nv + 2] = new Vertex(c, r1, t1, sr, sb, paletteTextureIndex, 0, drawmode, 0, TextureStoreChannel, TextureSlot, SecTextureStoreChannel, SecTextureSlot, r.Left, r.Top, r.Right, r.Bottom);
-				vertices[nv + 3] = new Vertex(c, r1, t1, sr, sb, paletteTextureIndex, 0, drawmode, 0, TextureStoreChannel, TextureSlot, SecTextureStoreChannel, SecTextureSlot, r.Left, r.Top, r.Right, r.Bottom);
-				vertices[nv + 4] = new Vertex(d, 0, t1, sl, sb, paletteTextureIndex, 0, drawmode, 0, TextureStoreChannel, TextureSlot, SecTextureStoreChannel, SecTextureSlot, r.Left, r.Top, r.Right, r.Bottom);
-				vertices[nv + 5] = new Vertex(a, 0, 0, sl, st, paletteTextureIndex, 0, drawmode, 0, TextureStoreChannel, TextureSlot, SecTextureStoreChannel, SecTextureSlot, r.Left, r.Top, r.Right, r.Bottom);
+				if (r.Stretched)
+				{
+					r1 = 1;
+					t1 = 1;
+				}
+
+				vertices[nv] = new Vertex(a, 0, 0, sl, st, paletteTextureIndex, 0, drawmode, samplerType, TextureStoreChannel, TextureSlot, SecTextureStoreChannel, SecTextureSlot, r.Left, r.Top, r.Right, r.Bottom, flipx, flipy);
+				vertices[nv + 1] = new Vertex(b, r1, 0, sr, st, paletteTextureIndex, 0, drawmode, samplerType, TextureStoreChannel, TextureSlot, SecTextureStoreChannel, SecTextureSlot, r.Left, r.Top, r.Right, r.Bottom, flipx, flipy);
+				vertices[nv + 2] = new Vertex(c, r1, t1, sr, sb, paletteTextureIndex, 0, drawmode, samplerType, TextureStoreChannel, TextureSlot, SecTextureStoreChannel, SecTextureSlot, r.Left, r.Top, r.Right, r.Bottom, flipx, flipy);
+				vertices[nv + 3] = new Vertex(c, r1, t1, sr, sb, paletteTextureIndex, 0, drawmode, samplerType, TextureStoreChannel, TextureSlot, SecTextureStoreChannel, SecTextureSlot, r.Left, r.Top, r.Right, r.Bottom, flipx, flipy);
+				vertices[nv + 4] = new Vertex(d, 0, t1, sl, sb, paletteTextureIndex, 0, drawmode, samplerType, TextureStoreChannel, TextureSlot, SecTextureStoreChannel, SecTextureSlot, r.Left, r.Top, r.Right, r.Bottom, flipx, flipy);
+				vertices[nv + 5] = new Vertex(a, 0, 0, sl, st, paletteTextureIndex, 0, drawmode, samplerType, TextureStoreChannel, TextureSlot, SecTextureStoreChannel, SecTextureSlot, r.Left, r.Top, r.Right, r.Bottom, flipx, flipy);
 				return;
 			}
 
@@ -176,35 +184,35 @@ namespace OpenRA.Graphics
 				{
 					wk = (int)((b.X - a.X) / r.Size.X); //width koof
 					hk = (int)((c.Y - a.Y) / r.Size.Y); // height koof
-					if (vlen==0)
+					if (vlen == 0)
 					{
 						vlen = 1;
 					}
-														//left += d1;
-														//right -= d2;
-														//top += d2;
-														//bot -= d2;
-					vertices[nv] = new Vertex(a, 0, 0, sl, st, paletteTextureIndex, wk, drawmode, hk, TextureStoreChannel, TextureSlot, SecTextureStoreChannel, SecTextureSlot, left, top, right, bot);
-					vertices[nv + 1] = new Vertex(b, hlen, 0, sr, st, paletteTextureIndex, wk, drawmode, hk, TextureStoreChannel, TextureSlot, SecTextureStoreChannel, SecTextureSlot, left, top, right, bot);
-					vertices[nv + 2] = new Vertex(c, hlen, vlen, sr, sb, paletteTextureIndex, wk, drawmode, hk, TextureStoreChannel, TextureSlot, SecTextureStoreChannel, SecTextureSlot, left, top, right, bot);
-					vertices[nv + 3] = new Vertex(c, hlen, vlen, sr, sb, paletteTextureIndex, wk, drawmode, hk, TextureStoreChannel, TextureSlot, SecTextureStoreChannel, SecTextureSlot, left, top, right, bot);
-					vertices[nv + 4] = new Vertex(d, 0, vlen, sl, sb, paletteTextureIndex, wk, drawmode, hk, TextureStoreChannel, TextureSlot, SecTextureStoreChannel, SecTextureSlot, left, top, right, bot);
-					vertices[nv + 5] = new Vertex(a, 0, 0, sl, st, paletteTextureIndex, wk, drawmode, hk, TextureStoreChannel, TextureSlot, SecTextureStoreChannel, SecTextureSlot, left, top, right, bot);
+					//left += d1;
+					//right -= d2;
+					//top += d2;
+					//bot -= d2;
+					vertices[nv] = new Vertex(a, 0, 0, sl, st, paletteTextureIndex, wk, drawmode, samplerType, TextureStoreChannel, TextureSlot, SecTextureStoreChannel, SecTextureSlot, left, top, right, bot, flipx, flipy);
+					vertices[nv + 1] = new Vertex(b, hlen, 0, sr, st, paletteTextureIndex, wk, drawmode, samplerType, TextureStoreChannel, TextureSlot, SecTextureStoreChannel, SecTextureSlot, left, top, right, bot, flipx, flipy);
+					vertices[nv + 2] = new Vertex(c, hlen, vlen, sr, sb, paletteTextureIndex, wk, drawmode, samplerType, TextureStoreChannel, TextureSlot, SecTextureStoreChannel, SecTextureSlot, left, top, right, bot, flipx, flipy);
+					vertices[nv + 3] = new Vertex(c, hlen, vlen, sr, sb, paletteTextureIndex, wk, drawmode, samplerType, TextureStoreChannel, TextureSlot, SecTextureStoreChannel, SecTextureSlot, left, top, right, bot, flipx, flipy);
+					vertices[nv + 4] = new Vertex(d, 0, vlen, sl, sb, paletteTextureIndex, wk, drawmode, samplerType, TextureStoreChannel, TextureSlot, SecTextureStoreChannel, SecTextureSlot, left, top, right, bot, flipx, flipy);
+					vertices[nv + 5] = new Vertex(a, 0, 0, sl, st, paletteTextureIndex, wk, drawmode, samplerType, TextureStoreChannel, TextureSlot, SecTextureStoreChannel, SecTextureSlot, left, top, right, bot, flipx, flipy);
 				}
 				else
-				
+
 				{
 					if (r.Stretched)
 					{
 						hlen = 1;
 						vlen = 1;
 					}
-					vertices[nv] = new Vertex(a, 0, 0, sl, st, paletteTextureIndex, wk, drawmode, hk, TextureStoreChannel, TextureSlot, SecTextureStoreChannel, SecTextureSlot, left, top, right, bot);
-					vertices[nv + 1] = new Vertex(b, hlen, 0, sr, st, paletteTextureIndex, wk, drawmode, hk, TextureStoreChannel, TextureSlot, SecTextureStoreChannel, SecTextureSlot, left, top, right, bot);
-					vertices[nv + 2] = new Vertex(c, hlen, vlen, sr, sb, paletteTextureIndex, wk, drawmode, hk, TextureStoreChannel, TextureSlot, SecTextureStoreChannel, SecTextureSlot, left, top, right, bot);
-					vertices[nv + 3] = new Vertex(c, hlen, vlen, sr, sb, paletteTextureIndex, wk, drawmode, hk, TextureStoreChannel, TextureSlot, SecTextureStoreChannel, SecTextureSlot, left, top, right, bot);
-					vertices[nv + 4] = new Vertex(d, 0, vlen, sl, sb, paletteTextureIndex, wk, drawmode, hk, TextureStoreChannel, TextureSlot, SecTextureStoreChannel, SecTextureSlot, left, top, right, bot);
-					vertices[nv + 5] = new Vertex(a, 0, 0, sl, st, paletteTextureIndex, wk, drawmode, hk, TextureStoreChannel, TextureSlot, SecTextureStoreChannel, SecTextureSlot, left, top, right, bot);
+					vertices[nv] = new Vertex(a, 0, 0, sl, st, paletteTextureIndex, wk, drawmode, samplerType, TextureStoreChannel, TextureSlot, SecTextureStoreChannel, SecTextureSlot, left, top, right, bot, flipx, flipy);
+					vertices[nv + 1] = new Vertex(b, hlen, 0, sr, st, paletteTextureIndex, wk, drawmode, samplerType, TextureStoreChannel, TextureSlot, SecTextureStoreChannel, SecTextureSlot, left, top, right, bot, flipx, flipy);
+					vertices[nv + 2] = new Vertex(c, hlen, vlen, sr, sb, paletteTextureIndex, wk, drawmode, samplerType, TextureStoreChannel, TextureSlot, SecTextureStoreChannel, SecTextureSlot, left, top, right, bot, flipx, flipy);
+					vertices[nv + 3] = new Vertex(c, hlen, vlen, sr, sb, paletteTextureIndex, wk, drawmode, samplerType, TextureStoreChannel, TextureSlot, SecTextureStoreChannel, SecTextureSlot, left, top, right, bot, flipx, flipy);
+					vertices[nv + 4] = new Vertex(d, 0, vlen, sl, sb, paletteTextureIndex, wk, drawmode, samplerType, TextureStoreChannel, TextureSlot, SecTextureStoreChannel, SecTextureSlot, left, top, right, bot, flipx, flipy);
+					vertices[nv + 5] = new Vertex(a, 0, 0, sl, st, paletteTextureIndex, wk, drawmode, samplerType, TextureStoreChannel, TextureSlot, SecTextureStoreChannel, SecTextureSlot, left, top, right, bot, flipx, flipy);
 				}
 				//vertices[nv] = new Vertex(a, r.Left, r.Top, sl, st, paletteTextureIndex, wk, drawmode, hk, ct1, ct2, ct3, ct4, left, top, right, bot);
 				//vertices[nv + 1] = new Vertex(b, r.Right, r.Top, sr, st, paletteTextureIndex, wk, drawmode, hk, ct1, ct2, ct3, ct4, left, top, right, bot);
@@ -217,7 +225,7 @@ namespace OpenRA.Graphics
 				return;
 			}
 
-			if (r.SpriteType==4)
+			if (r.SpriteType == 4)
 			{
 				drawmode = 8;
 				//vertices[nv] = new Vertex(a, a.X + 0, a.Y + 0, sl, st, paletteTextureIndex, 0, drawmode, 0, ct1, ct2, ct3, ct4, r.Left, r.Top, r.Right, r.Bottom);
@@ -229,7 +237,7 @@ namespace OpenRA.Graphics
 				//return;
 			}
 
-			if (r.SpriteType==5) //dump texture to png
+			if (r.SpriteType == 5) //dump texture to png
 			{
 				drawmode = 9;
 			}
@@ -242,14 +250,18 @@ namespace OpenRA.Graphics
 			{
 				drawmode = 11;
 			}
+			if (r.SpriteType == 8) //highlight
+			{
+				drawmode = 12;
+			}
 			// var fAttribC = (float)attribC;
-			vertices[nv] = new Vertex(a, r.Left, r.Top, sl, st, paletteTextureIndex, 0, drawmode, samplerType, TextureStoreChannel, TextureSlot, SecTextureStoreChannel, SecTextureSlot);
-			vertices[nv + 1] = new Vertex(b, r.Right, r.Top, sr, st, paletteTextureIndex, 0, drawmode, samplerType, TextureStoreChannel, TextureSlot, SecTextureStoreChannel, SecTextureSlot);
-			vertices[nv + 2] = new Vertex(c, r.Right, r.Bottom, sr, sb, paletteTextureIndex, 0, drawmode, samplerType, TextureStoreChannel, TextureSlot, SecTextureStoreChannel, SecTextureSlot);
+			vertices[nv] = new Vertex(a, r.Left, r.Top, sl, st, paletteTextureIndex, 0, drawmode, samplerType, TextureStoreChannel, TextureSlot, SecTextureStoreChannel, SecTextureSlot, flipx, flipy);
+			vertices[nv + 1] = new Vertex(b, r.Right, r.Top, sr, st, paletteTextureIndex, 0, drawmode, samplerType, TextureStoreChannel, TextureSlot, SecTextureStoreChannel, SecTextureSlot, flipx, flipy);
+			vertices[nv + 2] = new Vertex(c, r.Right, r.Bottom, sr, sb, paletteTextureIndex, 0, drawmode, samplerType, TextureStoreChannel, TextureSlot, SecTextureStoreChannel, SecTextureSlot, flipx, flipy);
 
-			vertices[nv + 3] = new Vertex(c, r.Right, r.Bottom, sr, sb, paletteTextureIndex, 0, drawmode, samplerType, TextureStoreChannel, TextureSlot, SecTextureStoreChannel, SecTextureSlot);
-			vertices[nv + 4] = new Vertex(d, r.Left, r.Bottom, sl, sb, paletteTextureIndex, 0, drawmode, samplerType, TextureStoreChannel, TextureSlot, SecTextureStoreChannel, SecTextureSlot);
-			vertices[nv + 5] = new Vertex(a, r.Left, r.Top, sl, st, paletteTextureIndex, 0, drawmode, samplerType, TextureStoreChannel, TextureSlot, SecTextureStoreChannel, SecTextureSlot);
+			vertices[nv + 3] = new Vertex(c, r.Right, r.Bottom, sr, sb, paletteTextureIndex, 0, drawmode, samplerType, TextureStoreChannel, TextureSlot, SecTextureStoreChannel, SecTextureSlot, flipx, flipy);
+			vertices[nv + 4] = new Vertex(d, r.Left, r.Bottom, sl, sb, paletteTextureIndex, 0, drawmode, samplerType, TextureStoreChannel, TextureSlot, SecTextureStoreChannel, SecTextureSlot, flipx, flipy);
+			vertices[nv + 5] = new Vertex(a, r.Left, r.Top, sl, st, paletteTextureIndex, 0, drawmode, samplerType, TextureStoreChannel, TextureSlot, SecTextureStoreChannel, SecTextureSlot, flipx, flipy);
 		}
 
 		public static void FastCreateQuadImGui(Vertex[] vertices, float3 a, float3 b, float3 c, float3 d, Sprite r, SamplerPointer samplers, float paletteTextureIndex, int nv)
@@ -325,12 +337,12 @@ namespace OpenRA.Graphics
 
 			drawmode = 5;
 
-			vertices[nv] = new Vertex(a, r.Left, r.Top, sl, st, paletteTextureIndex, 0, drawmode, 0, ct1, ct2, ct3, ct4);
-			vertices[nv + 1] = new Vertex(b, r.Right, r.Top, sr, st, paletteTextureIndex, 0, drawmode, 0, ct1, ct2, ct3, ct4);
-			vertices[nv + 2] = new Vertex(c, r.Right, r.Bottom, sr, sb, paletteTextureIndex, 0, drawmode, 0, ct1, ct2, ct3, ct4);
-			vertices[nv + 3] = new Vertex(c, r.Right, r.Bottom, sr, sb, paletteTextureIndex, 0, drawmode, 0, ct1, ct2, ct3, ct4);
-			vertices[nv + 4] = new Vertex(d, r.Left, r.Bottom, sl, sb, paletteTextureIndex, 0, drawmode, 0, ct1, ct2, ct3, ct4);
-			vertices[nv + 5] = new Vertex(a, r.Left, r.Top, sl, st, paletteTextureIndex, 0, drawmode, 0, ct1, ct2, ct3, ct4);
+			vertices[nv] = new Vertex(a, r.Left, r.Top, sl, st, paletteTextureIndex, 0, drawmode, 0, ct1, ct2, ct3, ct4, 0, 0);
+			vertices[nv + 1] = new Vertex(b, r.Right, r.Top, sr, st, paletteTextureIndex, 0, drawmode, 0, ct1, ct2, ct3, ct4, 0, 0);
+			vertices[nv + 2] = new Vertex(c, r.Right, r.Bottom, sr, sb, paletteTextureIndex, 0, drawmode, 0, ct1, ct2, ct3, ct4, 0, 0);
+			vertices[nv + 3] = new Vertex(c, r.Right, r.Bottom, sr, sb, paletteTextureIndex, 0, drawmode, 0, ct1, ct2, ct3, ct4, 0, 0);
+			vertices[nv + 4] = new Vertex(d, r.Left, r.Bottom, sl, sb, paletteTextureIndex, 0, drawmode, 0, ct1, ct2, ct3, ct4, 0, 0);
+			vertices[nv + 5] = new Vertex(a, r.Left, r.Top, sl, st, paletteTextureIndex, 0, drawmode, 0, ct1, ct2, ct3, ct4, 0, 0);
 		}
 
 		/// <summary>
@@ -350,7 +362,7 @@ namespace OpenRA.Graphics
 			{
 				data = dest.Sheet.GetData();
 			}
-			
+
 			var srcStride = dest.Bounds.Width; //ширина спрайта в пикселях, после которой делается destSkip
 			int destStride;
 
@@ -425,7 +437,7 @@ namespace OpenRA.Graphics
 			byte[] destData;
 			int destStride;
 			if (dest.Sheet == null)
-			{ 
+			{
 				destData = dest.Sheet2D.GetData(); //RGBA
 				destStride = dest.Sheet2D.Size.Width;
 			}
@@ -435,7 +447,7 @@ namespace OpenRA.Graphics
 				destStride = dest.Sheet.Size.Width;
 			}
 
-			
+
 			var width = dest.Bounds.Width;
 			var height = dest.Bounds.Height;
 
@@ -471,7 +483,57 @@ namespace OpenRA.Graphics
 				}
 			}
 		}
+		public static void FastCopyIntoSprite2(Sprite dest, byte[] src)
+		{
+			byte[] destData;
+			int destStride;
+			if (dest.Sheet == null)
+			{
+				destData = dest.Sheet2D.GetData(); //RGBA
+				destStride = dest.Sheet2D.Size.Width;
+			}
+			else
+			{
+				destData = dest.Sheet.GetData(); //BGRA
+				destStride = dest.Sheet.Size.Width;
+			}
 
+
+			var width = dest.Bounds.Width;
+			var height = dest.Bounds.Height;
+
+			unsafe
+			{
+				// Cast the data to an int array so we can copy the src data directly
+				fixed (byte* bd = &destData[0])
+				{
+					var data = (int*)bd;
+					var x = dest.Bounds.Left;
+					var y = dest.Bounds.Top;
+
+					var k = 0;
+					for (var j = 0; j < height; j++)
+					{
+						for (var i = 0; i < width; i++)
+						{
+							Color cc;
+
+							
+							var a = src[k++];
+							var r = src[k++];
+							var g = src[k++];
+							var b = src[k++];
+
+							cc = Color.FromArgb(a, r, g, b);
+
+
+
+							data[(y + j) * destStride + x + i] = cc.ToArgb();// PremultiplyAlpha(cc).ToArgb();
+						}
+					}
+				}
+			}
+		}
 		public static Color PremultiplyAlpha(Color c)
 		{
 			if (c.A == byte.MaxValue)
