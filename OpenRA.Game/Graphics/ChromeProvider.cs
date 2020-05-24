@@ -344,6 +344,29 @@ namespace OpenRA.Graphics
 			}
 			return image;
 		}
+		public static void AddSprite(string collectionName, string imageName, Sprite sprite)
+		{
+			if (string.IsNullOrEmpty(collectionName))
+				return ;
+
+			// Cached sprite
+			Dictionary<string, Sprite> cachedCollection;
+
+			Sprite spriteout;
+			if (cachedSprites.TryGetValue(collectionName, out cachedCollection) && cachedCollection.TryGetValue(imageName, out spriteout))
+				return ; //нашли в кешах, возвращаем Sprite
+
+
+			if (cachedCollection == null)
+			{
+				cachedCollection = new Dictionary<string, Sprite>();
+				cachedSprites.Add(collectionName, cachedCollection);
+			}
+			cachedCollection.Add(imageName, sprite);
+		
+			//cachedCollection.Add(imageName, sprite);
+
+		}
 	}
 }
 
