@@ -167,32 +167,42 @@ void main()
 	
 	if (DrawMode==6.0) // рисует пиксели из RGBA текстуры заполняя область
 	{
-	 vec2 spriteRange = (EndUV - StartUV );
-	
-	 vec2 uv = StartUV + fract(vTexCoord.st) * spriteRange;
-	 
-	 //vec4 x = Sample(vTexSampler.t,uv);
-	 vec4 x = texture(Texture2D0,vec3(uv,TextureArrayIndex)); //переставляет тут, так как в FastCopyIntoChannel r=b , b=r
-
-	 c =  x ; 
+		 vec2 spriteRange = (EndUV - StartUV );
+		
+		 vec2 uv = StartUV + fract(vTexCoord.st) * spriteRange;
+		 vec4 x;
+		vec2 p;
+		 //vec4 x = Sample(vTexSampler.t,uv);
+		 if (VertexTexMetadataOption2==0) //disabled with==3
+		{
+			x = Sample(vTexSampler.t, vTexCoord.st);
+		
+			
+		}
+		else
+		{
+			
+			x = texture(Texture2D0,vec3(uv,TextureArrayIndex)); //переставляет тут, так как в FastCopyIntoChannel r=b , b=r
+		}
+		 c =  x ; 
 
 	}
 	if (DrawMode==7.0) // рисует пиксели из 1 канальной текстуры заполняя область
 	{
+			
+		 vec2 spriteRange = (EndUV - StartUV );
+
+		 vec2 uv =StartUV + fract(vTexCoord) * spriteRange;
+
 		
-	 vec2 spriteRange = (EndUV - StartUV );
+		  vec4 x;
 
-	 vec2 uv =StartUV + fract(vTexCoord) * spriteRange;
-
-	
-	  vec4 x;
-
-	 //x = Sample(vTexSampler.t, uv); //забираем 4 байта из текстуры
-	 x=texture(Texture2D0,vec3(uv,TextureArrayIndex));
-	 vec2 p = vec2(x.r, PaletteIndex);   // определяем байт в котором указатель на цвет, через vChannelMask - укажет единичкой, какой байт использовать)
-	
-	
-	 c =  texture2D(Palette, p) ;//запрос цвета в палитер; 
+		 //x = Sample(vTexSampler.t, uv); //забираем 4 байта из текстуры
+		 x=texture(Texture2D0,vec3(uv,TextureArrayIndex));
+		 vec2 p = vec2(x.r, PaletteIndex);   // определяем байт в котором указатель на цвет, через vChannelMask - укажет единичкой, какой байт использовать)
+		
+		
+		 c =  texture2D(Palette, p) ;//запрос цвета в палитер; 
 	}
 	if (DrawMode==8.0) // рисует спрайты тайлов карты из мегатекстуры.
 	{
@@ -257,45 +267,36 @@ void main()
 							continue;
 						if (highlightcolor2==Layer1KeyColor[i])
 						{
-							c = Layer1Color[0];
+							//c = Layer1Color[0];
+							c= mix(usercolor, Layer1Color[0], 0.8);
 						}
 						if (Layer2KeyColor[i]==vec4(0,0,0,0))
 							continue;
 						if (highlightcolor2==Layer2KeyColor[i])
 						{
-							c = Layer2Color[0];
+							//c = Layer2Color[0];
+							c= mix(usercolor, Layer2Color[0], 0.8);
 						}
 						if (Layer3KeyColor[i]==vec4(0,0,0,0))
 							continue;
 						if (highlightcolor2==Layer3KeyColor[i])
 						{
-							c = Layer3Color[0];
+							//c = Layer3Color[0];
+							c= mix(usercolor, Layer3Color[0], 0.8);
 						}
 					}
-					/* if (highlightcolor2==Layer1KeyColor[0]) //vec4(0.66666669,0,0,1)
-					{
-						c=Layer1KeyColor;
-					}
-					if (highlightcolor2==Layer1KeyColor[1]) //vec4(0.66666669,0,0,1)
-					{
-						c=Layer2KeyColor;
-					} */
-					/* if (highlightcolor2==vec4(0.66666669,0,0.66666669,1))
-					{
-						c=vec4(1,1,1,1);
-					} */
-					//c=highlightcolor2;
 					
 				}
-
+				//переделать черный из прозрачного в черный.
+				/* if (c==vec4(0,0,0,0))
+				{
+					c=vec4(0,0,0,1);
+				} */
 				
 				
 			}
 
-			
-		 //c=texture(Texture2D0,vec3(vTexCoord,TextureArrayIndex));
-		//c=texture2D(Texture0, vTexCoord);
-		//c=vec4(1,1,1,1);
+
 	}
 	if (DrawMode==11.0) //для текстуры+маски алгоритм.
 	{
@@ -361,6 +362,28 @@ void main()
 			} 
 			
 
+	}
+	
+	if (DrawMode==12.0)
+	{
+		vec4 usercolor = texture(Texture0,vec2(vTexCoord.s,1-vTexCoord.t));
+		vec4 maskcolor = texture(Texture1,vec2(vTexCoord.s,1-vTexCoord.t));
+		c=usercolor;
+		if (maskcolor==vec4(0.66666669,0,0.66666669,1))
+		{
+			c=vec4(0,0,0,1);
+		}
+		//accept Texture0 for original
+		//accept PatchLookupColor for color lookup
+		//accept PatchReplaceColor for color replace
+		
+		//accept PatchLookupColor for color lookup по-этой площади будут заменяться пиксели из Texture0
+		//accept PatchReplaceColor for color replace по-этой площади будут браться пиксели из PatchTextureSlot
+		//accept PatchTextureSlot for pixel replace
+		
+		//Patch texture must be same size as original.
+		
+		//patch texture 
 	}
 	if (c.a == 0.0)
 		discard;
