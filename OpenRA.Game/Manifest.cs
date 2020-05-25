@@ -61,7 +61,7 @@ namespace OpenRA
 			Rules, ServerTraits,
 			Sequences, ModelSequences, Cursors, Chrome, Assemblies, ChromeLayout,
 			Weapons, Voices, Notifications, Music, Translations, TileSets,
-			ChromeMetrics, MapCompatibility, Missions, Hotkeys, ChromeDefaultPalette;
+			ChromeMetrics, MapCompatibility, CampaignDB, Hotkeys, ChromeDefaultPalette;
 
 		public readonly IReadOnlyDictionary<string, string> Packages;
 		public readonly IReadOnlyDictionary<string, string> MapFolders;
@@ -75,7 +75,7 @@ namespace OpenRA
 
 		readonly string[] reservedModuleNames = { "Metadata", "Folders", "MapFolders", "Packages", "Rules",
 			"Sequences", "ModelSequences", "Cursors", "Chrome", "Assemblies", "ChromeLayout", "Weapons",
-			"Voices", "Notifications", "Music", "Translations", "TileSets", "ChromeMetrics", "Missions", "Hotkeys",
+			"Voices", "Notifications", "Music", "Translations", "TileSets", "ChromeMetrics", "CampaignDB", "Hotkeys",
 			"ServerTraits", "LoadScreen", "Fonts", "SupportsMapsFrom", "SoundFormats", "SpriteFormats",
 			"RequiresMods", "PackageFormats", "FontsMSDFBaseFolders", "ChromeDefaultPalette" };
 
@@ -113,7 +113,7 @@ namespace OpenRA
 			Translations = YamlList(yaml, "Translations");
 			TileSets = YamlList(yaml, "TileSets");
 			ChromeMetrics = YamlList(yaml, "ChromeMetrics");
-			Missions = YamlList(yaml, "Missions");
+			CampaignDB = YamlList(yaml, "CampaignDB");
 			Hotkeys = YamlList(yaml, "Hotkeys");
 			ChromeDefaultPalette = YamlList(yaml, "ChromeDefaultPalette");
 

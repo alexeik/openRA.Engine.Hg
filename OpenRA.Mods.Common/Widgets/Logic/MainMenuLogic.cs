@@ -116,7 +116,7 @@ namespace OpenRA.Mods.Common.Widgets.Logic
 			var missionsButton = singleplayerMenu.Get<ButtonWidget>("MISSIONS_BUTTON");
 			missionsButton.OnClick = OpenMissionBrowserPanel;
 
-			var hasCampaign = modData.Manifest.Missions.Any();
+			var hasCampaign = modData.Manifest.CampaignDB.Any();
 			var hasMissions = modData.MapCache
 				.Any(p => p.Status == MapStatus.Available && p.Visibility.HasFlag(MapVisibility.MissionSelector));
 
