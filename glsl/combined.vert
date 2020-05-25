@@ -89,14 +89,14 @@ vec4 SelectPalettedFraction(float x)
 void main()
 {
  // if aVertexTexMetadata.t=X=65 , primarySampler=1,x=1,primaryChannel=1 =>attrib.s=1=primaryChannel
-	vec3 av=aVertexPosition.xyz;
+	//vec3 av=aVertexPosition.xyz;
 	
-	if (aFlipY==1.0)
+	/* if (aFlipY==1.0)
 	{
 		//av.xyz=vec3(vec2(av.x, 1.0 - av.y),av.z);
 		//av.xyz=vec3(av.xy * vec2(1.0,-1.0),av.z);
-	}
-	gl_Position = vec4((av.xyz - Scroll.xyz) * r1 + r2, 1);
+	} */
+	gl_Position = vec4((aVertexPosition.xyz - Scroll.xyz) * r1 + r2, 1);
 
 	VertexTexMetadataOption2=aVertexTexMetadataOption2;
 	vTexCoordSecond=aTexCoordSecond;
