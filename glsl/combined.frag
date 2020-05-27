@@ -25,9 +25,12 @@ uniform vec3 AlphaInit;
 uniform bool AlphaFlag;
 uniform bool FrameBufferMaskMode;
 
-uniform vec4 Layer1KeyColor[10];
-uniform vec4 Layer2KeyColor[10];
-uniform vec4 Layer3KeyColor[10];
+uniform vec4 Layer1KeyColors[10];
+uniform vec4 Layer2KeyColors[10];
+uniform vec4 Layer3KeyColors[10];
+uniform vec4 Layer4PickKeyColors[10]; //HighLight pick regions colors
+
+uniform float iTime;
 
 uniform vec4 Layer1Color[1];
 uniform vec4 Layer2Color[1];
@@ -240,53 +243,84 @@ void main()
 				
 				usercolor= texture(Texture1,vec2(vTexCoord.s,1-vTexCoord.t));
 				
-				//if (highlightcolor2==highlightcolor && highlightcolor!=excludecolor )
-				if (highlightcolor2==highlightcolor && highlightcolor!=excludecolor )
-				{
-
-						if (FrameBufferMaskMode)
+				
+				//блок отключен, так как обработка идет послойно в одном уровне кода
+				
+				
+					c=usercolor ;// texture(Texture1,vec2(vTexCoord.s,1-vTexCoord.t));
+					for(int i=0;i<10;++i)
+					{
+						
+						//free layers for map. because 3 fraction
+						if (Layer1KeyColors[i]==vec4(0,0,0,0))
+							continue;
+						if (highlightcolor2==Layer1KeyColors[i])
+						{
+							//c = Layer1Color[0];
+							c= mix(usercolor, Layer1Color[0], 0.8);
+						}
+						if (Layer2KeyColors[i]==vec4(0,0,0,0))
+							continue;
+						if (highlightcolor2==Layer2KeyColors[i])
+						{
+							//c = Layer2Color[0];
+							c= mix(usercolor, Layer2Color[0], 0.8);
+						}
+						if (Layer3KeyColors[i]==vec4(0,0,0,0))
+							continue;
+						if (highlightcolor2==Layer3KeyColors[i])
+						{
+							//c = Layer3Color[0];
+							c= mix(usercolor, Layer3Color[0], 0.8);
+						}
+						
+						
+						
+					}
+					
+					for(int i=0;i<10;++i)
+					{
+					//pickuplayer
+						if (Layer4PickKeyColors[i]==vec4(0,0,0,0))
+							continue;
+						if (highlightcolor2==Layer4PickKeyColors[i])
+						{
+							//c = Layer1Color[0];
+							c= mix(usercolor, vec4(iTime/255,iTime/255,1,1), 0.8);
+						}
+					}
+					if (highlightcolor2==highlightcolor && highlightcolor!=excludecolor )
+					{
+					//подсветку , только PickRegions
+						if (FrameBufferMaskMode) //для опроса цвета в нажатом пикселе
 						{
 							c=highlightcolor;
 						}
 						else
 						{
-							c= mix(usercolor, vec4(0.6,0,0,1), 0.7); // для режима выбора областей наступления
-							//c=highlightcolor; для дебага можно отключить и увидеть цвета подсветки в выборе регионов
-						}
-					
-					
-				
-				}
-				else
-				{
-					c=usercolor ;// texture(Texture1,vec2(vTexCoord.s,1-vTexCoord.t));
-					for(int i=0;i<10;++i)
-					{
-						//free layers for map. because 3 fraction
-						if (Layer1KeyColor[i]==vec4(0,0,0,0))
-							continue;
-						if (highlightcolor2==Layer1KeyColor[i])
-						{
-							//c = Layer1Color[0];
-							c= mix(usercolor, Layer1Color[0], 0.8);
-						}
-						if (Layer2KeyColor[i]==vec4(0,0,0,0))
-							continue;
-						if (highlightcolor2==Layer2KeyColor[i])
-						{
-							//c = Layer2Color[0];
-							c= mix(usercolor, Layer2Color[0], 0.8);
-						}
-						if (Layer3KeyColor[i]==vec4(0,0,0,0))
-							continue;
-						if (highlightcolor2==Layer3KeyColor[i])
-						{
-							//c = Layer3Color[0];
-							c= mix(usercolor, Layer3Color[0], 0.8);
+							for(int i=0;i<10;++i)
+							{
+							//pickuplayer
+								 if (Layer4PickKeyColors[i]==vec4(0,0,0,0))
+								{
+									//c= vec4(0.6,0,0,1);
+									//continue;
+								}
+								if (highlightcolor2==Layer4PickKeyColors[i])
+								{
+									//c= mix(usercolor, vec4(0.6,0,0,1), 0.7); // для режима выбора областей наступления
+									c= vec4(1,1,1,1); // для режима выбора областей наступления
+								}
+								else
+								{
+									//c=usercolor;
+								}
+							}
 						}
 					}
 					
-				}
+					
+				
 				//переделать черный из прозрачного в черный.
 				/* if (c==vec4(0,0,0,0))
 				{
