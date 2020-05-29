@@ -24,9 +24,10 @@ namespace OpenRA.Mods.Common.Server
 {
 	public class LobbyCommands : ServerTrait, IInterpretCommand, INotifyServerStart, INotifyServerEmpty, IClientJoined
 	{
+		//массив указателей на функции
 		readonly IDictionary<string, Func<S, Connection, Session.Client, string, bool>> commandHandlers = new Dictionary<string, Func<S, Connection, Session.Client, string, bool>>
 		{
-			{ "state", State },
+			{ "state", State }, //статус игрока Ready или Not Ready для игры
 			{ "startgame", StartGame },
 			{ "slot", Slot },
 			{ "allow_spectators", AllowSpectators },
@@ -46,8 +47,24 @@ namespace OpenRA.Mods.Common.Server
 			{ "spawn", Spawn },
 			{ "color", PlayerColor },
 			{ "sync_lobby", SyncLobby },
-			{ "startcash", StartCash }
+			{ "startcash", StartCash },
+			{ "setcampaign", SetCampaign }
 		};
+		private static bool SetCampaign(S server, Connection conn, Session.Client client, string s)
+		{
+			//Campaign name & Campaign Level
+			var split = s.Split(' ');
+			string CampaignName;
+			CampaignName = split[0];
+			
+			int CampaignLevel;
+			Exts.TryParseIntegerInvariant(split[1], out CampaignLevel);
+
+			server.LobbyInfo.GlobalSettings.EnableCampaign = true;
+			server.LobbyInfo.GlobalSettings.CampaignLevel = CampaignLevel;
+			server.LobbyInfo.GlobalSettings.CampaignName = CampaignName;
+			return true;
+		}
 
 		private static bool StartCash(S server, Connection conn, Session.Client client, string s)
 		{
@@ -113,6 +130,10 @@ namespace OpenRA.Mods.Common.Server
 			return a(server, conn, client, cmdValue);
 		}
 
+		/// <summary>
+		/// Для локальной игры
+		/// </summary>
+		/// <param name="server"></param>
 		static void CheckAutoStart(S server)
 		{
 			var nonBotPlayers = server.LobbyInfo.NonBotPlayers;
@@ -154,6 +175,14 @@ namespace OpenRA.Mods.Common.Server
 			return true;
 		}
 
+		/// <summary>
+		/// Для сетевой игры
+		/// </summary>
+		/// <param name="server"></param>
+		/// <param name="conn"></param>
+		/// <param name="client"></param>
+		/// <param name="s"></param>
+		/// <returns></returns>
 		static bool StartGame(S server, Connection conn, Session.Client client, string s)
 		{
 			if (!client.IsAdmin)

@@ -48,7 +48,18 @@ namespace OpenRA.Mods.Common.Widgets.Logic
 								return;
 
 							playerRoot.RemoveChildren();
-							Game.LoadWidget(world, "OBSERVER_WIDGETS", playerRoot, new WidgetArgs());
+							if (world.Type == WorldType.Capmaign)
+							{
+								Game.LoadWidget(world, "MISSIONBROWSER_PANEL", playerRoot, new WidgetArgs()
+												{
+													{ "onStart", () => { } },
+													{ "onExit", () => { } }
+												});
+							}
+							else
+							{
+								Game.LoadWidget(world, "OBSERVER_WIDGETS", playerRoot, new WidgetArgs());
+							}
 						});
 					}
 				};
@@ -57,6 +68,8 @@ namespace OpenRA.Mods.Common.Widgets.Logic
 			Game.LoadWidget(world, "DEBUG_WIDGETS", worldRoot, new WidgetArgs());
 			Game.LoadWidget(world, "CHAT_PANEL", worldRoot, new WidgetArgs() { { "isMenuChat", false } });
 
+
+			//запустится , когда MissionObjectives запустит GameOver
 			world.GameOver += () =>
 			{
 				Ui.CloseWindow();

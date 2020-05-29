@@ -150,6 +150,7 @@ namespace OpenRA.Server
 
 			serverTraits.TrimExcess();
 
+			//settings это входной аргумент этого метода-конструктора
 			LobbyInfo = new Session
 			{
 				GlobalSettings =

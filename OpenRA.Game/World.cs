@@ -23,7 +23,7 @@ using OpenRA.Traits;
 
 namespace OpenRA
 {
-	public enum WorldType { Regular, Shellmap, Editor }
+	public enum WorldType { Regular, Shellmap, Editor, Capmaign }
 
 	public sealed class World : IDisposable
 	{

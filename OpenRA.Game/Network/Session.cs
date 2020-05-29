@@ -203,6 +203,9 @@ namespace OpenRA.Network
 			public bool EnableSyncReports;
 			public bool Dedicated;
 			public bool GameSavesEnabled;
+			public bool EnableCampaign;
+			public int CampaignLevel;
+			public string CampaignName;
 
 			[FieldLoader.Ignore]
 			public Dictionary<string, LobbyOptionState> LobbyOptions = new Dictionary<string, LobbyOptionState>();

@@ -139,7 +139,11 @@ namespace OpenRA.Network
 						}
 						else
 							Game.AddSystemLine(ServerChatName, "The game has started.");
-
+						if (orderManager.LobbyInfo.GlobalSettings.EnableCampaign)
+						{
+							Game.StartGame(orderManager.LobbyInfo.GlobalSettings.Map, WorldType.Capmaign);
+							break;
+						}
 						Game.StartGame(orderManager.LobbyInfo.GlobalSettings.Map, WorldType.Regular);
 						break;
 					}

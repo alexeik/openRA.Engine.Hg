@@ -217,22 +217,7 @@ namespace OpenRA
 				CreateAndStartLocalServer(lobbyInfo.GlobalSettings.Map, orders);
 		}
 
-		public static void CreateAndStartLocalServer(string mapUID, IEnumerable<Order> setupOrders)
-		{
-			OrderManager om = null;
 
-			Action lobbyReady = null;
-			lobbyReady = () =>
-			{
-				LobbyInfoChanged -= lobbyReady;
-				foreach (var o in setupOrders)
-					om.IssueOrder(o);
-			};
-
-			LobbyInfoChanged += lobbyReady;
-
-			om = JoinServer(IPAddress.Loopback.ToString(), CreateLocalServer(mapUID), "");
-		}
 
 		public static bool IsHost
 		{
@@ -1061,6 +1046,55 @@ namespace OpenRA
 			server = new Server.Server(new IPEndPoint(IPAddress.Loopback, 0), settings, ModData, false);
 
 			return server.Port;
+		}
+		public static int CreateLocalCampaignServer(string map, string campaignName, int campaignLevel)
+		{
+			var settings = new ServerSettings()
+			{
+				Name = campaignName + campaignLevel.ToString(),
+				Map = map,
+				AdvertiseOnline = false
+			};
+
+			server = new Server.Server(new IPEndPoint(IPAddress.Loopback, 0), settings, ModData, false);
+
+			return server.Port;
+		}
+
+		public static void CreateAndStartLocalServer(string mapUID, IEnumerable<Order> setupOrders)
+		{
+			OrderManager om = null;
+
+			Action lobbyReady = null;
+			lobbyReady = () =>
+			{
+				//эти команды=Orders будут добавлены уже к основным.
+				LobbyInfoChanged -= lobbyReady;
+				foreach (var o in setupOrders)
+					om.IssueOrder(o);
+			};
+
+			LobbyInfoChanged += lobbyReady;
+
+			om = JoinServer(IPAddress.Loopback.ToString(), CreateLocalServer(mapUID), "");
+		}
+
+		public static void CreateAndStartLocalCampaignServer(string mapUID, IEnumerable<Order> setupOrders, string campaignName, int campaignLevel)
+		{
+			OrderManager om = null;
+
+			Action lobbyReady = null;
+			lobbyReady = () =>
+			{
+				//эти команды=Orders будут добавлены уже к основным.
+				LobbyInfoChanged -= lobbyReady;
+				foreach (var o in setupOrders)
+					om.IssueOrder(o);
+			};
+
+			LobbyInfoChanged += lobbyReady;
+
+			om = JoinServer(IPAddress.Loopback.ToString(), CreateLocalCampaignServer(mapUID, campaignName, campaignLevel), "");
 		}
 
 		public static bool IsCurrentWorld(World world)
