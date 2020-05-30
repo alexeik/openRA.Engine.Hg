@@ -130,6 +130,11 @@ namespace OpenRA.Graphics
 			return true;
 		}
 
+		/// <summary>
+		/// Играет анимацию(показывает все кадры анимации в одну сторону) и потом делает какое-то действие в after делегате
+		/// </summary>
+		/// <param name="sequenceName">Имя sequence</param>
+		/// <param name="after">Делегат, который выполнить после завершения анимации.</param>
 		public void PlayThen(string sequenceName, Action after)
 		{
 			backwards = false;
@@ -141,7 +146,8 @@ namespace OpenRA.Graphics
 			{
 				++frame;
 				if (frame >= CurrentSequence.Length)
-				{
+				{ 
+					//если дошли до последнего кадра, то обнуляем tickFunc и вызывает after() делегат 
 					frame = CurrentSequence.Length - 1;
 					tickFunc = () => { };
 					if (after != null) after();

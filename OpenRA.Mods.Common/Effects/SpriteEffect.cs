@@ -17,6 +17,9 @@ using OpenRA.Primitives;
 
 namespace OpenRA.Mods.Common.Effects
 {
+	/// <summary>
+	/// Этот класс проигрывает анимацию в количестве кадров в sequence.yaml и потом удаляет себя из мира.
+	/// </summary>
 	public class SpriteEffect : IEffect, ISpatiallyPartitionable
 	{
 		readonly World world;
@@ -46,6 +49,7 @@ namespace OpenRA.Mods.Common.Effects
 			pos = posFunc();
 			anim = new Animation(world, image, facingFunc);
 			anim.PlayThen(sequence, () => world.AddFrameEndTask(w => { w.Remove(this); w.ScreenMap.Remove(this); }));
+
 			world.ScreenMap.Add(this, pos, anim.Image);
 		}
 
