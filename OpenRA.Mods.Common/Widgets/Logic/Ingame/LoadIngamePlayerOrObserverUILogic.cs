@@ -33,36 +33,36 @@ namespace OpenRA.Mods.Common.Widgets.Logic
 			else
 			{
 				var playerWidgets = Game.LoadWidget(world, "PLAYER_WIDGETS", playerRoot, new WidgetArgs());
-				var sidebarTicker = playerWidgets.Get<LogicTickerWidget>("SIDEBAR_TICKER");
-				var objectives = world.LocalPlayer.PlayerActor.Info.TraitInfoOrDefault<MissionObjectivesInfo>();
+				//var sidebarTicker = playerWidgets.Get<LogicTickerWidget>("SIDEBAR_TICKER");
+				//var objectives = world.LocalPlayer.PlayerActor.Info.TraitInfoOrDefault<MissionObjectivesInfo>();
 
-				sidebarTicker.OnTick = () =>
-				{
-					// Switch to observer mode after win/loss
-					if (world.LocalPlayer.WinState != WinState.Undefined && !loadingObserverWidgets)
-					{
-						loadingObserverWidgets = true;
-						Game.RunAfterDelay(objectives != null ? objectives.GameOverDelay : 0, () =>
-						{
-							if (!Game.IsCurrentWorld(world))
-								return;
+				//sidebarTicker.OnTick = () =>
+				//{
+				//	// Switch to observer mode after win/loss
+				//	if (world.LocalPlayer.WinState != WinState.Undefined && !loadingObserverWidgets)
+				//	{
+				//		loadingObserverWidgets = true;
+				//		Game.RunAfterDelay(objectives != null ? objectives.GameOverDelay : 0, () =>
+				//		{
+				//			if (!Game.IsCurrentWorld(world))
+				//				return;
 
-							playerRoot.RemoveChildren();
-							if (world.Type == WorldType.Capmaign)
-							{
-								Game.LoadWidget(world, "MISSIONBROWSER_PANEL", playerRoot, new WidgetArgs()
-												{
-													{ "onStart", () => { } },
-													{ "onExit", () => { } }
-												});
-							}
-							else
-							{
-								Game.LoadWidget(world, "OBSERVER_WIDGETS", playerRoot, new WidgetArgs());
-							}
-						});
-					}
-				};
+				//			playerRoot.RemoveChildren();
+				//			if (world.Type == WorldType.Capmaign)
+				//			{
+				//				Game.LoadWidget(world, "MISSIONBROWSER_PANEL", playerRoot, new WidgetArgs()
+				//								{
+				//									{ "onStart", () => { } },
+				//									{ "onExit", () => { } }
+				//								});
+				//			}
+				//			else
+				//			{
+				//				Game.LoadWidget(world, "OBSERVER_WIDGETS", playerRoot, new WidgetArgs());
+				//			}
+				//		});
+				//	}
+				//};
 			}
 
 			Game.LoadWidget(world, "DEBUG_WIDGETS", worldRoot, new WidgetArgs());
@@ -70,27 +70,27 @@ namespace OpenRA.Mods.Common.Widgets.Logic
 
 
 			//запустится , когда MissionObjectives запустит GameOver
-			world.GameOver += () =>
-			{
-				Ui.CloseWindow();
-				menuRoot.RemoveChildren();
+			//world.GameOver += () =>
+			//{
+			//	Ui.CloseWindow();
+			//	menuRoot.RemoveChildren();
 
-				if (world.LocalPlayer != null)
-				{
-					var scriptContext = world.WorldActor.TraitOrDefault<LuaScript>();
-					var missionData = world.WorldActor.Info.TraitInfoOrDefault<MissionDataInfo>();
-					if (missionData != null && !(scriptContext != null && scriptContext.FatalErrorOccurred))
-					{
-						var video = world.LocalPlayer.WinState == WinState.Won ? missionData.WinVideo : missionData.LossVideo;
-						if (!string.IsNullOrEmpty(video))
-							Media.PlayFMVFullscreen(world, video, () => { });
-					}
-				}
+			//	if (world.LocalPlayer != null)
+			//	{
+			//		var scriptContext = world.WorldActor.TraitOrDefault<LuaScript>();
+			//		var missionData = world.WorldActor.Info.TraitInfoOrDefault<MissionDataInfo>();
+			//		if (missionData != null && !(scriptContext != null && scriptContext.FatalErrorOccurred))
+			//		{
+			//			var video = world.LocalPlayer.WinState == WinState.Won ? missionData.WinVideo : missionData.LossVideo;
+			//			if (!string.IsNullOrEmpty(video))
+			//				Media.PlayFMVFullscreen(world, video, () => { });
+			//		}
+			//	}
 
-				var optionsButton = playerRoot.GetOrNull<MenuButtonWidget>("OPTIONS_BUTTON");
-				if (optionsButton != null)
-					Sync.RunUnsynced(Game.Settings.Debug.SyncCheckUnsyncedCode, world, optionsButton.OnClick);
-			};
+			//	var optionsButton = playerRoot.GetOrNull<MenuButtonWidget>("OPTIONS_BUTTON");
+			//	if (optionsButton != null)
+			//		Sync.RunUnsynced(Game.Settings.Debug.SyncCheckUnsyncedCode, world, optionsButton.OnClick);
+			//};
 		}
 	}
 }
