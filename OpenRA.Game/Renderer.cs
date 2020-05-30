@@ -216,7 +216,7 @@ namespace OpenRA
 			Context.DrawPrimitives(type, 0, numVertices);
 			RendererCloseVAO();
 #if DEBUG_VERTEX
-			Console.WriteLine("DrawBatchForVertexesSprite SpriteRenderer");
+			Console.WriteLine("DrawBatchForVertexesSprite SpriteRenderer" + "array:" + numVertices);
 #endif
 			PerfHistory.Increment("batches", 1);
 		}
@@ -244,7 +244,7 @@ namespace OpenRA
 		public void DrawBatcForOpenGLVertexBuffer<T>(VertexBuffer<T> VertBuffer, int firstVertex, int numVertices, PrimitiveType type) where T : struct
 		{
 #if DEBUG_VERTEX
-			Console.WriteLine("DrawBatcForOpenGL " + VertBuffer.ownername);
+			Console.WriteLine("DrawBatcForOpenGL " + VertBuffer.ownername+ "array:" + (numVertices - firstVertex  ).ToString());
 #endif
 			Context.DrawPrimitives(type, firstVertex, numVertices);
 			PerfHistory.Increment("batches", 1);
