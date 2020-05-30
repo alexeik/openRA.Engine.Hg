@@ -535,6 +535,12 @@ namespace OpenRA
 		static Color systemMessageColor = Color.White;
 		static Color chatMessageColor = Color.White;
 		public static void RunAfterTick(Action a) { delayedActions.Add(a, RunTime); }
+
+		/// <summary>
+		/// Метод, через который можно поставить в очередь какой-то код, который выполнится в LogicTick
+		/// </summary>
+		/// <param name="delayMilliseconds"></param>
+		/// <param name="a"></param>
 		public static void RunAfterDelay(int delayMilliseconds, Action a) { delayedActions.Add(a, RunTime + delayMilliseconds); }
 
 		public static void TakeScreenshotInner()
