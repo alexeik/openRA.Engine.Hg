@@ -34,7 +34,6 @@ namespace OpenRA.Mods.Common.Traits
 		public UIEndGame(Actor self, UIEndGameServiceInfo info, World world)
 		{
 			this.info = info;
-			
 		}
 
 		void IGameOver.GameOver(World world)
@@ -81,7 +80,13 @@ namespace OpenRA.Mods.Common.Traits
 					Game.LoadWidget(world, "MISSIONBROWSER_PANEL", playerRoot, new WidgetArgs()
 												{
 													{ "onStart", () => { } },
-													{ "onExit", () => { } }
+													{ "onExit", () =>
+													{
+													 Ui.ResetAll();
+													Ui.CloseWindow();
+													Game.LoadWidget(world, "MAINMENU", Ui.Root, new WidgetArgs());
+													} 
+												}
 												});
 				}
 				else
