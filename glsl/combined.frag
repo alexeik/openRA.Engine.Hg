@@ -229,7 +229,7 @@ void main()
 		//c=vec4(1,1,1,1);
 	}	
 	
-	if (DrawMode==10.0) //для текстуры+маски алгоритм.
+	if (DrawMode==10.0) //для текстуры+маски алгоритм для карты
 	{
 			vec4 usercolor;
 			if (MouseLocation.x!=-1)
@@ -332,22 +332,32 @@ void main()
 
 
 	}
-	if (DrawMode==11.0) //для текстуры+маски алгоритм.
+	if (DrawMode==11.0) //для текстуры+маски алгоритм для домов
 	{
 			vec4 hlcolor;
+			vec4 highlightcolor;
+			vec4 highlightcolor2;
+			
 			if (MouseLocation.x!=-1)
 			{
 				//Texture1 хранит текстуру фреймбуфера
 				//Texture0 хранит текстуру карту масок
-				vec4 highlightcolor = texture(Texture0,vec2(MouseLocation));//перевернули уже в openra по вертикали
-				vec4 highlightcolor2 = texture(Texture0,vec2(vTexCoord.s,1-vTexCoord.t));
+				 if (VertexTexMetadataOption2==1) //disabled with==3
+					{
+						
+					}
+				else
+				{
+					highlightcolor = texture(Texture0,vec2(MouseLocation));//перевернули уже в openra по вертикали
+					highlightcolor2 = texture(Texture0,vec2(vTexCoord.s,1-vTexCoord.t));
+					
+					
+					hlcolor= texture(Texture1,vec2(vTexCoord.s,1-vTexCoord.t));
+				
+				}
 			
 				
-				hlcolor= texture(Texture1,vec2(vTexCoord.s,1-vTexCoord.t));
-				hlcolor= vec4(hlcolor.rgb, 0.5); //если альфа режим, то нужно взять из оригинала пиксель с заданной альфой.
-
 				
-				//if (highlightcolor2==highlightcolor && highlightcolor!=excludecolor )
 				if (highlightcolor2==highlightcolor && highlightcolor!=vec4(AlphaConstantRegion,1))
 				{
 
@@ -365,11 +375,12 @@ void main()
 				}
 				else
 				{
-					c= texture(Texture1,vec2(vTexCoord.s,1-vTexCoord.t));
+		
+						c=hlcolor;
 					
-					
-						vec4 hl=texture(Texture0,vec2(vTexCoord.s,1-vTexCoord.t));
-						if (hl==vec4(AlphaConstantRegion,1))
+		
+						
+						if (highlightcolor2==vec4(AlphaConstantRegion,1))
 						{
 							
 						}
@@ -398,7 +409,7 @@ void main()
 
 	}
 	
-	if (DrawMode==12.0)
+	if (DrawMode==12.0) //для карты, выбор среди заданных областей
 	{
 		vec4 usercolor = texture(Texture0,vec2(vTexCoord.s,1-vTexCoord.t));
 		vec4 maskcolor = texture(Texture1,vec2(vTexCoord.s,1-vTexCoord.t));
