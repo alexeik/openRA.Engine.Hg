@@ -337,25 +337,19 @@ void main()
 			vec4 hlcolor;
 			vec4 highlightcolor;
 			vec4 highlightcolor2;
+
 			
 			if (MouseLocation.x!=-1)
 			{
 				//Texture1 хранит текстуру фреймбуфера
 				//Texture0 хранит текстуру карту масок
-				 if (VertexTexMetadataOption2==1) //disabled with==3
-					{
-						
-					}
-				else
-				{
-					highlightcolor = texture(Texture0,vec2(MouseLocation));//перевернули уже в openra по вертикали
+				
+					highlightcolor = texture(Texture0,vec2(MouseLocation));// MouseLocation перевернули уже в openra по вертикали
 					highlightcolor2 = texture(Texture0,vec2(vTexCoord.s,1-vTexCoord.t));
 					
 					
 					hlcolor= texture(Texture1,vec2(vTexCoord.s,1-vTexCoord.t));
-				
-				}
-			
+
 				
 				
 				if (highlightcolor2==highlightcolor && highlightcolor!=vec4(AlphaConstantRegion,1))
