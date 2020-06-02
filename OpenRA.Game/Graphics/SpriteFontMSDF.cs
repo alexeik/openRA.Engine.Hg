@@ -96,10 +96,12 @@ namespace OpenRA.Graphics
 			location += new float2(0, size);
 			var p = new float2(location.X, location.Y);
 
+			float scale = 1;
+			
 			foreach (var s in text)
 			{
-				float scale = 1;
-				scale = (FontMSDF.Size * font.Height) / 18f;
+				
+				
 				if (s == '\n')
 				{
 					location += new float2(0, size);
@@ -118,13 +120,14 @@ namespace OpenRA.Graphics
 					gli.Sprite.SpriteType = 1; // 1 будет для FontMSDF
 					gli.Sprite.SpriteArrayNum = (int)s;
 
-
+					scale = (FontMSDF.Size * font.Height) / 18f;
+					//scale = (FontMSDF.Size * gli.fg.Size.Height) / 18f;
 					//scale = (FontMSDF.Size * gli.fg.Size.Height) / 18f;
 					float scalex = (FontMSDF.Size * gli.fg.Size.Width) / 18f;
 					//scale = (FontMSDF.Size / this.size);
 					///scale = 64;
 					//tempXY = new float2((int)Math.Round(p.X -6 , 0) / deviceScale, (p.Y - scale+6) / deviceScale);
-					tempXY = new float2((p.X - gli.Offset.X / 64f - 5) / deviceScale, (p.Y - scale - gli.Offset.Y *5/ 64f + 5) / deviceScale); // -5 -5 потому, что -translate 5 5 был задан в msdfgen
+					tempXY = new float2((p.X - 1) / deviceScale, (p.Y - scale  + 5) / deviceScale); // -5 -5 потому, что -translate 5 5 был задан в msdfgen
 																																			 // деление на 64 ,это приведение к шкале глифа SDF, который 64 на 64
 																																			 //tempXY = new float2((int)Math.Round(p.X , 0) / deviceScale, (p.Y ) / deviceScale);
 
@@ -148,7 +151,7 @@ namespace OpenRA.Graphics
 
 			}
 			Game.Renderer.FontSpriteRenderer.SetTextColor(c);
-
+			
 			// + добавить юсда передачу параметра в шейдер , цвет шрифта.
 		}
 

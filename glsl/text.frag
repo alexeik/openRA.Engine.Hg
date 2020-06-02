@@ -85,13 +85,16 @@ void main()
    fragColor =((opacity - fade_const) * color0 + fade_const * sum * opacity);	 */
   
   //emboss or bevel
-/* 	vec3 color ;
-	color = vec3(opacity);
-	
-	color += texture(TextureFontMSDF,flipped_texCoords - vec3(onepixel,0)).rgb * 3;
-	color -= texture(TextureFontMSDF,flipped_texCoords + vec3(onepixel,0)).rgb * 3;
-	color = vec3((color.r + color.g + color.b )/3.0);
-	fragColor =vec4(color,opacity) ;  */
+ 	// vec3 color ;
+	// color = vec3(opacity );
+	//bevel
+	//color += texture(TextureFontMSDF,flipped_texCoords - vec3(onepixel,0)).rgb * 3;
+	//color -= texture(TextureFontMSDF,flipped_texCoords + vec3(onepixel,0)).rgb * 3;
+	//ebmoss
+	// color.rgb += (texture(TextureFontMSDF,flipped_texCoords + vec3(onepixel,0)).rgb * 3.0) ;
+	// color.rgb -= (texture(TextureFontMSDF,flipped_texCoords - vec3(onepixel,0)).rgb * 3.0) ;
+	// color.rgb = vec3((color.r  + color.g  + color.b  )/3.0);
+	// fragColor =vec4(color,opacity) ;  
 	 
 	//fragColor = vec4(fragColor.rgb ,opacity); 
 	//if(fragColor.a <0.1)

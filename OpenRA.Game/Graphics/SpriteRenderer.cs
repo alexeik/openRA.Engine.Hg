@@ -316,7 +316,7 @@ namespace OpenRA.Graphics
 		}
 		public void SetTextColor(Color c)
 		{
-			shader.SetVec("TextColor", c.R, c.G, c.B);
+			shader.SetVec("TextColor", c.R/255f, c.G/255f, c.B/255f);
 		}
 		public void SetDepthPreviewEnabled(bool enabled)
 		{

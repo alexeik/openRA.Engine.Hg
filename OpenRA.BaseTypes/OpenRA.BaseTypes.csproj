@@ -1,8 +1,53 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <TargetFramework>net461</TargetFramework>
     <Platforms>AnyCPU;x64</Platforms>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <OutputPath>K:\games.dev\dune2.mod\engine\</OutputPath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="Input\IInputHandler.cs" />
+    <Compile Include="Input\Keycode.cs" />
+    <Compile Include="PlatformInterfaces\Platform.cs" />
+    <Compile Include="PlatformInterfaces\PlatformInterfaces.cs" />
+    <Compile Include="PlatformInterfaces\SoundDevice.cs" />
+    <Compile Include="PlatformInterfaces\Vertex.cs" />
+    <Compile Include="Primitives\ActionQueue.cs" />
+    <Compile Include="Primitives\BitSet.cs" />
+    <Compile Include="Primitives\Cache.cs" />
+    <Compile Include="Primitives\Color.cs" />
+    <Compile Include="Primitives\ConcurrentCache.cs" />
+    <Compile Include="Primitives\DisposableAction.cs" />
+    <Compile Include="Primitives\Exts.cs" />
+    <Compile Include="Primitives\float2.cs" />
+    <Compile Include="Primitives\float3.cs" />
+    <Compile Include="Primitives\int2.cs" />
+    <Compile Include="Primitives\Int32Matrix4x4.cs" />
+    <Compile Include="Primitives\IObservableCollection.cs" />
+    <Compile Include="Primitives\MergedStream.cs" />
+    <Compile Include="Primitives\ObservableCollection.cs" />
+    <Compile Include="Primitives\ObservableDictionary.cs" />
+    <Compile Include="Primitives\ObservableList.cs" />
+    <Compile Include="Primitives\Pair.cs" />
+    <Compile Include="Primitives\PriorityQueue.cs" />
+    <Compile Include="Primitives\ReadOnlyAdapterStream.cs" />
+    <Compile Include="Primitives\ReadOnlyDictionary.cs" />
+    <Compile Include="Primitives\ReadOnlyList.cs" />
+    <Compile Include="Primitives\Rectangle.cs" />
+    <Compile Include="Primitives\SegmentStream.cs" />
+    <Compile Include="Primitives\Size.cs" />
+    <Compile Include="Primitives\SpatiallyPartitioned.cs" />
+    <Compile Include="Primitives\StreamExts.cs" />
+    <Compile Include="Primitives\TypeDictionary.cs" />
+    <Compile Include="Primitives\WAngle.cs" />
+    <Compile Include="Primitives\WDist.cs" />
+    <Compile Include="Primitives\WPos.cs" />
+    <Compile Include="Primitives\WRot.cs" />
+    <Compile Include="Primitives\WVec.cs" />
+    <Compile Include="Support\Log.cs" />
+    <Compile Include="Support\MersenneTwister.cs" />
+  </ItemGroup>
 
 </Project>
