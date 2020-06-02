@@ -88,12 +88,18 @@ namespace OpenRA.Graphics
 
 		public void DrawText(string text, float2 location, Color c)
 		{
+			if (text.Contains("Cyril"))
+			{
+
+			}
 			// Offset from the baseline position to the top-left of the glyph for rendering
 			location += new float2(0, size);
 			var p = new float2(location.X, location.Y);
 
 			foreach (var s in text)
 			{
+				float scale = 1;
+				scale = (FontMSDF.Size * font.Height) / 18f;
 				if (s == '\n')
 				{
 					location += new float2(0, size);
@@ -111,11 +117,17 @@ namespace OpenRA.Graphics
 				{
 					gli.Sprite.SpriteType = 1; // 1 будет для FontMSDF
 					gli.Sprite.SpriteArrayNum = (int)s;
-					float scale = 1;
-					scale = (FontMSDF.Size * font.Height) / 18f;
+
+
+					//scale = (FontMSDF.Size * gli.fg.Size.Height) / 18f;
+					float scalex = (FontMSDF.Size * gli.fg.Size.Width) / 18f;
+					//scale = (FontMSDF.Size / this.size);
 					///scale = 64;
-					tempXY = new float2((int)Math.Round(p.X * deviceScale-5, 0) / deviceScale, (p.Y - scale+5) / deviceScale);
-					float coof = gli.Sprite.Size.X / gli.Sprite.Size.Y;
+					//tempXY = new float2((int)Math.Round(p.X -6 , 0) / deviceScale, (p.Y - scale+6) / deviceScale);
+					tempXY = new float2((p.X - gli.Offset.X / 64f - 5) / deviceScale, (p.Y - scale - gli.Offset.Y *5/ 64f + 5) / deviceScale); // -5 -5 потому, что -translate 5 5 был задан в msdfgen
+																																			 // деление на 64 ,это приведение к шкале глифа SDF, который 64 на 64
+																																			 //tempXY = new float2((int)Math.Round(p.X , 0) / deviceScale, (p.Y ) / deviceScale);
+
 					gli.Sprite.Left = 0f;
 					gli.Sprite.Bottom = 0f;
 					gli.Sprite.Top = 1f;
@@ -123,10 +135,17 @@ namespace OpenRA.Graphics
 					//Sprite ничего не значит тут. Он нужен лишь для определения размера полигона
 					Game.Renderer.FontSpriteRenderer.SetFontMSDF(Mfont.Texture); //assign texture arg for shader text.vert.
 
-					Game.Renderer.FontSpriteRenderer.DrawSprite(gli.Sprite, tempXY, 0, new float3(scale, scale, 0));
-				}
+					Game.Renderer.FontSpriteRenderer.DrawTextSprite(gli.Sprite, tempXY, 0, new float3(scale, scale, 0));
 
-				p += new float2(gli.Advance / deviceScale, 0);
+
+				}
+				float coof = (FontMSDF.Size * font.Height) / 18f;
+				if (s == 'm')
+				{
+					//gli.Advance = 15;
+				}
+				p += new float2((gli.Advance ) / deviceScale, 0);
+
 			}
 			Game.Renderer.FontSpriteRenderer.SetTextColor(c);
 

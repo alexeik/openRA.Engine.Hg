@@ -212,7 +212,12 @@ namespace OpenRA.Graphics
 			Util.FastCreateQuad(vertices, location + s.FractionalOffset * size, s, samplers, paletteTextureIndex, nv, size);
 			nv += 6;
 		}
-
+		public void DrawTextSprite(Sprite s, float3 location, float paletteTextureIndex, float3 size)
+		{
+			var samplers = SetRenderStateForSprite(s); // узнает номер текстуры из которой этой спрайт в переменную samplers, чтобы потом записать это в VBO
+			Util.FastCreateQuad(vertices, location , s, samplers, paletteTextureIndex, nv, size);
+			nv += 6;
+		}
 		public void DrawSprite(Sprite s, float3 location, PaletteReference pal)
 		{
 			DrawSprite(s, location, pal.TextureIndex, s.Size);

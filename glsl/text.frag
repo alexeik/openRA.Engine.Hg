@@ -62,7 +62,7 @@ void main()
 	
 	vec2 pos = flipped_texCoords.xy;
     
-	float pxRange=16; //так было при генерации png в msdfgen.
+	float pxRange=12; //так было при генерации png в msdfgen.
 
 	vec2 onepixel=1.0/vec2(textureSize(TextureFontMSDF, 0));
 
