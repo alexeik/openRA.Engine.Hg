@@ -12,6 +12,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.MemoryMappedFiles;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -163,6 +164,7 @@ namespace OpenRA
 			new MapField("Bounds"),
 			new MapField("Visibility"),
 			new MapField("Categories"),
+			new MapField("LoadResourceLayer", required:false), //нужно добавить публичное свойство в класс Map!
 			new MapField("LockPreview", required: false, ignoreIfValue: "False"),
 			new MapField("Players", "PlayerDefinitions"),
 			new MapField("Actors", "ActorDefinitions"),
@@ -185,6 +187,7 @@ namespace OpenRA
 		public string Title;
 		public string Author;
 		public string Tileset;
+		public bool LoadResourceLayer=true;
 		public bool LockPreview;
 		public Rectangle Bounds;
 		public MapVisibility Visibility = MapVisibility.Lobby;
@@ -330,6 +333,7 @@ namespace OpenRA
 			PlayerDefinitions = MiniYaml.NodesOrEmpty(yaml, "Players");
 			ActorDefinitions = MiniYaml.NodesOrEmpty(yaml, "Actors");
 
+			
 			Grid = modData.Manifest.Get<MapGrid>();
 
 			var size = new Size(MapSize.X, MapSize.Y);
@@ -359,16 +363,19 @@ namespace OpenRA
 					}
 				}
 
-				if (header.ResourcesOffset > 0)
+				if (LoadResourceLayer)
 				{
-					s.Position = header.ResourcesOffset;
-					for (var i = 0; i < MapSize.X; i++)
+					if (header.ResourcesOffset > 0)
 					{
-						for (var j = 0; j < MapSize.Y; j++)
+						s.Position = header.ResourcesOffset;
+						for (var i = 0; i < MapSize.X; i++)
 						{
-							var type = s.ReadUInt8();
-							var density = s.ReadUInt8();
-							Resources[new MPos(i, j)] = new ResourceTile(type, density);
+							for (var j = 0; j < MapSize.Y; j++)
+							{
+								var type = s.ReadUInt8();
+								var density = s.ReadUInt8();
+								Resources[new MPos(i, j)] = new ResourceTile(type, density);
+							}
 						}
 					}
 				}

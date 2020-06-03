@@ -105,7 +105,17 @@ namespace OpenRA
 							if (mapPackage == null)
 								continue;
 
-							var uid = Map.ComputeUID(mapPackage);
+							string uid="";
+							try
+							{
+								uid = Map.ComputeUID(mapPackage);
+							}
+							catch (Exception mapex)
+							{
+
+								throw;
+							}
+							
 							previews[uid].UpdateFromMap(mapPackage, kv.Key, kv.Value, modData.Manifest.MapCompatibility, mapGrid.Type);
 						}
 					}
