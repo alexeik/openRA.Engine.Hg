@@ -170,6 +170,10 @@ namespace OpenRA.Mods.Common.Traits.Render
 
 		public RenderSprites(ActorInitializer init, RenderSpritesInfo info)
 		{
+			if (init.Self.Info.Name=="asteroid")
+			{
+
+			}
 			Info = info;
 			faction = init.Contains<FactionInit>() ? init.Get<FactionInit, string>() : init.Self.Owner.Faction.InternalName;
 		}
