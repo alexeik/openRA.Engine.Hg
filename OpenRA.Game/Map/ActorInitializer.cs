@@ -56,6 +56,24 @@ namespace OpenRA
 		public LocationInit(CPos init) { value = init; }
 		public CPos Value(World world) { return value; }
 	}
+	public class LocationOfCrush : IActorInit<CPos>
+	{
+		[FieldFromYamlKey]
+		readonly CPos value = CPos.Zero;
+
+		public LocationOfCrush() { }
+		public LocationOfCrush(CPos init) { value = init; }
+		public CPos Value(World world) { return value; }
+	}
+	public class LocationOfEnd : IActorInit<CPos>
+	{
+		[FieldFromYamlKey]
+		readonly CPos value = CPos.Zero;
+
+		public LocationOfEnd() { }
+		public LocationOfEnd(CPos init) { value = init; }
+		public CPos Value(World world) { return value; }
+	}
 
 	public class OwnerInit : IActorInit<Player>
 	{
