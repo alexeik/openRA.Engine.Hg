@@ -120,7 +120,7 @@ namespace OpenRA.Mods.Common.Traits
 		{
 			self.World.AddFrameEndTask(w =>
 			{
-				if (info.NeedsActorSpawner)
+				if (info.NeedsActorSpawner) //это если задан SpawnLocation , которые встроены в карту.
 				{
 					CreatedActors.Add(w.CreateActor(info.Actors.Random(self.World.SharedRandom), new TypeDictionary
 			{
@@ -130,7 +130,7 @@ namespace OpenRA.Mods.Common.Traits
 				}
 				else
 				{
-
+					//это тех, у кого spawnlocation задано через yaml.
 					CreatedActors.Add(w.CreateActor(info.Actors.Random(self.World.SharedRandom), new TypeDictionary
 			{   new OwnerInit(w.Players.First(x => x.PlayerName == info.Owner)),new LocationInit(info.LocationInit), new CenterPositionInit(self.World.Map.CenterOfCell(info.LocationInit) + new WVec(0, 0, info.Altitude)) }));
 				}
