@@ -31,14 +31,19 @@ namespace OpenRA.Activities
 	public abstract class Activity
 	{
 		public ActivityState State { get; private set; }
-
+		
 		Activity childActivity;
+		/// <summary>
+		/// Свойство базового класса
+		/// </summary>
 		protected Activity ChildActivity
 		{
 			get { return childActivity != null && childActivity.State < ActivityState.Done ? childActivity : null; }
 			set { childActivity = value; }
 		}
-
+		/// <summary>
+		/// Свойство базового класса. Назначается через Queue
+		/// </summary>
 		public Activity NextActivity { get; protected set; }
 
 		public bool IsInterruptible { get; protected set; }
