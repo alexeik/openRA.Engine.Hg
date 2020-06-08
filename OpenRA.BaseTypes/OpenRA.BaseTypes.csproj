@@ -1,12 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net461</TargetFramework>
-    <Platforms>AnyCPU;x64</Platforms>
+    <Platforms>AnyCPU</Platforms>
+    <AutoGenerateBindingRedirects>false</AutoGenerateBindingRedirects>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <OutputPath>K:\games.dev\dune2.mod\engine\</OutputPath>
   </PropertyGroup>
-
   <ItemGroup>
     <Compile Include="Input\IInputHandler.cs" />
     <Compile Include="Input\Keycode.cs" />
@@ -49,5 +51,6 @@
     <Compile Include="Support\Log.cs" />
     <Compile Include="Support\MersenneTwister.cs" />
   </ItemGroup>
+
 
 </Project>
