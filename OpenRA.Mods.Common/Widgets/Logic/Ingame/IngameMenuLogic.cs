@@ -181,7 +181,7 @@ namespace OpenRA.Mods.Common.Widgets.Logic
 
 		void CreateAbortMissionButton()
 		{
-			if (world.Type != WorldType.Regular)
+			if ((world.Type == WorldType.Shellmap || world.Type == WorldType.Editor) )
 				return;
 
 			var button = AddButton("ABORT_MISSION", world.IsGameOver ? "Leave" : "Abort Mission");
@@ -229,7 +229,10 @@ namespace OpenRA.Mods.Common.Widgets.Logic
 
 		void CreateSurrenderButton()
 		{
-			if (world.Type != WorldType.Regular || world.Map.Visibility.HasFlag(MapVisibility.MissionSelector) || world.LocalPlayer == null)
+			if ((world.Type == WorldType.Shellmap || world.Type ==  WorldType.Editor) ||  world.LocalPlayer == null)
+				return;
+
+			if (world.Type != WorldType.Capmaign && world.Map.Visibility.HasFlag(MapVisibility.MissionSelector))
 				return;
 
 			Action onSurrender = () =>
