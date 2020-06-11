@@ -192,6 +192,12 @@ namespace OpenRA
 		public Color[] CustomColors = { };
 	}
 
+	public class CampaignSavePoint
+	{
+		public int TryID;
+		public int CampaignLevel;
+		public string CampaignNameYaml;
+	}
 	public class GameSettings
 	{
 		public string Platform = "Default";
@@ -237,6 +243,7 @@ namespace OpenRA
 		public readonly ServerSettings Server = new ServerSettings();
 		public readonly DebugSettings Debug = new DebugSettings();
 		internal Dictionary<string, Hotkey> Keys = new Dictionary<string, Hotkey>();
+		public readonly CampaignSavePoint CampSavePoint = new CampaignSavePoint();
 
 		public readonly Dictionary<string, object> Sections;
 
@@ -256,6 +263,7 @@ namespace OpenRA
 				{ "Graphics", Graphics },
 				{ "Server", Server },
 				{ "Debug", Debug },
+				{ "CampaignSavePoint", CampSavePoint },
 			};
 
 			// Override fieldloader to ignore invalid entries
