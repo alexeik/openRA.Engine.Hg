@@ -312,7 +312,10 @@ namespace OpenRA
 				Disposed = true;
 
 				if (luaInterface != null)
-					luaInterface.Value.OnActorDestroyed();
+					if (luaInterface.Value != null)
+					{
+						luaInterface.Value.OnActorDestroyed();
+					}
 			});
 		}
 
