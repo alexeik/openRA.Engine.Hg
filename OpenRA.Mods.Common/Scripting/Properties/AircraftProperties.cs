@@ -25,7 +25,8 @@ namespace OpenRA.Mods.Common.Scripting
 		public AircraftProperties(ScriptContext context, Actor self)
 			: base(context, self)
 		{
-			aircraft = self.Trait<Aircraft>();
+			aircraft= self.TraitOrDefault<Aircraft>();
+			//aircraft = self.Trait<Aircraft>();
 		}
 
 		[ScriptActorPropertyActivity]
