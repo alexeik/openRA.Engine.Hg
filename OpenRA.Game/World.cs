@@ -355,7 +355,10 @@ namespace OpenRA
 			syncedEffects.RemoveAll(e => predicate((IEffect)e));
 		}
 
-		public void AddFrameEndTask(Action<World> a) { frameEndActions.Enqueue(a); }
+		public void AddFrameEndTask(Action<World> a)
+		{ 
+			frameEndActions.Enqueue(a); 
+		}
 
 		public event Action<Actor> ActorAdded = _ => { };
 		public event Action<Actor> ActorRemoved = _ => { };
