@@ -284,11 +284,11 @@ namespace OpenRA.Mods.Common.Widgets.Logic
 					Game.Settings.Debug.SystemInformationVersionPrompt = SystemInformationVersion;
 					Game.Settings.Save();
 					SwitchMenu(MenuType.Main);
-					LoadAndDisplayNews(webServices.GameNews, newsBG);
+					//LoadAndDisplayNews(webServices.GameNews, newsBG);
 				};
 			}
 			else
-				LoadAndDisplayNews(webServices.GameNews, newsBG);
+				//LoadAndDisplayNews(webServices.GameNews, newsBG);
 
 			Game.OnShellmapLoaded += OpenMenuBasedOnLastGame;
 		}

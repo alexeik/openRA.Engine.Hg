@@ -97,10 +97,10 @@ namespace OpenRA
 		public int Samples = 25;
 
 		[Desc("Check whether a newer version is available online.")]
-		public bool CheckVersion = true;
+		public bool CheckVersion = false;
 
 		[Desc("Allow the collection of anonymous data such as Operating System, .NET runtime, OpenGL version and language settings.")]
-		public bool SendSystemInformation = true;
+		public bool SendSystemInformation = false;
 
 		[Desc("Version of sysinfo that the player last opted in or out of.")]
 		public int SystemInformationVersionPrompt = 0;
@@ -109,7 +109,7 @@ namespace OpenRA
 		public string UUID = Guid.NewGuid().ToString();
 
 		[Desc("Enable hidden developer settings in the Advanced settings tab.")]
-		public bool DisplayDeveloperSettings = false;
+		public bool DisplayDeveloperSettings = true;
 
 		[Desc("Display bot debug messages in the game chat.")]
 		public bool BotDebug = false;
@@ -136,7 +136,7 @@ namespace OpenRA
 	public class GraphicSettings
 	{
 		[Desc("This can be set to Windowed, Fullscreen or PseudoFullscreen.")]
-		public WindowMode Mode = WindowMode.PseudoFullscreen;
+		public WindowMode Mode = WindowMode.Windowed;
 
 		[Desc("Screen resolution in fullscreen mode.")]
 		public int2 FullscreenSize = new int2(0, 0);
