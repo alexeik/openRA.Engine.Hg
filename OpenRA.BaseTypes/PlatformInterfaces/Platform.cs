@@ -107,7 +107,7 @@ namespace OpenRA
 			{
 				case PlatformType.Windows:
 				{
-					preferredSupportDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "OpenRA");
+					preferredSupportDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "OpenRA");
 					fallbackSupportDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "OpenRA");
 					break;
 				}
