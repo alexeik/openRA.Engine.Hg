@@ -25,9 +25,9 @@ namespace OpenRA
 		static Process gameProcess;
 
 		// Constants to be replaced by the wrapper / compilation script
-		const string ModID = "MOD_ID";
-		const string DisplayName = "DISPLAY_NAME";
-		const string FaqUrl = "FAQ_URL";
+		const string ModID = "${MOD_ID}";
+		const string DisplayName = "${DISPLAY_NAME}";
+		const string FaqUrl = "${FAQ_URL}";
 
 		[STAThread]
 		static int Main(string[] args)

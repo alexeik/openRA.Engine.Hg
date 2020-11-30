@@ -76,3 +76,5 @@ StyleCopViolations.xml
 /mods/modcontent/
 /mods/common/SDL2-CS.dll.config
 /mods/d2/msdf/
+/packaging/windows/WindowsLauncher.cs
+MaxMind.Db.xml
