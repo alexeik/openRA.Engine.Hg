@@ -58,6 +58,7 @@ namespace OpenRA
 
 		public CPos Location { get { return OccupiesSpace.TopLeft; } }
 		public WPos CenterPosition { get { return OccupiesSpace.CenterPosition; } }
+		public float Scale;
 
 		public WRot Orientation
 		{
@@ -93,6 +94,7 @@ namespace OpenRA
 
 			World = world;
 			ActorID = world.NextAID();
+			Scale = 1f;
 			if (initDict.Contains<OwnerInit>())
 				Owner = init.Get<OwnerInit, Player>();
 
