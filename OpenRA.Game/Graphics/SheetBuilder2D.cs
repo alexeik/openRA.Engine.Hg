@@ -81,11 +81,17 @@ namespace OpenRA.Graphics
 			return Add(src, size, 0, float3.Zero);
 		}
 
+		/// <summary>
+		/// Нужно для случая, когда нужно скопировать часть картинки из текстуры1 в sheet2d текстуру.
+		/// В данном случае текстура1=текстура фреймбуфера1
+		/// </summary>
+		/// <param name="sprite"></param>
+		/// <returns></returns>
 		public Sprite AddSprite(Sprite sprite)
 		{
 			Sprite rect = Allocate(new Size(Convert.ToInt32(sprite.Size.X), Convert.ToInt32(sprite.Size.Y)), sprite.ZRamp, sprite.Offset, TextureChannel.RGBA);
 
-			byte[] spritedata = sprite.Sheet.GetData();
+			byte[] spritedata = sprite.Sheet.GetData(); //тут беруться данные из текстуры1 из видеокарты.
 			byte[] src = new byte[rect.Bounds.Height * rect.Bounds.Width * 4]; //4byte sprite
 
 		
